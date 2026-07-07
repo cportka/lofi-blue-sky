@@ -27,6 +27,10 @@ export type { Rng } from './rng.js';
 export { isValidHash, normalizeHash, randomHash } from './hash.js';
 export type { Hash } from './hash.js';
 
+// exploration (browser generator only — never affects the seed → genome mapping)
+export { randomHashByPolicy, rerollFeature, FEATURE_KEYS } from './explore.js';
+export { encodeGenome, decodeGenome, isGenomeToken } from './codec.js';
+
 // loop
 export { loopPhase, loopClock, loopEnvelope, TAU } from './loop.js';
 export type { LoopClock } from './loop.js';

@@ -127,8 +127,12 @@ hash, same features — registered via `$fx.features(...)`. Six traits:
 | **Band Density** | `Fine` · `Wide` | `Fine` when `bands >= 24`, else `Wide`. |
 | **Drift** | `Still` · `Flowing` | `motion = bandDrift + rowDisplace + (driftCycles-1)·0.03`; `Flowing` when `motion > 0.09`. |
 | **Processing** | `Clean` · `Grained` · `Degraded` | `wear = grain + dither·0.5 + chroma + (16-quantLevels)·0.03`; `>1.0` → `Degraded`, `>0.55` → `Grained`, else `Clean`. |
-| **Perfect Horizon** | `true` / `false` | a clean, level horizon near the golden band: `horizon > 0.42 && horizon < 0.5 && rowDisplace < 0.02`. |
-| **Full Corruption** | `true` / `false` | the rare wrecked one: `chroma > 0.4 && grain > 0.35 && quantLevels <= 7`. |
+| **Perfect Horizon** | `true` / `false` | a clean, level horizon near the golden band: `horizon > 0.40 && horizon < 0.52 && rowDisplace < 0.025`. |
+| **Full Corruption** | `true` / `false` | the rare wrecked one: `chroma > 0.3 && grain > 0.32 && quantLevels <= 9`. |
+
+Feature thresholds are trait *labels* over the same pixels, not part of the genome — tuning them
+changes no sky (v0.2.0 widened the last two so they vary as you explore). They become fixed for a
+token **at mint**. See [CANON.md](./CANON.md).
 
 The four palette families — **Sodium** (the `32__OG` sunset), **Powder** (blue sky), **Olive**
 (mosaic), **Periwinkle** (dusk) — mirror the reference loops that seeded them

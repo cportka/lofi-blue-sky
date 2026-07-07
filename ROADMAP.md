@@ -37,10 +37,15 @@ Legend: ✅ done · 🟡 in progress · ⬜ planned
 - `sort.frag` / `datamosh.frag` — the hard, feedback-buffer modes (the `35` look). Requires the
   ping-pong history buffer and a loop-closure strategy (§ seamless-loop in DETERMINISM.md).
 
-## Phase 5 — Breathe target ⬜
-- Full UI, all modes switchable, larger internal resolution, explore / seed-share.
-- High-res PNG (≥3000px) supersampled export + seamless WebM/MP4 — these become the pre-rendered
-  editions for other chains and the social assets.
+## Phase 5 — Breathe target 🟡 (started in v0.2.0)
+- Interactive generator: seed box, click-the-sky HUD toggle, click-an-attribute reshuffle with
+  ◀ ▶ undo/redo, `g:…` genome tokens for edited skies, copy/share. ✅
+- WebM one-loop recording + PNG frame save. ✅ (MediaRecorder; MP4 + supersampled ≥3000px still to come)
+- ⬜ All modes switchable, larger internal resolution, high-res PNG (≥3000px) — the pre-rendered
+  editions for other chains + social assets.
+
+_v0.1.0 is canonized and frozen — see [docs/CANON.md](./docs/CANON.md). Later phases sit above the
+seed→pixels contract and never change what a hash renders (a new genome would be a MAJOR bump)._
 
 ## Phase 6 — Audio + decentralized deploy ⬜
 - Seeded ambient/lofi bed (muted by default), synced to the visual loop.

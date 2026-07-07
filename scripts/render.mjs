@@ -37,6 +37,9 @@ const FIXED = [
   { hash: 'a3f1b2c4d5e6f7089a1b2c3d4e5f60718293a4b5c6d7e8f9012345678abcdef0', t: 0.5 },
   { hash: 'facefeed1234567890abcdef0000111122223333444455556666777788889999', t: 0.2 },
   { hash: 'b10eb1005ky5eed5b10eb1005ky5eed5b10eb1005ky5eed5b10eb1005ky5eed5a', t: 0.66 },
+  // canonical picks — pixel-locked so a shader change that would alter them fails the golden
+  { hash: '00f50f353cf56cfa55f3b32404db3196e7cef86e37bd4b0fbca9304a8dd6097f', t: 0.33 },
+  { hash: '3ebed465933f11af41fb9f999635ca11ea55c1357cdcba0f3d4bc11f9de5ff64', t: 0.33 },
 ];
 
 const MIME = {

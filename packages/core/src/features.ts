@@ -30,8 +30,10 @@ export function deriveFeatures(g: Genome): Features {
   const processing = wear > 1.0 ? 'Degraded' : wear > 0.55 ? 'Grained' : 'Clean';
 
   // A clean, level horizon sitting near the golden band reads as a "perfect" one.
-  const perfectHorizon = g.horizon > 0.42 && g.horizon < 0.5 && g.rowDisplace < 0.02;
-  const fullCorruption = g.chroma > 0.4 && g.grain > 0.35 && g.quantLevels <= 7;
+  // (Windows widened in v0.2.0 so the two rare flags actually vary as you explore — a label-only
+  // tuning that never changes any seed's rendered pixels. They freeze at mint. See docs/CANON.md.)
+  const perfectHorizon = g.horizon > 0.4 && g.horizon < 0.52 && g.rowDisplace < 0.025;
+  const fullCorruption = g.chroma > 0.3 && g.grain > 0.32 && g.quantLevels <= 9;
 
   return {
     Palette: family,

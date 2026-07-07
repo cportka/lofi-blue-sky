@@ -5,7 +5,7 @@
 > it is my meditation — sit with me and watch the sky go by
 > ˜”°•.˜”°• hello •°”˜.•°”˜
 
-**Version:** 0.1.0 · **License:** MIT · [Roadmap](./ROADMAP.md) · [Docs](./docs) · **Live:** https://cportka.github.io/lofi-blue-sky/
+**Version:** 0.2.0 · **License:** MIT · [Roadmap](./ROADMAP.md) · [Docs](./docs) · **Live:** https://cportka.github.io/lofi-blue-sky/
 
 A procedurally generated **lofi glitch-sky**, synthesized entirely in a fragment shader from a
 hash. No footage, no assets — a slow, meditative, seamless loop of a slit-scan sunset built from
@@ -68,12 +68,25 @@ Determinism is the whole game: **same hash → byte-identical params → byte-id
 verified in CI and in a real browser. See [docs/DETERMINISM.md](./docs/DETERMINISM.md) and
 [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).
 
+## Explore (the live generator)
+
+On [the site](https://cportka.github.io/lofi-blue-sky/): **click the sky** to hide/show the panel;
+**click any attribute** to reshuffle just that one; **◀ ▶** undo/redo; **↻ new sky** rolls a fresh
+seed; the seed box updates live and takes a pasted hash automatically; **⧉** copies it; **png**
+saves the frame and **loop** records one seamless loop as WebM. A hand-tweaked sky is shared as a
+`g:…` genome token instead of a hash. See [docs/CANON.md](./docs/CANON.md).
+
+Two canonical seeds to try:
+`00f50f353cf56cfa55f3b32404db3196e7cef86e37bd4b0fbca9304a8dd6097f` (a sodium sunset) and
+`3ebed465933f11af41fb9f999635ca11ea55c1357cdcba0f3d4bc11f9de5ff64` (an olive sky).
+
 ## Status
 
-v0.1.0 ships Phases 0–1 of the [roadmap](./ROADMAP.md): the core scaffold, the deterministic
-genome, the sky + slit-scan look, curated palettes, post-processing, a seamless loop, and both
-targets building and rendering. Open design calls (mode, storage, params) are tracked in
-[docs/DECISIONS.md](./docs/DECISIONS.md).
+**v0.1.0 is canonical and frozen** — the genome, palettes, and shaders never change, so every seed
+regenerates byte-identically (locked by [docs/CANON.md](./docs/CANON.md) + CI). v0.2.0 adds the
+interactive generator, a WebM loop export, and label-only feature tuning — **no change to any seed's
+rendered sky**. Phases 0–1 of the [roadmap](./ROADMAP.md) are done; open design calls (mode, storage,
+params) are tracked in [docs/DECISIONS.md](./docs/DECISIONS.md).
 
 ---
 

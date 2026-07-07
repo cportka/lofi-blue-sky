@@ -12,6 +12,7 @@
       :root {
         --ink: #ece6d6;
         --muted: #a9a294;
+        --good: #86c98b;
       }
       * {
         box-sizing: border-box;
@@ -31,12 +32,13 @@
         width: 100vw;
         height: 100vh;
         display: block;
+        cursor: pointer;
       }
       #hud {
         position: fixed;
         left: 16px;
         bottom: 16px;
-        max-width: min(320px, 82vw);
+        width: min(320px, 82vw);
         padding: 14px 16px;
         border-radius: 12px;
         background: rgba(11, 10, 18, 0.5);
@@ -45,46 +47,82 @@
         border: 1px solid rgba(236, 230, 214, 0.12);
         font-size: 12px;
         line-height: 1.5;
-        user-select: none;
+        transition: opacity 0.18s ease, transform 0.18s ease;
       }
-      .hud-hidden #hud > *:not(#title) {
-        display: none;
+      body.hud-hidden #hud {
+        opacity: 0;
+        transform: translateY(8px);
+        pointer-events: none;
       }
-      #title {
-        font-size: 13px;
-        letter-spacing: 0.04em;
-        margin-bottom: 10px;
-        cursor: pointer;
+      #titlebar {
         display: flex;
         justify-content: space-between;
-        gap: 12px;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      #brand {
+        font-size: 13px;
+        letter-spacing: 0.04em;
         opacity: 0.95;
       }
-      #title .dot {
+      #nav button {
+        background: none;
+        border: none;
         color: var(--muted);
+        cursor: pointer;
+        font-size: 13px;
+        padding: 2px 5px;
+        border-radius: 6px;
+      }
+      #nav button:hover:not(:disabled) {
+        color: var(--ink);
+        background: rgba(236, 230, 214, 0.12);
+      }
+      #nav button:disabled {
+        opacity: 0.3;
+        cursor: default;
       }
       #feats {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 2px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
         margin-bottom: 12px;
       }
       .feat {
-        display: contents;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
+        text-align: left;
+        font: inherit;
+        color: var(--ink);
+        background: none;
+        border: none;
+        border-radius: 6px;
+        padding: 2px 6px;
+        cursor: pointer;
+      }
+      .feat:hover {
+        background: rgba(236, 230, 214, 0.1);
       }
       .feat .k {
         color: var(--muted);
       }
+      .feat:hover .k::after {
+        content: " ⟳";
+        color: rgba(236, 230, 214, 0.5);
+      }
       .feat .v {
         text-align: right;
       }
-      .row {
+      .seedrow,
+      .btns {
         display: flex;
         gap: 8px;
         margin-top: 8px;
       }
       input,
-      button {
+      button.act {
         font: inherit;
         color: var(--ink);
         background: rgba(236, 230, 214, 0.06);
@@ -92,21 +130,35 @@
         border-radius: 8px;
         padding: 6px 10px;
       }
-      input {
+      #seed {
         flex: 1;
         min-width: 0;
-      }
-      button {
-        cursor: pointer;
-      }
-      button:hover {
-        background: rgba(236, 230, 214, 0.14);
-      }
-      #hash {
-        margin-top: 10px;
         font-size: 10px;
         color: var(--muted);
-        word-break: break-all;
+        text-overflow: ellipsis;
+      }
+      button.act {
+        cursor: pointer;
+      }
+      button.act:hover:not(:disabled) {
+        background: rgba(236, 230, 214, 0.14);
+      }
+      button.act:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      #copy {
+        width: 34px;
+        display: grid;
+        place-items: center;
+        padding: 6px 0;
+      }
+      #copy.ok {
+        color: var(--good);
+        border-color: var(--good);
+      }
+      .btns .act {
+        flex: 1;
       }
     </style>
     <!-- FX_SNIPPET: unused for the web target -->
@@ -114,19 +166,23 @@
   <body>
     <canvas id="sky"></canvas>
     <div id="hud">
-      <div id="title">
-        <span>lofi&nbsp;blue&nbsp;sky</span><span class="dot" id="panelToggle">◐</span>
+      <div id="titlebar">
+        <span id="brand">lofi&nbsp;blue&nbsp;sky</span>
+        <span id="nav">
+          <button id="back" title="previous (undo)">◀</button>
+          <button id="fwd" title="next (redo)">▶</button>
+        </span>
       </div>
-      <div id="feats"></div>
-      <div class="row">
-        <input id="seed" placeholder="paste a hash or seed" spellcheck="false" />
-        <button id="apply">go</button>
+      <div id="feats" title="click an attribute to reshuffle just that one"></div>
+      <div class="seedrow">
+        <input id="seed" spellcheck="false" autocomplete="off" placeholder="hash or g:… token" />
+        <button id="copy" class="act" title="copy seed">⧉</button>
       </div>
-      <div class="row">
-        <button id="rand">↻ new sky</button>
-        <button id="save">save png</button>
+      <div class="btns">
+        <button id="rand" class="act">↻ new sky</button>
+        <button id="png" class="act" title="save this frame">png</button>
+        <button id="webm" class="act" title="record one full loop as webm">loop</button>
       </div>
-      <div id="hash"></div>
     </div>
     <!-- INLINE_SCRIPT: the engine is inlined here by targets/web/build.mjs -->
   </body>
