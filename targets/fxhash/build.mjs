@@ -37,7 +37,15 @@ async function main() {
   await writeFile(path.join(DIST, 'index.html'), html);
   await copyFile(path.join(ROOT, 'LICENSE'), path.join(DIST, 'LICENSE'));
 
-  // upload.zip with index.html at the archive root.
+  // upload.zip with index.html at the archive root. `zip` is a documented build prerequisite
+  // (present on ubuntu-latest CI and standard dev boxes); fail clearly if it is missing.
+  try {
+    execFileSync('zip', ['-v'], { stdio: 'ignore' });
+  } catch {
+    console.error('`zip` not found. Install it (e.g. `apt-get install zip`) to produce upload.zip.');
+    console.error('dist/index.html was written and is the essential artifact.');
+    process.exit(1);
+  }
   const zipPath = path.join(HERE, 'upload.zip');
   await rm(zipPath, { force: true });
   execFileSync('zip', ['-j', '-q', zipPath, path.join(DIST, 'index.html'), path.join(DIST, 'LICENSE')]);

@@ -118,7 +118,11 @@ export function genome(rand: Rng): Genome {
   const quantLevels = rangeInt(rand, 5, 16);
   const grain = range(rand, 0.04, 0.5);
   const dither = range(rand, 0.2, 0.9);
-  const chroma = chance(rand, 0.45) ? range(rand, 0.0, 0.6) : 0.0;
+  // Draw both rolls unconditionally so the draw COUNT never depends on an earlier value — that is
+  // the fixed-draw-count half of the determinism contract. Then gate the magnitude.
+  const chromaOn = chance(rand, 0.45);
+  const chromaMag = range(rand, 0.0, 0.6);
+  const chroma = chromaOn ? chromaMag : 0.0;
   const vignette = range(rand, 0.1, 0.6);
 
   // loop

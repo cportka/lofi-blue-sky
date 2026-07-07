@@ -25,15 +25,15 @@ sky, breaking every token already in the wild.
 > **Never reorder, insert, or delete a `rand()` draw without a MAJOR version bump.** This is the one
 > rule the whole project rests on. See [DETERMINISM.md](./DETERMINISM.md).
 
-The two conditional branches in the draw stream are both deterministic *per hash*, so they don't
-threaten cross-machine reproducibility:
+The stream has one coin-flip branch (`bands`), but **every genome consumes exactly 27 draws** — the
+count never depends on an earlier value, which is the strongest form of the invariant:
 
 - **`bands`** picks `fine` (a 50/50 `chance`), then draws exactly one int from either range. Both
   branches consume **one** draw, so the stream length past this point is stable regardless of the
   coin flip.
-- **`chroma`** gates on a 45% `chance` and draws an *extra* value only when the gate passes. So a
-  genome consumes **26 or 27** draws total. This is fine — the gate is deterministic from the hash —
-  but it means everything after `chroma` (vignette, loopSeconds) still shifts if you touch the gate.
+- **`chroma`** rolls its on/off `chance` **and** its magnitude `range` *unconditionally*, then gates
+  the value (`chromaOn ? chromaMag : 0`). Both numbers are always drawn, so the draw count stays fixed
+  and nothing downstream (`vignette`, `loopSeconds`) shifts with the coin flip.
 
 ### the draw stream, in order
 
@@ -58,10 +58,10 @@ draw #   field            helper
  21      quantLevels      rangeInt(5, 16)         ── colour + post
  22      grain            range(0.04, 0.5)
  23      dither           range(0.2, 0.9)
- 24      (chroma gate)    chance(0.45)
- 24b     chroma value     range(0.0, 0.6)            drawn only if gate passed
- 25      vignette         range(0.1, 0.6)
- 26      loopSeconds      range(20, 34)           ── loop
+ 24      chromaOn         chance(0.45)               (both always drawn…
+ 25      chromaMag        range(0.0, 0.6)             …value gated to 0 if chromaOn is false)
+ 26      vignette         range(0.1, 0.6)
+ 27      loopSeconds      range(20, 34)           ── loop
 ```
 
 `mode` is not drawn — v1 locks it to the literal `'bands'`.

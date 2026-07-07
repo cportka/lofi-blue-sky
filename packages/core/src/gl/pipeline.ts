@@ -116,6 +116,7 @@ export class Pipeline {
     this.post.use();
     this.post.tex('uScene', 0, this.b.texture);
     this.post.vec2('uResolution', displayW, displayH);
+    this.post.vec2('uInternalRes', this.iw, this.ih);
     this.post.f('uQuantLevels', g.quantLevels);
     this.post.f('uGrain', g.grain);
     this.post.f('uDither', g.dither);

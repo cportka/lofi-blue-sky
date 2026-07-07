@@ -10,6 +10,7 @@ out vec4 fragColor;
 
 uniform sampler2D uScene;
 uniform vec2  uResolution;
+uniform vec2  uInternalRes;
 uniform float uQuantLevels;
 uniform float uGrain;
 uniform float uDither;
@@ -27,12 +28,17 @@ void main() {
   float b = texture(uScene, uv - dir * amt).b;
   vec3 col = vec3(r, g, b);
 
+  // Grain and dither are keyed off the INTERNAL-resolution pixel grid, not gl_FragCoord — so the
+  // noise/dither scale with the lofi blocks and a token looks identical at any display size.
+  vec2 ip = floor(uv * uInternalRes);
+  float levels = max(2.0, uQuantLevels);
+
   // Ordered dither before posterisation to break up the banding.
-  float d = ditherBayer(gl_FragCoord.xy) * (uDither / max(2.0, uQuantLevels));
-  col = posterize(col + d, uQuantLevels);
+  float d = ditherBayer(ip) * (uDither / levels);
+  col = posterize(col + d, levels);
 
   // Static film grain.
-  float grain = (hash21(gl_FragCoord.xy) - 0.5) * uGrain * 0.16;
+  float grain = (hash21(ip) - 0.5) * uGrain * 0.16;
   col += grain;
 
   // Vignette.

@@ -29,14 +29,29 @@ export function injectHtml(template, { script, snippet = '' }) {
   return html;
 }
 
-/** Assert the produced HTML is truly self-contained (no external fetches, no leftover ESM imports). */
+/**
+ * Assert the produced HTML is truly self-contained: no external fetches, no leftover ESM imports,
+ * no CSS-side external references. This is a build-time lint (a safety net), not the security
+ * guarantee — the guarantee is that esbuild inlines the module graph. It errs toward flagging.
+ */
 export function assertSelfContained(html) {
   const problems = [];
-  const ext = html.match(/\b(?:src|href)\s*=\s*["']https?:\/\/[^"']+/gi);
-  if (ext) problems.push(`external resource refs: ${ext.slice(0, 3).join(', ')}`);
-  if (/\bimport\s+[\w{*]/.test(html) && !/<!--/.test(RegExp.lastMatch))
-    problems.push('leftover ESM `import` statement (bundle did not inline)');
-  if (/\bfetch\s*\(/.test(html)) problems.push('a fetch() call is present (network at runtime)');
+  const push = (label, re) => {
+    const m = html.match(re);
+    if (m) problems.push(`${label}: ${[...new Set(m)].slice(0, 3).join(' , ')}`);
+  };
+  // markup attributes pointing off-box (absolute or protocol-relative)
+  push('external src/href', /\b(?:src|href)\s*=\s*["'](?:https?:)?\/\/[^"']+/gi);
+  // CSS-side external references
+  push('css url() to a non-data resource', /url\(\s*["']?(?!data:)(?:https?:)?\/\/[^)]+/gi);
+  push('@import', /@import\b[^;]*/gi);
+  push('@font-face (external font)', /@font-face\b/gi);
+  // runtime network APIs
+  push('fetch()', /\bfetch\s*\(/g);
+  push('XMLHttpRequest', /\bXMLHttpRequest\b/g);
+  push('WebSocket', /\bnew\s+WebSocket\b/g);
+  // leftover ESM that means the bundle did not inline
+  push('leftover ESM import ... from', /\bimport\b[^;\n]*\bfrom\b/g);
   return problems;
 }
 

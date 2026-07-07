@@ -16,4 +16,16 @@ test -f .nojekyll                      || { echo "missing .nojekyll"; exit 1; }
 if grep -Eq 'src=["'"'"']https?://|href=["'"'"']https?://' targets/fxhash/dist/index.html; then
   echo "fxhash bundle references an external resource"; exit 1
 fi
-echo "  [build] artifacts present and self-contained"
+
+# The committed repo-root index.html (+ .nojekyll) IS the artifact GitHub Pages serves from main.
+# `npm run build` above just regenerated it; if it differs from the committed copy, the committed
+# page is stale. The build is byte-deterministic, so this diff is a reliable guard. (Skipped when
+# not in a git work tree, e.g. a tarball checkout.)
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  if ! git diff --quiet -- index.html .nojekyll; then
+    echo "  [build] committed GitHub Pages artifact is STALE — run 'npm run build:web' and commit index.html:"
+    git --no-pager diff --stat -- index.html .nojekyll
+    exit 1
+  fi
+fi
+echo "  [build] artifacts present, self-contained, and Pages page in sync"

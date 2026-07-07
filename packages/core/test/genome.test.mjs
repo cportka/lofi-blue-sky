@@ -53,23 +53,75 @@ test('different hashes -> different genomes', () => {
   assert.notDeepEqual(a, b);
 });
 
-test('every generated genome is in-range and well-formed', () => {
-  for (let i = 0; i < 400; i++) {
+// Extra golden vectors pin the OTHER draw paths the deadbeef golden misses: a chroma=0 hash (the
+// gated-magnitude branch) and a fine-bands / driftCycles=3 / horizontal-ish hash.
+const GOLDEN_VECTORS = {
+  'seed-4': {
+    mode: 'bands', paletteId: 'olive-haze',
+    stopJitter: [0.057708084359765044, -0.0051770644728094325, -0.013355187932029368,
+      -0.004327639639377594, 0.05123597390949726, -0.04592280942946672],
+    horizon: 0.4017001429200172, sunElevation: 0.5773192049912177, sunStrength: 0.27621843698434534,
+    bands: 9, bandPhase: 0.6816464364528656, bandDrift: 0.035924939919495955,
+    rowDisplace: 0.01323959418106824, driftCycles: 1, tile: 12, sortThreshold: 0.6664858225570061,
+    sortAxis: 'horizontal', moshDecay: 0.8693750870763324, quantLevels: 8, grain: 0.09093006900046022,
+    dither: 0.42671795743517577, chroma: 0, vignette: 0.4436766439117491, loopSeconds: 23.383221368771046,
+  },
+  'seed-3': {
+    mode: 'bands', paletteId: 'periwinkle-dusk',
+    stopJitter: [-0.002698839101940395, -0.056407305216416716, -0.04179643026553094,
+      -0.004335041223093868, -0.03517482270486653, 0.04921595804393292],
+    horizon: 0.40009025782346724, sunElevation: 0.5037014248827472, sunStrength: 0.7796804954996333,
+    bands: 44, bandPhase: 0.39475096575915813, bandDrift: 0.048222664415370674,
+    rowDisplace: 0.054802955766208465, driftCycles: 3, tile: 9, sortThreshold: 0.447101808085572,
+    sortAxis: 'vertical', moshDecay: 0.9698582527227699, quantLevels: 6, grain: 0.4358113253349438,
+    dither: 0.22780112745240333, chroma: 0.5315904050599783, vignette: 0.13846778790466488,
+    loopSeconds: 32.79398643737659,
+  },
+};
+
+test('golden vectors pin every draw path (chroma=0 and fine-bands branches)', () => {
+  for (const [seed, expected] of Object.entries(GOLDEN_VECTORS)) {
+    assert.deepEqual(genomeFromHash(seed), expected);
+  }
+});
+
+test('every generated genome is fully in-range and well-formed', () => {
+  const inRange = (v, lo, hi, msg) => assert.ok(v >= lo - 1e-9 && v <= hi + 1e-9, `${msg}: ${v}`);
+  for (let i = 0; i < 500; i++) {
     const g = genomeFromHash('seed-' + i);
     assert.equal(g.mode, 'bands');
     assert.ok(getPaletteById(g.paletteId), `unknown palette ${g.paletteId}`);
     assert.equal(g.stopJitter.length, MAX_STOPS);
-    for (const j of g.stopJitter) assert.ok(Number.isFinite(j) && Math.abs(j) <= 0.06 + 1e-9);
-    assert.ok(g.horizon >= 0.3 && g.horizon <= 0.62);
-    assert.ok(g.sunStrength >= 0.15 && g.sunStrength <= 0.85);
-    assert.ok(g.bands >= 8 && g.bands <= 48 && Number.isInteger(g.bands));
-    assert.ok(g.bandPhase >= 0 && g.bandPhase < 1);
+    for (const j of g.stopJitter) inRange(j, -0.06, 0.06, 'stopJitter');
+    inRange(g.horizon, 0.3, 0.62, 'horizon');
+    inRange(g.sunElevation, g.horizon - 0.05, g.horizon + 0.18, 'sunElevation');
+    inRange(g.sunStrength, 0.15, 0.85, 'sunStrength');
+    assert.ok(g.bands >= 8 && g.bands <= 48 && Number.isInteger(g.bands), `bands ${g.bands}`);
+    inRange(g.bandPhase, 0, 1, 'bandPhase');
+    inRange(g.bandDrift, 0.015, 0.09, 'bandDrift');
+    inRange(g.rowDisplace, 0.0, 0.06, 'rowDisplace');
     assert.ok(g.driftCycles >= 1 && g.driftCycles <= 3 && Number.isInteger(g.driftCycles));
-    assert.ok(g.quantLevels >= 5 && g.quantLevels <= 16 && Number.isInteger(g.quantLevels));
-    assert.ok(g.grain >= 0 && g.dither >= 0 && g.chroma >= 0 && g.vignette >= 0);
-    assert.ok(g.loopSeconds >= 20 && g.loopSeconds <= 34);
+    assert.ok(g.tile >= 3 && g.tile <= 12 && Number.isInteger(g.tile), `tile ${g.tile}`);
+    inRange(g.sortThreshold, 0.35, 0.72, 'sortThreshold');
     assert.ok(g.sortAxis === 'vertical' || g.sortAxis === 'horizontal');
+    inRange(g.moshDecay, 0.85, 0.98, 'moshDecay');
+    assert.ok(g.quantLevels >= 5 && g.quantLevels <= 16 && Number.isInteger(g.quantLevels));
+    inRange(g.grain, 0.04, 0.5, 'grain');
+    inRange(g.dither, 0.2, 0.9, 'dither');
+    assert.ok(g.chroma === 0 || (g.chroma >= 0 && g.chroma <= 0.6), `chroma ${g.chroma}`);
+    inRange(g.vignette, 0.1, 0.6, 'vignette');
+    inRange(g.loopSeconds, 20, 34, 'loopSeconds');
   }
+});
+
+test('chroma is bimodal: exactly 0 or within (0, 0.6]', () => {
+  let zeros = 0, nonzeros = 0;
+  for (let i = 0; i < 300; i++) {
+    const c = genomeFromHash('cseed-' + i).chroma;
+    if (c === 0) zeros++;
+    else { nonzeros++; assert.ok(c > 0 && c <= 0.6); }
+  }
+  assert.ok(zeros > 0 && nonzeros > 0, 'expected a mix of chroma on/off');
 });
 
 test('a plain seed string is folded deterministically (never throws)', () => {

@@ -103,9 +103,9 @@ falls out for free, no crossfade needed.
 
 **post** ([post.ts](../packages/core/src/gl/passes/post.ts)) — the digital-corruption texture:
 radial chromatic bleed, 4×4 Bayer ordered dither *before* posterization (so the quantization doesn't
-band), `quantLevels` posterize, film grain, and a vignette. The grain is a static function of pixel
-position — `hash21(gl_FragCoord)`, **no loop time** — so it adds texture without ever breaking the
-seam.
+band), `quantLevels` posterize, film grain, and a vignette. Grain and dither are static functions of
+the **internal-resolution** pixel grid — `hash21(floor(uv·uInternalRes))`, **no loop time** — so they
+add texture without ever breaking the seam and stay identical at any display size.
 
 ```
 band 0 ▓▓▓▓▓▓▓▓▓  ← each band shows a flat slice of the gradient…
