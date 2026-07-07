@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>lofi blue sky</title>
+    <meta
+      name="description"
+      content="A procedurally generated lofi glitch-sky, synthesized entirely in a fragment shader from a hash."
+    />
+    <style>
+      :root {
+        --ink: #ece6d6;
+        --muted: #a9a294;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #0b0a12;
+        overflow: hidden;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: var(--ink);
+      }
+      #sky {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        display: block;
+      }
+      #hud {
+        position: fixed;
+        left: 16px;
+        bottom: 16px;
+        max-width: min(320px, 82vw);
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: rgba(11, 10, 18, 0.5);
+        backdrop-filter: blur(9px) saturate(1.1);
+        -webkit-backdrop-filter: blur(9px) saturate(1.1);
+        border: 1px solid rgba(236, 230, 214, 0.12);
+        font-size: 12px;
+        line-height: 1.5;
+        user-select: none;
+      }
+      .hud-hidden #hud > *:not(#title) {
+        display: none;
+      }
+      #title {
+        font-size: 13px;
+        letter-spacing: 0.04em;
+        margin-bottom: 10px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        opacity: 0.95;
+      }
+      #title .dot {
+        color: var(--muted);
+      }
+      #feats {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 2px 12px;
+        margin-bottom: 12px;
+      }
+      .feat {
+        display: contents;
+      }
+      .feat .k {
+        color: var(--muted);
+      }
+      .feat .v {
+        text-align: right;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      input,
+      button {
+        font: inherit;
+        color: var(--ink);
+        background: rgba(236, 230, 214, 0.06);
+        border: 1px solid rgba(236, 230, 214, 0.16);
+        border-radius: 8px;
+        padding: 6px 10px;
+      }
+      input {
+        flex: 1;
+        min-width: 0;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:hover {
+        background: rgba(236, 230, 214, 0.14);
+      }
+      #hash {
+        margin-top: 10px;
+        font-size: 10px;
+        color: var(--muted);
+        word-break: break-all;
+      }
+    </style>
+    <!-- FX_SNIPPET: unused for the web target -->
+  </head>
+  <body>
+    <canvas id="sky"></canvas>
+    <div id="hud">
+      <div id="title">
+        <span>lofi&nbsp;blue&nbsp;sky</span><span class="dot" id="panelToggle">◐</span>
+      </div>
+      <div id="feats"></div>
+      <div class="row">
+        <input id="seed" placeholder="paste a hash or seed" spellcheck="false" />
+        <button id="apply">go</button>
+      </div>
+      <div class="row">
+        <button id="rand">↻ new sky</button>
+        <button id="save">save png</button>
+      </div>
+      <div id="hash"></div>
+    </div>
+    <!-- INLINE_SCRIPT: the engine is inlined here by targets/web/build.mjs -->
+  </body>
+</html>

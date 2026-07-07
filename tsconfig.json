@@ -1,0 +1,9 @@
+{
+  "//": "Solution-style root config. `tsc -b` builds the referenced projects in order.",
+  "files": [],
+  "references": [
+    { "path": "packages/core" },
+    { "path": "targets/fxhash" },
+    { "path": "targets/web" }
+  ]
+}

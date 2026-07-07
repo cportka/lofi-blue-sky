@@ -1,0 +1,319 @@
+<!-- Generated from targets/web/ by `npm run build:web`. Do not edit by hand; edit the target source and rebuild. Served by GitHub Pages from the repo root. -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>lofi blue sky</title>
+    <meta
+      name="description"
+      content="A procedurally generated lofi glitch-sky, synthesized entirely in a fragment shader from a hash."
+    />
+    <style>
+      :root {
+        --ink: #ece6d6;
+        --muted: #a9a294;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #0b0a12;
+        overflow: hidden;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: var(--ink);
+      }
+      #sky {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        display: block;
+      }
+      #hud {
+        position: fixed;
+        left: 16px;
+        bottom: 16px;
+        max-width: min(320px, 82vw);
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: rgba(11, 10, 18, 0.5);
+        backdrop-filter: blur(9px) saturate(1.1);
+        -webkit-backdrop-filter: blur(9px) saturate(1.1);
+        border: 1px solid rgba(236, 230, 214, 0.12);
+        font-size: 12px;
+        line-height: 1.5;
+        user-select: none;
+      }
+      .hud-hidden #hud > *:not(#title) {
+        display: none;
+      }
+      #title {
+        font-size: 13px;
+        letter-spacing: 0.04em;
+        margin-bottom: 10px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        opacity: 0.95;
+      }
+      #title .dot {
+        color: var(--muted);
+      }
+      #feats {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 2px 12px;
+        margin-bottom: 12px;
+      }
+      .feat {
+        display: contents;
+      }
+      .feat .k {
+        color: var(--muted);
+      }
+      .feat .v {
+        text-align: right;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      input,
+      button {
+        font: inherit;
+        color: var(--ink);
+        background: rgba(236, 230, 214, 0.06);
+        border: 1px solid rgba(236, 230, 214, 0.16);
+        border-radius: 8px;
+        padding: 6px 10px;
+      }
+      input {
+        flex: 1;
+        min-width: 0;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:hover {
+        background: rgba(236, 230, 214, 0.14);
+      }
+      #hash {
+        margin-top: 10px;
+        font-size: 10px;
+        color: var(--muted);
+        word-break: break-all;
+      }
+    </style>
+    
+  </head>
+  <body>
+    <canvas id="sky"></canvas>
+    <div id="hud">
+      <div id="title">
+        <span>lofi&nbsp;blue&nbsp;sky</span><span class="dot" id="panelToggle">◐</span>
+      </div>
+      <div id="feats"></div>
+      <div class="row">
+        <input id="seed" placeholder="paste a hash or seed" spellcheck="false" />
+        <button id="apply">go</button>
+      </div>
+      <div class="row">
+        <button id="rand">↻ new sky</button>
+        <button id="save">save png</button>
+      </div>
+      <div id="hash"></div>
+    </div>
+    <script>"use strict";(()=>{function ue(e){let t=parseInt(e,16);return[(t>>16&255)/255,(t>>8&255)/255,(t&255)/255]}function c(e,t,o,r){return{id:e,name:t,family:o,stops:r.map(([n,i])=>({t:n,c:ue(i)}))}}var E=[c("sodium-sunset","Sodium Sunset","Sodium",[[0,"f3e7c4"],[.18,"e6a752"],[.34,"b8562f"],[.52,"8f5a5e"],[.72,"4a4668"],[1,"211d38"]]),c("sodium-ember","Sodium Ember","Sodium",[[0,"ecd8a6"],[.22,"d08a3c"],[.4,"94371f"],[.6,"5b3244"],[1,"17131f"]]),c("sodium-grey","Sodium Striation","Sodium",[[0,"ded3bc"],[.25,"c99a63"],[.45,"94766a"],[.7,"6e6a6e"],[1,"45424c"]]),c("powder-blue","Powder Blue","Powder",[[0,"e6ebe6"],[.3,"c2d2d6"],[.6,"9fb8c4"],[1,"7c93a6"]]),c("powder-salmon","Powder Salmon","Powder",[[0,"e8c4b4"],[.28,"cdb8b0"],[.55,"a9c0c8"],[1,"8aa1b0"]]),c("powder-dawn","Powder Dawn","Powder",[[0,"f0e6da"],[.3,"d8c3b8"],[.55,"b3b6bd"],[.8,"8f9fb2"],[1,"6b83a0"]]),c("olive-haze","Olive Haze","Olive",[[0,"d8d2b0"],[.3,"a9a86e"],[.55,"7d7f52"],[.78,"8a7d78"],[1,"5c5b52"]]),c("olive-dust","Olive Dust","Olive",[[0,"cfc9a2"],[.35,"9a9a63"],[.7,"6f6f4c"],[1,"4a4a3c"]]),c("olive-rose","Olive Rose","Olive",[[0,"ddc9b0"],[.3,"b0a074"],[.55,"94745e"],[.8,"7a6b6e"],[1,"51494f"]]),c("periwinkle-dusk","Periwinkle Dusk","Periwinkle",[[0,"e2d6d0"],[.3,"c0b2c0"],[.55,"9a94b8"],[.8,"7c7aa4"],[1,"57567e"]]),c("periwinkle-mauve","Periwinkle Mauve","Periwinkle",[[0,"e6d2cc"],[.28,"cbaeb4"],[.5,"a898b0"],[.75,"8481a6"],[1,"5d5b82"]]),c("periwinkle-slate","Periwinkle Slate","Periwinkle",[[0,"d6d8dc"],[.3,"aeb2c2"],[.6,"8388a6"],[1,"565a7e"]])];function T(e){return E.find(t=>t.id===e)}var N=`
+// --- hashing (deterministic, no textures) ---------------------------------------------------
+float hash11(float p) {
+  p = fract(p * 0.1031);
+  p *= p + 33.33;
+  p *= p + p;
+  return fract(p);
+}
+
+float hash21(vec2 p) {
+  vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.x + p3.y) * p3.z);
+}
+
+// --- colour utilities -----------------------------------------------------------------------
+float luma(vec3 c) { return dot(c, vec3(0.299, 0.587, 0.114)); }
+
+vec3 posterize(vec3 c, float levels) {
+  return floor(c * levels + 0.5) / levels;
+}
+
+// 4x4 ordered (Bayer) dither, returns a threshold in [-0.5, 0.5].
+float ditherBayer(vec2 fragXY) {
+  const float m[16] = float[16](
+     0.0,  8.0,  2.0, 10.0,
+    12.0,  4.0, 14.0,  6.0,
+     3.0, 11.0,  1.0,  9.0,
+    15.0,  7.0, 13.0,  5.0
+  );
+  int x = int(mod(fragXY.x, 4.0));
+  int y = int(mod(fragXY.y, 4.0));
+  return (m[y * 4 + x] + 0.5) / 16.0 - 0.5;
+}
+`;var fe=`#version 300 es
+precision highp float;
+out vec2 vUv;
+void main() {
+  vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
+  vUv = p;
+  gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
+}
+`;function he(e){return`#version 300 es
+precision highp float;
+precision highp int;
+#define MAX_STOPS ${6}
+#define TAU 6.28318530718
+${N}
+${e}`}function $(e){let t=e.getContext("webgl2",{antialias:!1,depth:!1,stencil:!1,alpha:!1,preserveDrawingBuffer:!0,premultipliedAlpha:!1,powerPreference:"high-performance"});if(!t)throw new Error("WebGL2 is not available in this browser.");return t}function V(e,t,o){let r=e.createShader(t);if(!r)throw new Error("createShader failed");if(e.shaderSource(r,o),e.compileShader(r),!e.getShaderParameter(r,e.COMPILE_STATUS)){let n=e.getShaderInfoLog(r);throw e.deleteShader(r),new Error(`shader compile error:
+${n}
+--- source ---
+${me(o)}`)}return r}function me(e){return e.split(`
+`).map((t,o)=>`${String(o+1).padStart(3," ")}| ${t}`).join(`
+`)}var S=class{constructor(t,o){this.gl=t,this.locs=new Map;let r=V(t,t.VERTEX_SHADER,fe),n=V(t,t.FRAGMENT_SHADER,he(o)),i=t.createProgram();if(!i)throw new Error("createProgram failed");if(t.attachShader(i,r),t.attachShader(i,n),t.linkProgram(i),t.deleteShader(r),t.deleteShader(n),!t.getProgramParameter(i,t.LINK_STATUS)){let a=t.getProgramInfoLog(i);throw t.deleteProgram(i),new Error(`program link error:
+${a}`)}this.program=i}use(){this.gl.useProgram(this.program)}loc(t){let o=this.locs.get(t);return o===void 0&&(o=this.gl.getUniformLocation(this.program,t),this.locs.set(t,o)),o}f(t,o){this.gl.uniform1f(this.loc(t),o)}i(t,o){this.gl.uniform1i(this.loc(t),o)}vec2(t,o,r){this.gl.uniform2f(this.loc(t),o,r)}fv(t,o){this.gl.uniform1fv(this.loc(t),o)}vec3v(t,o){this.gl.uniform3fv(this.loc(t),o)}tex(t,o,r){this.gl.activeTexture(this.gl.TEXTURE0+o),this.gl.bindTexture(this.gl.TEXTURE_2D,r),this.gl.uniform1i(this.loc(t),o)}dispose(){this.gl.deleteProgram(this.program)}};function g(e,t,o,r){let n=e.createTexture();if(!n)throw new Error("createTexture failed");e.bindTexture(e.TEXTURE_2D,n),e.texImage2D(e.TEXTURE_2D,0,e.RGBA8,t,o,0,e.RGBA,e.UNSIGNED_BYTE,null);let i=r?e.LINEAR:e.NEAREST;e.texParameteri(e.TEXTURE_2D,e.TEXTURE_MIN_FILTER,i),e.texParameteri(e.TEXTURE_2D,e.TEXTURE_MAG_FILTER,i),e.texParameteri(e.TEXTURE_2D,e.TEXTURE_WRAP_S,e.CLAMP_TO_EDGE),e.texParameteri(e.TEXTURE_2D,e.TEXTURE_WRAP_T,e.CLAMP_TO_EDGE);let a=e.createFramebuffer();if(!a)throw new Error("createFramebuffer failed");e.bindFramebuffer(e.FRAMEBUFFER,a),e.framebufferTexture2D(e.FRAMEBUFFER,e.COLOR_ATTACHMENT0,e.TEXTURE_2D,n,0);let s=e.checkFramebufferStatus(e.FRAMEBUFFER);if(s!==e.FRAMEBUFFER_COMPLETE)throw new Error(`framebuffer incomplete: 0x${s.toString(16)}`);return e.bindFramebuffer(e.FRAMEBUFFER,null),{framebuffer:a,texture:n,width:t,height:o}}function y(e,t){e.deleteTexture(t.texture),e.deleteFramebuffer(t.framebuffer)}var q=`
+in vec2 vUv;
+out vec4 fragColor;
+
+uniform vec2  uResolution;
+uniform int   uStopCount;
+uniform float uStops[MAX_STOPS];
+uniform vec3  uColors[MAX_STOPS];
+uniform float uHorizon;
+uniform float uSunElev;
+uniform float uSunStrength;
+
+// Piecewise-linear ramp sampler (mirrors palettes.ts sampleRamp).
+vec3 sampleRamp(float t) {
+  t = clamp(t, 0.0, 1.0);
+  vec3 c = uColors[0];
+  for (int i = 1; i < MAX_STOPS; i++) {
+    if (i >= uStopCount) break;
+    float f = clamp((t - uStops[i - 1]) / max(1e-4, uStops[i] - uStops[i - 1]), 0.0, 1.0);
+    c = mix(c, uColors[i], f);
+  }
+  return c;
+}
+
+void main() {
+  vec2 uv = vUv;
+
+  // Warp the vertical coordinate so the horizon glow concentrates around uHorizon.
+  float y = uv.y;
+  float warped = y < uHorizon
+    ? (y / max(1e-3, uHorizon)) * 0.5
+    : 0.5 + (y - uHorizon) / max(1e-3, 1.0 - uHorizon) * 0.5;
+
+  vec3 col = sampleRamp(warped);
+
+  // Sun glow: a soft horizontal band centred at uSunElev, tinted with the warm low end of the ramp.
+  // Mostly a glowing horizon with a gentle brightening toward the centre \u2014 a low sun through haze,
+  // not a headlight.
+  vec3 warm = sampleRamp(0.08);
+  float d = abs(uv.y - uSunElev);
+  float glow = exp(-d * d * 70.0) * uSunStrength;
+  float hx = exp(-pow((uv.x - 0.5) * 1.25, 2.0) * 1.3);
+  col += warm * glow * (0.62 + 0.38 * hx);
+
+  fragColor = vec4(col, 1.0);
+}
+`;var W=`
+in vec2 vUv;
+out vec4 fragColor;
+
+uniform sampler2D uSky;
+uniform vec2  uResolution;
+uniform float uLoopT;
+uniform float uBands;
+uniform float uBandPhase;
+uniform float uBandDrift;
+uniform float uRowDisplace;
+uniform float uDriftCycles;
+
+void main() {
+  vec2 uv = vUv;
+
+  float bandIdx = floor(uv.y * uBands);
+  float bandBase = bandIdx / uBands;
+  float seed = hash11(bandIdx + 1.0);
+
+  // Per-band vertical drift \u2014 integer cycles per loop keeps it seamless.
+  float drift = uBandDrift * sin(TAU * (uDriftCycles * uLoopT + seed) + uBandPhase * TAU);
+
+  // Each band shows a near-flat slice of the gradient at its drifting position, with a little
+  // of the in-band gradient bled back in so the bands don't look like hard posterisation.
+  float yLocal = fract(uv.y * uBands) / uBands;
+  float sy = bandBase + mix(0.5 / uBands, yLocal, 0.35) + drift;
+
+  // Per-row horizontal displacement (the smear), also loop-periodic.
+  float row = floor(uv.y * uResolution.y);
+  float rowN = hash11(row + 3.0) - 0.5;
+  float xdisp = uRowDisplace * rowN * sin(TAU * (uLoopT + seed));
+
+  vec2 samp = vec2(uv.x + xdisp, sy);
+  // Reflect at the edges so displaced samples never read the clamp streak.
+  samp = abs(samp);
+  samp = mix(samp, 2.0 - samp, step(1.0, samp));
+  samp = clamp(samp, 0.0, 1.0);
+
+  vec3 col = texture(uSky, samp).rgb;
+
+  // A faint seam of shadow at each band edge sells the slit-scan quantisation.
+  float edge = smoothstep(0.0, 0.06, yLocal * uBands) * smoothstep(0.0, 0.06, (1.0 - yLocal * uBands));
+  col *= 0.92 + 0.08 * edge;
+
+  fragColor = vec4(col, 1.0);
+}
+`;var Y=`
+in vec2 vUv;
+out vec4 fragColor;
+
+uniform sampler2D uScene;
+uniform vec2  uResolution;
+uniform float uQuantLevels;
+uniform float uGrain;
+uniform float uDither;
+uniform float uChroma;
+uniform float uVignette;
+
+void main() {
+  vec2 uv = vUv;
+
+  // Chromatic bleed: pull R and B along the radial direction.
+  vec2 dir = uv - 0.5;
+  float amt = uChroma * 0.006;
+  float r = texture(uScene, uv + dir * amt).r;
+  float g = texture(uScene, uv).g;
+  float b = texture(uScene, uv - dir * amt).b;
+  vec3 col = vec3(r, g, b);
+
+  // Ordered dither before posterisation to break up the banding.
+  float d = ditherBayer(gl_FragCoord.xy) * (uDither / max(2.0, uQuantLevels));
+  col = posterize(col + d, uQuantLevels);
+
+  // Static film grain.
+  float grain = (hash21(gl_FragCoord.xy) - 0.5) * uGrain * 0.16;
+  col += grain;
+
+  // Vignette.
+  float vig = smoothstep(1.15, 0.35, length(dir * vec2(1.05, 1.0)));
+  col *= mix(1.0, vig, uVignette);
+
+  fragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
+}
+`;function de(e){let t=T(e.paletteId)??E[0],o=new Float32Array(6),r=new Float32Array(6*3),n=t.stops.length;for(let i=0;i<6;i++){let a=t.stops[Math.min(i,n-1)];o[i]=a.t;let s=1+(e.stopJitter[i]??0);r[i*3+0]=Math.min(1,Math.max(0,a.c[0]*s)),r[i*3+1]=Math.min(1,Math.max(0,a.c[1]*s)),r[i*3+2]=Math.min(1,Math.max(0,a.c[2]*s))}return{stops:o,colors:r,count:n}}var M=class{constructor(t,o,r){this.gl=t,this.iw=o,this.ih=r,this.sky=new S(t,q),this.slit=new S(t,W),this.post=new S(t,Y);let n=t.createVertexArray();if(!n)throw new Error("createVertexArray failed");this.vao=n,this.a=g(t,o,r,!0),this.b=g(t,o,r,!1)}setGenome(t){this.genome=t,this.pal=de(t)}resizeInternal(t,o){t===this.iw&&o===this.ih||(this.iw=t,this.ih=o,y(this.gl,this.a),y(this.gl,this.b),this.a=g(this.gl,t,o,!0),this.b=g(this.gl,t,o,!1))}render(t,o,r){let n=this.gl,i=this.genome;n.bindVertexArray(this.vao),n.bindFramebuffer(n.FRAMEBUFFER,this.a.framebuffer),n.viewport(0,0,this.iw,this.ih),this.sky.use(),this.sky.vec2("uResolution",this.iw,this.ih),this.sky.i("uStopCount",this.pal.count),this.sky.fv("uStops",this.pal.stops),this.sky.vec3v("uColors",this.pal.colors),this.sky.f("uHorizon",i.horizon),this.sky.f("uSunElev",i.sunElevation),this.sky.f("uSunStrength",i.sunStrength),n.drawArrays(n.TRIANGLES,0,3),n.bindFramebuffer(n.FRAMEBUFFER,this.b.framebuffer),n.viewport(0,0,this.iw,this.ih),this.slit.use(),this.slit.tex("uSky",0,this.a.texture),this.slit.vec2("uResolution",this.iw,this.ih),this.slit.f("uLoopT",t),this.slit.f("uBands",i.bands),this.slit.f("uBandPhase",i.bandPhase),this.slit.f("uBandDrift",i.bandDrift),this.slit.f("uRowDisplace",i.rowDisplace),this.slit.f("uDriftCycles",i.driftCycles),n.drawArrays(n.TRIANGLES,0,3),n.bindFramebuffer(n.FRAMEBUFFER,null),n.viewport(0,0,o,r),this.post.use(),this.post.tex("uScene",0,this.b.texture),this.post.vec2("uResolution",o,r),this.post.f("uQuantLevels",i.quantLevels),this.post.f("uGrain",i.grain),this.post.f("uDither",i.dither),this.post.f("uChroma",i.chroma),this.post.f("uVignette",i.vignette),n.drawArrays(n.TRIANGLES,0,3),n.bindVertexArray(null)}dispose(){this.sky.dispose(),this.slit.dispose(),this.post.dispose(),y(this.gl,this.a),y(this.gl,this.b),this.gl.deleteVertexArray(this.vao)}};function j(e){let t=1779033703^e.length;for(let o=0;o<e.length;o++)t=Math.imul(t^e.charCodeAt(o),3432918353),t=t<<13|t>>>19;return function(){return t=Math.imul(t^t>>>16,2246822507),t=Math.imul(t^t>>>13,3266489909),t^=t>>>16,t>>>0}}function Q(e,t,o,r){return function(){e|=0,t|=0,o|=0,r|=0;let i=(e+t|0)+r|0;return r=r+1|0,e=t^t>>>9,t=o+(o<<3)|0,o=o<<21|o>>>11,o=o+i|0,(i>>>0)/4294967296}}function L(e){let t=j(e);return Q(t(),t(),t(),t())}function l(e,t,o){return t+(o-t)*e()}function d(e,t,o){return Math.floor(t+(o-t+1)*e())}function C(e,t){return t[Math.floor(e()*t.length)%t.length]}function R(e,t){return e()<t}var I="0123456789abcdef";function F(e){return typeof e=="string"&&/^[0-9a-f]{64}$/.test(e)}function p(e){let t=(e??"").toString().toLowerCase();if(F(t))return t;let o=2166136261,r=t.length?t:"lofi-blue-sky",n="";for(let i=0;n.length<64;i++){let a=r.charCodeAt(i%r.length)+i*131;o=Math.imul(o^a,16777619)>>>0,n+=I[o>>>28&15],n+=I[o>>>12&15]}return n.slice(0,64)}function k(e=Math.random){let t="";for(let o=0;o<64;o++)t+=I[Math.floor(e()*16)&15];return t}function U(e){let t=C(e,E),o=[];for(let X=0;X<6;X++)o.push(l(e,-.06,.06));let r=l(e,.3,.62),n=l(e,r-.05,r+.18),i=l(e,.15,.85),s=R(e,.5)?d(e,24,48):d(e,8,22),h=e(),m=l(e,.015,.09),x=l(e,0,.06),w=d(e,1,3),b=d(e,3,12),B=l(e,.35,.72),oe=R(e,.7)?"vertical":"horizontal",re=l(e,.85,.98),ie=d(e,5,16),ne=l(e,.04,.5),ae=l(e,.2,.9),se=R(e,.45)?l(e,0,.6):0,le=l(e,.1,.6),ce=l(e,20,34);return{mode:"bands",paletteId:t.id,stopJitter:o,horizon:r,sunElevation:n,sunStrength:i,bands:s,bandPhase:h,bandDrift:m,rowDisplace:x,driftCycles:w,tile:b,sortThreshold:B,sortAxis:oe,moshDecay:re,quantLevels:ie,grain:ne,dither:ae,chroma:se,vignette:le,loopSeconds:ce}}function H(e){let t=T(e.paletteId),o=t?t.family:"Sodium",r=e.bands>=24?"Fine":"Wide",i=e.bandDrift+e.rowDisplace+(e.driftCycles-1)*.03>.09?"Flowing":"Still",a=e.grain+e.dither*.5+e.chroma+(16-e.quantLevels)*.03,s=a>1?"Degraded":a>.55?"Grained":"Clean",h=e.horizon>.42&&e.horizon<.5&&e.rowDisplace<.02,m=e.chroma>.4&&e.grain>.35&&e.quantLevels<=7;return{Palette:o,"Band Density":r,Drift:i,Processing:s,"Perfect Horizon":h,"Full Corruption":m}}var pe=Math.PI*2;function z(e,t){let o=t>0?t:1,r=e%o/o;return r<0?r+1:r}var P=400;function K(e,t){let o=Math.max(1,e),r=Math.max(1,t);return o>=r?[P,Math.max(2,Math.round(P*r/o))]:[Math.max(2,Math.round(P*o/r)),P]}function O(e,t={}){let o=t.genome??U(t.rand??L(p(t.hash??"lofi-blue-sky"))),r=H(o),n=$(e),i=t.dpr??(typeof devicePixelRatio=="number"?devicePixelRatio:1),a=e.width||800,s=e.height||800;e.width=a,e.height=s;let[h,m]=K(a,s),x=new M(n,h,m);return x.setGenome(o),{params:o,features:r,render(w){let b=z(w,o.loopSeconds);x.render(b,a,s)},resize(w,b,B){i=B??i,a=Math.max(1,Math.round(w*i)),s=Math.max(1,Math.round(b*i)),e.width=a,e.height=s,[h,m]=K(a,s),x.resizeInternal(h,m)},dispose(){x.dispose()}}}var J=document.getElementById("sky"),v=e=>document.getElementById(e),ve=v("feats"),xe=v("hash"),_=v("seed"),u=null,A="",Z=0,Ee=performance.now();function ee(){if(!u)return;let e=Math.min(typeof devicePixelRatio=="number"?devicePixelRatio:1,2);u.resize(window.innerWidth,window.innerHeight,e)}function Se(){if(!u)return;let e=u.features;ve.innerHTML=Object.entries(e).map(([t,o])=>`<div class="feat"><span class="k">${t}</span><span class="v">${typeof o=="boolean"?o?"yes":"\u2014":o}</span></div>`).join(""),xe.textContent=A}function D(e){A=p(e),u&&u.dispose(),u=O(J,{hash:A}),ee(),Se();let t=new URL(window.location.href);t.searchParams.set("seed",A),history.replaceState(null,"",t.toString())}function te(e){u&&u.render((e-Ee)/1e3),Z=requestAnimationFrame(te)}v("rand").addEventListener("click",()=>D(k()));v("apply").addEventListener("click",()=>{let e=_.value.trim();e&&D(e)});_.addEventListener("keydown",e=>{e.key==="Enter"&&_.value.trim()&&D(_.value.trim())});v("save").addEventListener("click",()=>{let e=document.createElement("a");e.download=`lofi-blue-sky_${A.slice(0,12)}.png`,e.href=J.toDataURL("image/png"),e.click()});v("panelToggle").addEventListener("click",()=>{document.body.classList.toggle("hud-hidden")});window.addEventListener("resize",ee);var G=new URL(window.location.href).searchParams.get("seed");D(G&&F(p(G))?G:k());Z=requestAnimationFrame(te);})();
+</script>
+  </body>
+</html>

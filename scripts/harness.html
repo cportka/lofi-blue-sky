@@ -1,0 +1,40 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>lofi-blue-sky render harness</title>
+<style>
+  html, body { margin: 0; background: #000; }
+  canvas { display: block; }
+</style>
+<canvas id="c"></canvas>
+<script type="module">
+  // Loaded same-origin from the local static server so it can import the compiled engine.
+  import { createSky } from '/packages/core/dist/index.js';
+
+  let sky = null;
+
+  window.__setup = (hash, w, h) => {
+    const c = document.getElementById('c');
+    c.width = w;
+    c.height = h;
+    sky = createSky(c, { hash, dpr: 1 });
+    sky.resize(w, h, 1);
+    return { params: sky.params, features: sky.features };
+  };
+
+  window.__renderAt = (timeSeconds) => {
+    sky.render(timeSeconds);
+  };
+
+  // Raw RGBA pixels of the current backbuffer (for exact determinism comparison).
+  window.__pixels = () => {
+    const c = document.getElementById('c');
+    const gl = c.getContext('webgl2');
+    const px = new Uint8Array(c.width * c.height * 4);
+    gl.readPixels(0, 0, c.width, c.height, gl.RGBA, gl.UNSIGNED_BYTE, px);
+    return Array.from(px);
+  };
+
+  window.__png = () => document.getElementById('c').toDataURL('image/png');
+
+  window.__ready = true;
+</script>

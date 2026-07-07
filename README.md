@@ -1,2 +1,81 @@
-# lofi-blue-sky
- (っ◔◡◔)っ ♥ abstraction ♥ a beautiful blue sky i've been filming the sky for over a decadeit is my meditation sit with me and watch the sky go by ˜”°•.˜”°• hello •°”˜.•°”˜ lofi blue sky is an art project 
+# lofi blue sky
+
+> (っ◔◡◔)っ ♥ abstraction ♥
+> a beautiful blue sky — i've been filming the sky for over a decade
+> it is my meditation — sit with me and watch the sky go by
+> ˜”°•.˜”°• hello •°”˜.•°”˜
+
+**Version:** 0.1.0 · **License:** MIT · [Roadmap](./ROADMAP.md) · [Docs](./docs) · **Live:** https://cportka.github.io/lofi-blue-sky/
+
+A procedurally generated **lofi glitch-sky**, synthesized entirely in a fragment shader from a
+hash. No footage, no assets — a slow, meditative, seamless loop of a slit-scan sunset built from
+math. Same hash, same sky, on every machine, forever.
+
+![a lofi blue sky](./assets/hero.png)
+
+_The same sky, five moments across one loop — the bands drift, the horizon breathes:_
+
+![loop filmstrip](./assets/filmstrip.png)
+
+## The thesis
+
+**The masterpiece is in the GLSL — one idea executed completely. The platform is the frame.**
+
+One shared engine, two frames:
+
+- **Target A — the fxhash token** (`targets/fxhash/`). A single, restrained slit-scan sunset,
+  deterministic from `$fx.hash`, bundled into one **self-contained ~16 KB HTML** with no network
+  and no external resources — small enough to store fully on-chain (ONCHFS). The disciplined
+  masterpiece: it thrives inside fxhash's limits instead of fighting them.
+- **Target B — breathe** (`targets/web/`). The generator with the cap off — for now, a small
+  GitHub Pages preview of the live engine (randomize, paste a seed, save a frame). It grows into
+  the full edition: all glitch modes, audio, high-res + video export.
+
+Both are built from the **same GLSL core + the same genome** — two entry points, one shader set.
+
+## The look
+
+Slit-scan horizontal-band skies: a sunset gradient quantized into drifting bands, each phase-shifted
+into a venetian-blind smear, with per-row displacement, ordered dither, posterization, chromatic
+bleed and grain over the top. Slow 20–34s seamless loops. Muted, dusty, quantized palettes —
+Sodium, Powder, Olive, Periwinkle. See [docs/AESTHETIC.md](./docs/AESTHETIC.md) and the
+[palette sheet](./assets/palettes/palettes.svg).
+
+## Quickstart
+
+```bash
+npm install          # dev tooling only (typescript, esbuild) — zero runtime dependencies
+npm test             # version sync + typecheck + deterministic unit suite + self-contained build
+npm run build        # → targets/fxhash/dist/index.html (+ upload.zip) and ./index.html (Pages)
+npm run render       # local: render in headless Chromium, verify determinism + seamless loop
+```
+
+Open `targets/fxhash/dist/index.html?fxhash=<any-hex>` or the root `index.html` in a browser.
+
+## How it works
+
+```
+$fx.hash ─► genome (hash → params) ─► engine ─► sky.frag ─► slitscan.frag ─► post.frag ─► screen
+            (deterministic DNA)                  gradient    drifting bands   dither/grain
+```
+
+- `packages/core/` — the platform-agnostic engine: a deterministic RNG, the genome, curated
+  palettes, the WebGL2 pipeline, and the GLSL passes. Never imports `$fx` or the DOM UI.
+- `targets/fxhash/` — wires `$fx` (hash · rand · features · preview) and builds the token bundle.
+- `targets/web/` — the GitHub Pages generator UI.
+
+Determinism is the whole game: **same hash → byte-identical params → byte-identical pixels**,
+verified in CI and in a real browser. See [docs/DETERMINISM.md](./docs/DETERMINISM.md) and
+[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).
+
+## Status
+
+v0.1.0 ships Phases 0–1 of the [roadmap](./ROADMAP.md): the core scaffold, the deterministic
+genome, the sky + slit-scan look, curated palettes, post-processing, a seamless loop, and both
+targets building and rendering. Open design calls (mode, storage, params) are tracked in
+[docs/DECISIONS.md](./docs/DECISIONS.md).
+
+---
+
+_lofi blue sky is an art project by Chris Portka ([djpants](https://fxhash.xyz/u/djpants) ·
+`djpants.eth`)._
