@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>lofi blue sky</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #0b0a12;
+        overflow: hidden;
+      }
+      #sky {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+    <!-- FX_SNIPPET: at publish time the fxhash snippet (@fxhash/project-sdk) is injected here,
+         before the bundle, so it defines the real $fx. In dev/sandbox it is empty and the shim
+         inside the bundle takes over. See docs/fxhash.md. -->
+  </head>
+  <body>
+    <canvas id="sky"></canvas>
+    <!-- INLINE_SCRIPT: the entire engine is inlined here by targets/fxhash/build.mjs -->
+  </body>
+</html>

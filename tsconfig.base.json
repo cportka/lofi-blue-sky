@@ -1,0 +1,18 @@
+{
+  "//": "Shared compiler options for every project in the repo.",
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "declaration": true,
+    "composite": true,
+    "sourceMap": false,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true
+  }
+}

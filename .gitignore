@@ -1,0 +1,18 @@
+# dependencies
+node_modules/
+
+# build output (compiled + bundled artifacts are generated from source)
+packages/*/dist/
+targets/*/dist/
+targets/fxhash/upload.zip
+*.tsbuildinfo
+
+# NOTE: the GitHub Pages entry (repo-root index.html + .nojekyll) IS committed on purpose —
+# it is the built Target B, served by Pages from main. Regenerate with `npm run build:web`.
+
+# renders / captures produced during verification
+/.captures/
+*.log
+
+# os
+.DS_Store

@@ -1,0 +1,25 @@
+name: portka-standard
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # This repo has a real build (TypeScript + esbuild), so the Portka version-sync runner is
+      # wrapped with a Node toolchain + install. The tests/cases/*.sh then typecheck, run the
+      # deterministic unit suite, and build both self-contained targets.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Run tests (version sync + typecheck + unit + build)
+        run: bash tests/run-tests.sh
