@@ -42,13 +42,15 @@ test('features discriminate at their thresholds', () => {
   assert.equal(deriveFeatures(mk({ grain: 0.05, dither: 0.2, quantLevels: 16 })).Processing, 'Clean'); // 0.15
   assert.equal(deriveFeatures(mk({ grain: 0.3, dither: 0.4, quantLevels: 14 })).Processing, 'Grained'); // 0.56
   assert.equal(deriveFeatures(mk({ grain: 0.5, dither: 0.9, chroma: 0.5, quantLevels: 5 })).Processing, 'Degraded');
-  // Perfect Horizon window
-  assert.equal(deriveFeatures(mk({ horizon: 0.46, rowDisplace: 0.01 }))['Perfect Horizon'], true);
+  // Perfect Horizon window (widened in v0.2.0: horizon in (0.40, 0.52), rowDisplace < 0.025)
+  assert.equal(deriveFeatures(mk({ horizon: 0.41, rowDisplace: 0.02 }))['Perfect Horizon'], true);
+  assert.equal(deriveFeatures(mk({ horizon: 0.46, rowDisplace: 0.024 }))['Perfect Horizon'], true);
   assert.equal(deriveFeatures(mk({ horizon: 0.46, rowDisplace: 0.03 }))['Perfect Horizon'], false);
   assert.equal(deriveFeatures(mk({ horizon: 0.55, rowDisplace: 0.01 }))['Perfect Horizon'], false);
-  // Full Corruption conjunction
-  assert.equal(deriveFeatures(mk({ chroma: 0.5, grain: 0.4, quantLevels: 7 }))['Full Corruption'], true);
-  assert.equal(deriveFeatures(mk({ chroma: 0.5, grain: 0.4, quantLevels: 8 }))['Full Corruption'], false);
+  // Full Corruption conjunction (relaxed: chroma > 0.3, grain > 0.32, quantLevels <= 9)
+  assert.equal(deriveFeatures(mk({ chroma: 0.5, grain: 0.4, quantLevels: 9 }))['Full Corruption'], true);
+  assert.equal(deriveFeatures(mk({ chroma: 0.5, grain: 0.4, quantLevels: 10 }))['Full Corruption'], false);
+  assert.equal(deriveFeatures(mk({ chroma: 0.25, grain: 0.4, quantLevels: 7 }))['Full Corruption'], false);
 });
 
 test('features actually vary across the hash space (no zero-rarity trait)', () => {

@@ -4,6 +4,29 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.2.0] - 2026-07-07
+
+Canonize v0.1.0 and make the generator interactive. **No change to any seed's rendered sky** — the
+genome, palettes, and shaders are frozen (see `docs/CANON.md`); everything here sits above that line.
+
+### Added
+- **Canon**: `docs/CANON.md` + `packages/core/test/canon.test.mjs` pin the exact genome of the
+  canonical seeds in CI, and `scripts/render-goldens.json` pins their pixels. Two of Chris's picks
+  seeded the anchors.
+- **Interactive generator** (`targets/web`): live seed box (paste a hash or `g:…` token — applies
+  automatically, no button); **click the sky** to toggle the panel; **click any attribute** to
+  reshuffle just that one; **◀ ▶** undo/redo history; **⧉** copy-with-check; **png** frame save and
+  **loop** one-loop WebM recording.
+- **Exploration helpers** in core (never touch the seed→genome map): `randomHashByPolicy`
+  (rejection-sample to bias a family rarer), `rerollFeature` (change one attribute), and
+  `encodeGenome`/`decodeGenome` (share a hand-tweaked sky as a `g:…` token).
+
+### Changed
+- **Olive is rarer in "new sky"** (~10%, was ~25%) via exploration policy — a pasted Olive hash
+  still renders Olive.
+- **Feature tuning (labels only, no pixel change)**: widened *Perfect Horizon* (~16%) and
+  *Full Corruption* (~4%) so the rare flags actually vary. They freeze at mint.
+
 ## [0.1.0] - 2026-07-07
 
 First light. Phases 0–1 of the roadmap: the shared core, the slit-scan sunset, and both targets
