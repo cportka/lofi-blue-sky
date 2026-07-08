@@ -141,25 +141,97 @@ This is a conscious call, not a default. v0.1.0 is built lean (~16 KB, gzip ~6.5
 **ONCHFS** — permanent, fully on-chain, pay-per-byte — stays on the table; **IPFS** is cheaper but
 needs pinning. Confirm before the drop: see decision #2 in [./DECISIONS.md](./DECISIONS.md).
 
-## publish sequence
+## the fxhash create flow — art coin (Open form)
 
-A checklist, top to bottom. Do not skip the two-machine step — determinism bugs hide on a single
-box.
+fxhash's current `create` wizard (fxhash.xyz/create) launches a project as an **art coin**: you mint
+a coin (`$TICKER`) that goes live *alongside* the generative work, and collectors spend that coin
+(plus a mint fee) to mint editions. The wizard's left rail has eight steps:
 
-1. **sandbox-validate on two machines.** Build, then upload `upload.zip` to fxhash.xyz/sandbox on
-   **two different machines/browsers**. Confirm: it renders, resizes cleanly, loops seamlessly, and
-   the **same hash yields the same sky** on both. Check the captured preview looks right (it fires a
-   third of the way into the loop).
-2. **connect a wallet.** Kukai or Temple, on the account that will hold the token and receive
-   royalties.
-3. **publish the generative token.** Upload the same `upload.zip`; pick the storage target from the
-   decision above (ONCHFS vs IPFS).
-4. **set edition size + pricing.** Fixed / Dutch / open — a platform setting, not code (decision #5
-   in [./DECISIONS.md](./DECISIONS.md)).
-5. **set royalties.** Secondary-sale split; not stored in the repo (decision #6).
-6. **mint artist proofs.** Pull a few iterations for yourself; sanity-check live tokens against the
-   sandbox.
-7. **announce.** Share the drop.
+`get-started → art-coin-details → artwork-type → artwork → check-files → configure-capture → verification → preview-and-mint`
+
+Everything below is transcribed from the live flow so we know exactly what to prepare.
+
+### 1. art-coin-details — *"set up your art coin"*
+| field | what it wants | notes for lofi blue sky |
+|-------|---------------|--------------------------|
+| **ticker** | `$` symbol, **≥ 2 chars** | e.g. `$SKY` / `$LOFI` / `$PANT`. **⚠ pick one** (decision below). |
+| **self-allocation** | fixed by the platform: **you are allocated 40% of supply, locked, unlocking gradually over 3 years**. More than that = buy it on fxhash after launch. | not a choice — just know it. |
+| **description** | **≥ 5 chars** | the coin's blurb (short; the project description is separate, step 4). |
+| **logo** | an image file (drop / pick) | **asset to make** — a lofi-blue-sky mark (a sky swatch / the favicon at higher res). |
+
+### 2. artwork-type — *"select the type of project you want to publish"*
+- **Open form** — *"Generative art that evolves — collectors can **reroll and branch** new editions from their collected ones."*
+- **Long form** — *"The classic genart experience — unique, randomized artworks generated at mint time."*
+
+> **Recommendation: Open form.** It is a direct match for what the engine already does — the browser
+> generator's per-attribute **reshuffle** and its **`g:<engine>:…` genome tokens** (see
+> [ENGINES.md](./ENGINES.md), [CANON.md](./CANON.md)) *are* reroll-and-branch. An Open-form token
+> would expose that as on-chain evolution: a collector rerolls their sky into a new branched edition.
+> This also elevates decision #4 (fx(params) exposure) — Open form wants **evolve params**, so we'd
+> map a small, safe set of genome fields (e.g. palette, band density; Billow: coverage, wind) to the
+> evolve/`$fx.params` surface and keep the rest hash-locked. Genesis's frozen key + reserved draws
+> give us room to wire this without disturbing existing seeds.
+
+### 3. artwork — the generative project itself
+| field | what it wants | for lofi blue sky |
+|-------|---------------|--------------------|
+| **where to store the code** | **offchain IPFS** (cheaper, needs pinning) *or* **onchain ONCHFS** (fully on-chain, pay-per-byte, storage cost = chain + live gas) | we're built lean (~18 KB) → **ONCHFS is viable** (decision #2). |
+| **project zip** | the self-contained bundle, `index.html` at the archive root | our `targets/fxhash/upload.zip` — exactly this shape. |
+| **editions** | total supply / **nb of editions** → sets the coin price per edition (the example showed `100000` → *10 $PANT to mint 1 edition*) | **⚠ decide edition count** (decision #5). |
+| **mint fee** | the fee in **ETH** to mint an edition (example `0.001`) | small, covers gas + platform. **⚠ decide.** |
+| **royalties** | your % of each secondary resale (**25% goes to fxhash**) | **⚠ decide** (decision #6). |
+| **evolve fee growth rate** | % growth of the evolve fee per depth — **not self-editable, contact support to change** (default `25` → `0.00025 ETH` at depth 1, `0.0005` at depth 2, …) | governs the cost to reroll/branch; relevant only for **Open form**. |
+| **name** | the project title | e.g. *lofi blue sky — Genesis*. |
+| **description** | the project blurb | our thesis, short. |
+| **release date** | **coin + project go live together** — the coin opens for trading and the project becomes mintable at the same moment | **⚠ pick a date/time.** |
+| **tags** | comma-separated | `generative, art, sky, glitch, slit-scan, lofi, seamless-loop`. |
+| **labels** | pick any that apply: *Epileptic trigger · Sexual content · Sensitive content · Image composition · Animated · Interactive · Profile Picture (PFP) · Audio · Includes prerendered components* | **Animated** ✓. (Audio only if Target B's bed ever ships here — it won't; that's the breathe edition.) |
+
+### 4. check-files
+fxhash validates the uploaded zip: `index.html` at the root, renders in the sandbox, no external
+resources. This is the same contract our `assertSelfContained` gate already enforces at build time —
+so a green `npm run build:fxhash` should sail through.
+
+### 5. configure-capture
+Sets how fxhash snapshots the token's **preview/thumbnail**: the capture **trigger**, **resolution**,
+and a **delay**. Our entry calls **`$fx.preview()` a third of the way into the loop** on a
+representative frame — so configure the trigger as *"programmatic / fxpreview"* (wait for the
+`$fx.preview()` signal) rather than a fixed delay, at a square resolution. Verify the captured still
+looks like a good representative sky.
+
+### 6. verification
+Wallet + identity verification for the launching account (the `djpants` identity — keep it the same
+across the drop for clean provenance; verify links via tzprofiles / your ENS where prompted).
+
+### 7. preview-and-mint
+Final review of coin + project, then mint. Coin and project go live at the **release date** set in
+step 3.
+
+## ⚠ release worksheet — decisions to lock before minting
+
+| # | decision | default / lean | status |
+|---|----------|----------------|--------|
+| ticker | the `$` coin symbol (≥2 chars) | `$SKY` (or `$LOFI`) | **open** |
+| type | Open form vs Long form | **Open form** (matches reroll/branch) | recommended |
+| storage | ONCHFS vs IPFS | **ONCHFS** (we're lean) | decision #2 |
+| editions | supply / edition count → price | — | **open** (decision #5) |
+| mint fee | ETH per mint | small (e.g. 0.001) | **open** |
+| royalties | secondary % (−25% fxhash) | — | **open** (decision #6) |
+| evolve params | which genome fields become evolve/`$fx.params` | palette + band density (Genesis) | decision #4 |
+| labels / tags | Animated; sky/glitch/lofi tags | set | ready |
+| logo | coin mark image | make one | **asset to do** |
+| release date | coin + project go-live | — | **open** |
+| wallet / identity | launch account, royalties payout, tzprofiles/ENS | `djpants` | verify |
+
+## publish checklist (short)
+
+1. **Build + sandbox-validate on two machines** — `npm run build:fxhash`, upload `upload.zip` to
+   fxhash.xyz/sandbox on two different machines/browsers. Confirm it renders, resizes, loops
+   seamlessly, and the **same hash → same sky** on both; the captured preview looks right.
+2. **Lock the worksheet above** (ticker, type, storage, editions, fees, royalties, release date).
+3. **Run the create wizard** (steps 1–7) with those values; upload the same `upload.zip`.
+4. **Mint** — coin + project go live at the release date.
+5. **Announce** across the project's channels (see [PROJECT.md](./PROJECT.md)).
 
 ## quick reference
 

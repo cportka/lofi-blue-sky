@@ -183,6 +183,17 @@
       .btns .act {
         flex: 1;
       }
+      #museumLink {
+        display: block;
+        margin-top: 12px;
+        font-size: 11px;
+        text-align: center;
+        color: var(--muted);
+        text-decoration: none;
+      }
+      #museumLink:hover {
+        color: var(--ink);
+      }
     </style>
     <!-- FX_SNIPPET: unused for the web target -->
   </head>
@@ -207,6 +218,7 @@
         <button id="png" class="act" title="save this frame">png</button>
         <button id="webm" class="act" title="record one full loop as webm">loop</button>
       </div>
+      <a id="museumLink" href="./museum.html">the museum — released skies ↗</a>
     </div>
     <!-- INLINE_SCRIPT: the engine is inlined here by targets/web/build.mjs -->
   </body>

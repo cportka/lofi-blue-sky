@@ -5,7 +5,7 @@
 > it is my meditation — sit with me and watch the sky go by
 > ˜”°•.˜”°• hello •°”˜.•°”˜
 
-**Version:** 0.3.0 · **License:** MIT · [Roadmap](./ROADMAP.md) · [Docs](./docs) · **Live:** https://cportka.github.io/lofi-blue-sky/
+**Version:** 0.4.0 · **License:** MIT · [Roadmap](./ROADMAP.md) · [Docs](./docs) · **Live:** https://cportka.github.io/lofi-blue-sky/
 
 A procedurally generated **lofi glitch-sky**, synthesized entirely in a fragment shader from a
 hash. No footage, no assets — a slow, meditative, seamless loop of a slit-scan sunset built from
@@ -32,6 +32,21 @@ One shared engine, two frames:
   the full edition: all glitch modes, audio, high-res + video export.
 
 Both are built from the **same GLSL core + the same genome** — two entry points, one shader set.
+
+## The project
+
+lofi blue sky is a long-running **internet art project** by Chris Portka (**djpants** ·
+`djpants.eth`) — a decade of filming the sky, distilled into slow, glitched loops. This repo is the
+generative engine; the wider project is a body of released animated skies:
+[Website](https://lofibluesky.io/) ·
+[OpenSea](https://opensea.io/collection/lofibluesky) ·
+[objkt](https://objkt.com/collections/KT1LYDrLXqJBgrs414HjER6qTqAgre2moq3u) ·
+[Paras](https://paras.id/lofibluesky.near) ·
+[Instagram](https://www.instagram.com/lofi_blue_sky/) ·
+[X](https://x.com/lofi_blue_sky).
+
+See [docs/PROJECT.md](./docs/PROJECT.md) for the full picture and [the museum](./docs/MUSEUM.md) for
+the library of released skies.
 
 ## Engines
 

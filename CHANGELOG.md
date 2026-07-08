@@ -4,7 +4,27 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
-## [0.3.0] - 2026-07-08
+## [0.4.0] - 2026-07-08
+
+Position lofi blue sky as the internet art project it is, and document the real fxhash release path.
+No engine/genome changes — docs, a museum, and one new site page.
+
+### Added
+- **`docs/fxhash.md`** rewritten around the actual fxhash **art-coin / Open-form** create wizard
+  (all 8 steps + every field, transcribed) + a release worksheet. Notes that Open-form
+  reroll-and-branch is exactly the engine's reshuffle + `g:` genome tokens.
+- **`docs/PROJECT.md`** — lofi blue sky as an internet art project: identity (Chris Portka / djpants
+  / `djpants.eth` / lofi_blue_sky) and the full cross-platform presence.
+- **`docs/MUSEUM.md`** + **`museum.html`** (a new page on the site, linked from the generator) — a
+  library of the released animated skies, linking OpenSea / objkt / Paras / Instagram / X / YouTube /
+  Bandcamp, framed as the source loops that became the engines.
+- **`docs/DESIGN-LOG.md`** + **`assets/iterations/`** — the generator's visual history (v0.1 Genesis →
+  v0.3 Billow) with labeled stills.
+- README "The project" section with the presence links.
+
+### Notes
+- Marketplace pages are egress/bot-blocked from this environment, so the museum **links out** to the
+  live collections (the source of truth) rather than mirroring media; it's a curated index that grows.
 
 Make sky algorithms swappable, and start the second one. Genesis is unchanged — every seed renders
 byte-identically (render goldens confirm). See `docs/ENGINES.md`.

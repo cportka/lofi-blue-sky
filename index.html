@@ -184,6 +184,17 @@
       .btns .act {
         flex: 1;
       }
+      #museumLink {
+        display: block;
+        margin-top: 12px;
+        font-size: 11px;
+        text-align: center;
+        color: var(--muted);
+        text-decoration: none;
+      }
+      #museumLink:hover {
+        color: var(--ink);
+      }
     </style>
     
   </head>
@@ -208,6 +219,7 @@
         <button id="png" class="act" title="save this frame">png</button>
         <button id="webm" class="act" title="record one full loop as webm">loop</button>
       </div>
+      <a id="museumLink" href="./museum.html">the museum — released skies ↗</a>
     </div>
     <script>"use strict";(()=>{function ot(e){let t=parseInt(e,16);return[(t>>16&255)/255,(t>>8&255)/255,(t&255)/255]}function m(e,t,o,n){return{id:e,name:t,family:o,stops:n.map(([r,i])=>({t:r,c:ot(i)}))}}var S=[m("sodium-sunset","Sodium Sunset","Sodium",[[0,"f3e7c4"],[.18,"e6a752"],[.34,"b8562f"],[.52,"8f5a5e"],[.72,"4a4668"],[1,"211d38"]]),m("sodium-ember","Sodium Ember","Sodium",[[0,"ecd8a6"],[.22,"d08a3c"],[.4,"94371f"],[.6,"5b3244"],[1,"17131f"]]),m("sodium-grey","Sodium Striation","Sodium",[[0,"ded3bc"],[.25,"c99a63"],[.45,"94766a"],[.7,"6e6a6e"],[1,"45424c"]]),m("powder-blue","Powder Blue","Powder",[[0,"e6ebe6"],[.3,"c2d2d6"],[.6,"9fb8c4"],[1,"7c93a6"]]),m("powder-salmon","Powder Salmon","Powder",[[0,"e8c4b4"],[.28,"cdb8b0"],[.55,"a9c0c8"],[1,"8aa1b0"]]),m("powder-dawn","Powder Dawn","Powder",[[0,"f0e6da"],[.3,"d8c3b8"],[.55,"b3b6bd"],[.8,"8f9fb2"],[1,"6b83a0"]]),m("olive-haze","Olive Haze","Olive",[[0,"d8d2b0"],[.3,"a9a86e"],[.55,"7d7f52"],[.78,"8a7d78"],[1,"5c5b52"]]),m("olive-dust","Olive Dust","Olive",[[0,"cfc9a2"],[.35,"9a9a63"],[.7,"6f6f4c"],[1,"4a4a3c"]]),m("olive-rose","Olive Rose","Olive",[[0,"ddc9b0"],[.3,"b0a074"],[.55,"94745e"],[.8,"7a6b6e"],[1,"51494f"]]),m("periwinkle-dusk","Periwinkle Dusk","Periwinkle",[[0,"e2d6d0"],[.3,"c0b2c0"],[.55,"9a94b8"],[.8,"7c7aa4"],[1,"57567e"]]),m("periwinkle-mauve","Periwinkle Mauve","Periwinkle",[[0,"e6d2cc"],[.28,"cbaeb4"],[.5,"a898b0"],[.75,"8481a6"],[1,"5d5b82"]]),m("periwinkle-slate","Periwinkle Slate","Periwinkle",[[0,"d6d8dc"],[.3,"aeb2c2"],[.6,"8388a6"],[1,"565a7e"]])];function _(e){return S.find(t=>t.id===e)}var Re=`
 // --- hashing (deterministic, no textures) ---------------------------------------------------
