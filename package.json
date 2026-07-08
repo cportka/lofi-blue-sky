@@ -1,6 +1,6 @@
 {
   "name": "lofi-blue-sky",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "A procedurally generated lofi glitch-sky, synthesized entirely in a fragment shader from a hash. One shared GLSL core, two frames: a size-disciplined fxhash token and a browser generator.",
   "type": "module",
