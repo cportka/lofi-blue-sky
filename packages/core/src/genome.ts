@@ -23,6 +23,9 @@ import { PALETTES, MAX_STOPS } from './palettes.js';
 export type SkyMode = 'bands' | 'mosaic' | 'sort' | 'mosh';
 export type SortAxis = 'vertical' | 'horizontal';
 
+/** Reserved blank draws appended to the Genesis key (headroom; unused by the shaders). */
+export const GENESIS_RESERVED = 4;
+
 export interface Genome {
   /** Active glitch mode. v1 = `bands`. */
   mode: SkyMode;
@@ -80,6 +83,13 @@ export interface Genome {
   // loop
   /** Seamless loop length in seconds, 20 → 34. */
   loopSeconds: number;
+
+  /**
+   * Reserved blank draws — headroom to grow the Genesis key without shifting existing fields.
+   * Drawn at the very end and unused by the shaders, so every seed's *pixels* are unchanged
+   * (opened up a little in v0.3.0, pre-release). See docs/ENGINES.md and docs/CANON.md.
+   */
+  reserved: number[];
 }
 
 /**
@@ -128,6 +138,10 @@ export function genome(rand: Rng): Genome {
   // loop
   const loopSeconds = range(rand, 20, 34);
 
+  // reserved blank draws — headroom to open the key up later without shifting existing fields.
+  const reserved: number[] = [];
+  for (let i = 0; i < GENESIS_RESERVED; i++) reserved.push(rand());
+
   return {
     mode: 'bands',
     paletteId: palette.id,
@@ -150,6 +164,7 @@ export function genome(rand: Rng): Genome {
     chroma,
     vignette,
     loopSeconds,
+    reserved,
   };
 }
 

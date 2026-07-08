@@ -48,6 +48,12 @@ Everything that sits *above* the seed → pixels mapping can evolve in **MINOR/P
 - **Feature labels** — `deriveFeatures` thresholds (`features.ts`) are trait *names* over the same
   pixels; tuning them (as v0.2.0 did for Perfect Horizon / Full Corruption) changes no sky. They do
   become fixed for a given token **at mint** on fxhash.
+- **New engines.** Adding an engine (Billow) can't touch what a Genesis hash renders — each engine
+  has its own key. A *young* engine's key (Billow) is still evolving and **not** frozen yet; it
+  freezes when it's minted. See [ENGINES.md](./ENGINES.md).
+- **Reserved-draw appends.** *Appending* unused reserved draws to a key (Genesis gained 4 in v0.3.0)
+  is allowed pre-release: they're drawn last and unused by the shaders, so **pixels are byte-identical**
+  (the render goldens confirm it) — only the params object grows a trailing `reserved[]`.
 
 ## Rule of thumb
 

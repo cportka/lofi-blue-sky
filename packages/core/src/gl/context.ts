@@ -18,13 +18,13 @@ void main() {
 }
 `;
 
-function assembleFragment(body: string): string {
+function assembleFragment(body: string, extraDefines?: Record<string, number>): string {
+  let defines = `#define MAX_STOPS ${MAX_STOPS}\n#define TAU 6.28318530718\n`;
+  for (const [k, v] of Object.entries(extraDefines ?? {})) defines += `#define ${k} ${v}\n`;
   return `#version 300 es
 precision highp float;
 precision highp int;
-#define MAX_STOPS ${MAX_STOPS}
-#define TAU 6.28318530718
-${GLSL_COMMON}
+${defines}${GLSL_COMMON}
 ${body}`;
 }
 
@@ -68,9 +68,13 @@ export class Program {
   readonly program: WebGLProgram;
   private readonly locs = new Map<string, WebGLUniformLocation | null>();
 
-  constructor(private readonly gl: WebGL2RenderingContext, fragmentBody: string) {
+  constructor(
+    private readonly gl: WebGL2RenderingContext,
+    fragmentBody: string,
+    extraDefines?: Record<string, number>,
+  ) {
     const vs = compileShader(gl, gl.VERTEX_SHADER, VERT_SRC);
-    const fs = compileShader(gl, gl.FRAGMENT_SHADER, assembleFragment(fragmentBody));
+    const fs = compileShader(gl, gl.FRAGMENT_SHADER, assembleFragment(fragmentBody, extraDefines));
     const p = gl.createProgram();
     if (!p) throw new Error('createProgram failed');
     gl.attachShader(p, vs);

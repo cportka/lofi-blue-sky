@@ -8,17 +8,17 @@
 <canvas id="c"></canvas>
 <script type="module">
   // Loaded same-origin from the local static server so it can import the compiled engine.
-  import { createSky } from '/packages/core/dist/index.js';
+  import { createSky, getEngine } from '/packages/core/dist/index.js';
 
   let sky = null;
 
-  window.__setup = (hash, w, h) => {
+  window.__setup = (hash, w, h, engine) => {
     const c = document.getElementById('c');
     c.width = w;
     c.height = h;
-    sky = createSky(c, { hash, dpr: 1 });
+    sky = createSky(c, { engine: engine ? getEngine(engine) : undefined, hash, dpr: 1 });
     sky.resize(w, h, 1);
-    return { params: sky.params, features: sky.features };
+    return { engineId: sky.engineId, params: sky.params, features: sky.features };
   };
 
   window.__renderAt = (timeSeconds) => {

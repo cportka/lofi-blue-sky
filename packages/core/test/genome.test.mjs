@@ -35,6 +35,7 @@ const GOLDEN = {
   chroma: 0.02633928065188229,
   vignette: 0.24825711131561548,
   loopSeconds: 20.59140261122957,
+  reserved: [0.36706103663891554, 0.026951322564855218, 0.7531773808877915, 0.5494654239155352],
 };
 
 test('genome matches the golden snapshot (byte-identical determinism)', () => {
@@ -65,6 +66,7 @@ const GOLDEN_VECTORS = {
     rowDisplace: 0.01323959418106824, driftCycles: 1, tile: 12, sortThreshold: 0.6664858225570061,
     sortAxis: 'horizontal', moshDecay: 0.8693750870763324, quantLevels: 8, grain: 0.09093006900046022,
     dither: 0.42671795743517577, chroma: 0, vignette: 0.4436766439117491, loopSeconds: 23.383221368771046,
+    reserved: [0.6438043543603271, 0.7918091125320643, 0.2066000634804368, 0.5988964706193656],
   },
   'seed-3': {
     mode: 'bands', paletteId: 'periwinkle-dusk',
@@ -76,6 +78,7 @@ const GOLDEN_VECTORS = {
     sortAxis: 'vertical', moshDecay: 0.9698582527227699, quantLevels: 6, grain: 0.4358113253349438,
     dither: 0.22780112745240333, chroma: 0.5315904050599783, vignette: 0.13846778790466488,
     loopSeconds: 32.79398643737659,
+    reserved: [0.661491182865575, 0.8016446474939585, 0.16820385633036494, 0.5482450120616704],
   },
 };
 
@@ -111,6 +114,8 @@ test('every generated genome is fully in-range and well-formed', () => {
     assert.ok(g.chroma === 0 || (g.chroma >= 0 && g.chroma <= 0.6), `chroma ${g.chroma}`);
     inRange(g.vignette, 0.1, 0.6, 'vignette');
     inRange(g.loopSeconds, 20, 34, 'loopSeconds');
+    assert.equal(g.reserved.length, 4);
+    for (const rv of g.reserved) inRange(rv, 0, 1, 'reserved');
   }
 });
 
