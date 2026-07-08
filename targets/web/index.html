@@ -82,6 +82,29 @@
         opacity: 0.3;
         cursor: default;
       }
+      #engines {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .chip {
+        font: inherit;
+        font-size: 11px;
+        color: var(--muted);
+        background: rgba(236, 230, 214, 0.05);
+        border: 1px solid rgba(236, 230, 214, 0.14);
+        border-radius: 999px;
+        padding: 3px 11px;
+        cursor: pointer;
+      }
+      .chip:hover {
+        color: var(--ink);
+      }
+      .chip[aria-selected="true"] {
+        color: #0b0a12;
+        background: var(--ink);
+        border-color: var(--ink);
+      }
       #feats {
         display: flex;
         flex-direction: column;
@@ -173,6 +196,7 @@
           <button id="fwd" title="next (redo)">▶</button>
         </span>
       </div>
+      <div id="engines" title="switch sky engine"></div>
       <div id="feats" title="click an attribute to reshuffle just that one"></div>
       <div class="seedrow">
         <input id="seed" spellcheck="false" autocomplete="off" placeholder="hash or g:… token" />

@@ -18,6 +18,7 @@ const CANON = {
     sortAxis: 'vertical', moshDecay: 0.8997874998836778, quantLevels: 8, grain: 0.26657230912242086,
     dither: 0.4057804578682408, chroma: 0.5052202731370926, vignette: 0.30507355709560213,
     loopSeconds: 21.048279407434165,
+    reserved: [0.4875154900364578, 0.8187487695831805, 0.4278997981455177, 0.4055037861689925],
   },
   '3ebed465933f11af41fb9f999635ca11ea55c1357cdcba0f3d4bc11f9de5ff64': {
     mode: 'bands', paletteId: 'olive-rose',
@@ -28,6 +29,7 @@ const CANON = {
     rowDisplace: 0.022370359115302562, driftCycles: 2, tile: 12, sortThreshold: 0.6645986850839107,
     sortAxis: 'horizontal', moshDecay: 0.8618357972288504, quantLevels: 8, grain: 0.06991859803907574,
     dither: 0.2241068454924971, chroma: 0, vignette: 0.28589400011114774, loopSeconds: 33.16096306312829,
+    reserved: [0.8994906900916249, 0.5249389284290373, 0.4779778786469251, 0.5104593147989362],
   },
 };
 

@@ -4,6 +4,31 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.3.0] - 2026-07-08
+
+Make sky algorithms swappable, and start the second one. Genesis is unchanged — every seed renders
+byte-identically (render goldens confirm). See `docs/ENGINES.md`.
+
+### Added
+- **Engine framework** (`packages/core/src/engines`): an `Engine` interface (key + shaders +
+  features + renderer), a registry, and an engine-aware `createSky({ engine, hash })`. Genesis is
+  migrated in as an adapter over the existing, frozen pipeline (no pixel change).
+- **Billow engine** — rolling billowing clouds sweeping across a blue sky: procedural periodic FBM
+  with an integer-wind horizontal drift + time-circle churn (seamless), its own key / palettes /
+  features, and a block of **reserved blank draws** for future design.
+- **Phase 4 (experimental)**: `mosaic` mode live in Billow (the `31` downsample look); `sort`/`mosh`
+  reserved. Genesis stays `bands`-only.
+- **Engine switcher** in the full-screen web generator (Genesis ⇄ Billow); a pasted hash reinterprets
+  under the selected engine; **engine-tagged** share tokens (`g:<engine>:…`); engine in the URL.
+- Tests for the registry, Billow determinism/reserved space, and engine-tagged tokens (37 total).
+- `docs/ENGINES.md`; `assets/billow.png`.
+
+### Changed
+- **Opened the Genesis key** with 4 reserved draws (pre-release headroom) — **no seed's pixels
+  change**; the param snapshots gain a trailing `reserved[]` block.
+- `createSky`'s `engine` option is now an engine object (defaults to Genesis), so the fxhash token
+  tree-shakes the other engines out and stays ONCHFS-lean (~18 KB).
+
 ## [0.2.0] - 2026-07-07
 
 Canonize v0.1.0 and make the generator interactive. **No change to any seed's rendered sky** — the

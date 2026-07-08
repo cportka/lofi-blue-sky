@@ -32,10 +32,17 @@ Legend: ✅ done · 🟡 in progress · ⬜ planned
 - ⬜ fx(params): expose palette + band density at mint (lock the rest). See
   [docs/DECISIONS.md](./docs/DECISIONS.md).
 
-## Phase 4 — Other modes ⬜
-- `mosaic.frag` — downsample + tile quantize (the `31` look). Stateless, easy.
-- `sort.frag` / `datamosh.frag` — the hard, feedback-buffer modes (the `35` look). Requires the
-  ping-pong history buffer and a loop-closure strategy (§ seamless-loop in DETERMINISM.md).
+## Engine framework 🟡 (v0.3.0)
+- Swappable engines — each a sky algorithm with its own key, shaders, and features; registry +
+  engine-aware `createSky`; single-engine targets tree-shake the rest. See
+  [docs/ENGINES.md](./docs/ENGINES.md). ✅
+- **Genesis** migrated in unchanged (byte-identical); **Billow** (rolling clouds) started with a
+  reserved-blank key. ✅
+
+## Phase 4 — Other modes 🟡 (experimental in v0.3.0)
+- `mosaic` — downsample + tile quantize (the `31` look). ✅ live as an experimental Billow mode.
+- ⬜ `sort` / `datamosh` — the hard, feedback-buffer modes (the `35` look). Reserved in Billow's key;
+  need the ping-pong history buffer + a loop-closure strategy (§ seamless-loop in DETERMINISM.md).
 
 ## Phase 5 — Breathe target 🟡 (started in v0.2.0)
 - Interactive generator: seed box, click-the-sky HUD toggle, click-an-attribute reshuffle with

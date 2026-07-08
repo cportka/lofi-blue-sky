@@ -5,7 +5,7 @@
 > it is my meditation — sit with me and watch the sky go by
 > ˜”°•.˜”°• hello •°”˜.•°”˜
 
-**Version:** 0.2.0 · **License:** MIT · [Roadmap](./ROADMAP.md) · [Docs](./docs) · **Live:** https://cportka.github.io/lofi-blue-sky/
+**Version:** 0.3.0 · **License:** MIT · [Roadmap](./ROADMAP.md) · [Docs](./docs) · **Live:** https://cportka.github.io/lofi-blue-sky/
 
 A procedurally generated **lofi glitch-sky**, synthesized entirely in a fragment shader from a
 hash. No footage, no assets — a slow, meditative, seamless loop of a slit-scan sunset built from
@@ -33,12 +33,23 @@ One shared engine, two frames:
 
 Both are built from the **same GLSL core + the same genome** — two entry points, one shader set.
 
+## Engines
+
+One core, swappable **engines** — each a sky algorithm with its own hash→params key and shaders
+([docs/ENGINES.md](./docs/ENGINES.md)):
+
+- **Genesis** — the horizontal slit-scan sunset (above). Frozen and canonical.
+- **Billow** — rolling billowing clouds sweeping across a blue sky, procedural and seamless. Young;
+  carries the experimental Phase-4 mosaic mode.
+
+![Billow — rolling clouds](./assets/billow.png)
+
 ## The look
 
-Slit-scan horizontal-band skies: a sunset gradient quantized into drifting bands, each phase-shifted
-into a venetian-blind smear, with per-row displacement, ordered dither, posterization, chromatic
-bleed and grain over the top. Slow 20–34s seamless loops. Muted, dusty, quantized palettes —
-Sodium, Powder, Olive, Periwinkle. See [docs/AESTHETIC.md](./docs/AESTHETIC.md) and the
+Genesis: slit-scan horizontal-band skies — a sunset gradient quantized into drifting bands, each
+phase-shifted into a venetian-blind smear, with per-row displacement, ordered dither, posterization,
+chromatic bleed and grain. Slow 20–34s seamless loops. Muted, dusty, quantized palettes — Sodium,
+Powder, Olive, Periwinkle. See [docs/AESTHETIC.md](./docs/AESTHETIC.md) and the
 [palette sheet](./assets/palettes/palettes.svg).
 
 ## Quickstart
@@ -70,11 +81,13 @@ verified in CI and in a real browser. See [docs/DETERMINISM.md](./docs/DETERMINI
 
 ## Explore (the live generator)
 
-On [the site](https://cportka.github.io/lofi-blue-sky/): **click the sky** to hide/show the panel;
-**click any attribute** to reshuffle just that one; **◀ ▶** undo/redo; **↻ new sky** rolls a fresh
-seed; the seed box updates live and takes a pasted hash automatically; **⧉** copies it; **png**
-saves the frame and **loop** records one seamless loop as WebM. A hand-tweaked sky is shared as a
-`g:…` genome token instead of a hash. See [docs/CANON.md](./docs/CANON.md).
+On [the site](https://cportka.github.io/lofi-blue-sky/) (full-screen, always looping): **switch
+engine** (Genesis / Billow) with the chips — the same seed reinterprets under it; **click the sky**
+to hide/show the panel; **click any attribute** to reshuffle just that one; **◀ ▶** undo/redo;
+**↻ new sky** rolls a fresh seed; the seed box updates live and takes a pasted hash automatically;
+**⧉** copies it; **png** saves the frame and **loop** records one seamless loop as WebM. A
+hand-tweaked sky is shared as an engine-tagged `g:<engine>:…` token. See
+[docs/CANON.md](./docs/CANON.md).
 
 Two canonical seeds to try:
 `00f50f353cf56cfa55f3b32404db3196e7cef86e37bd4b0fbca9304a8dd6097f` (a sodium sunset) and
@@ -82,11 +95,12 @@ Two canonical seeds to try:
 
 ## Status
 
-**v0.1.0 is canonical and frozen** — the genome, palettes, and shaders never change, so every seed
-regenerates byte-identically (locked by [docs/CANON.md](./docs/CANON.md) + CI). v0.2.0 adds the
-interactive generator, a WebM loop export, and label-only feature tuning — **no change to any seed's
-rendered sky**. Phases 0–1 of the [roadmap](./ROADMAP.md) are done; open design calls (mode, storage,
-params) are tracked in [docs/DECISIONS.md](./docs/DECISIONS.md).
+**Genesis v0.1.0 is canonical and frozen** — its genome, palettes, and shaders never change, so
+every Genesis seed regenerates byte-identically (locked by [docs/CANON.md](./docs/CANON.md) + CI).
+v0.2.0 added the interactive generator + WebM export; **v0.3.0** makes engines swappable and starts
+**Billow** (rolling clouds) with the experimental Phase-4 mosaic mode — all without changing any
+Genesis seed's pixels. Open design calls (storage, params) are in
+[docs/DECISIONS.md](./docs/DECISIONS.md); the engine model is in [docs/ENGINES.md](./docs/ENGINES.md).
 
 ---
 
