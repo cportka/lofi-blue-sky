@@ -138,8 +138,7 @@
       .feat .v {
         text-align: right;
       }
-      .seedrow,
-      .btns {
+      .seedrow {
         display: flex;
         gap: 8px;
         margin-top: 8px;
@@ -170,7 +169,8 @@
         opacity: 0.5;
         cursor: default;
       }
-      #copy {
+      #copy,
+      #rand {
         width: 34px;
         display: grid;
         place-items: center;
@@ -179,9 +179,6 @@
       #copy.ok {
         color: var(--good);
         border-color: var(--good);
-      }
-      .btns .act {
-        flex: 1;
       }
       #museumLink {
         display: block;
@@ -212,13 +209,9 @@
       <div class="seedrow">
         <input id="seed" spellcheck="false" autocomplete="off" placeholder="hash or g:… token" />
         <button id="copy" class="act" title="copy seed">⧉</button>
+        <button id="rand" class="act" title="new sky">↻</button>
       </div>
-      <div class="btns">
-        <button id="rand" class="act">↻ new sky</button>
-        <button id="png" class="act" title="save this frame">png</button>
-        <button id="webm" class="act" title="record one full loop as webm">loop</button>
-      </div>
-      <a id="museumLink" href="./museum.html">the museum — released skies ↗</a>
+      <a id="museumLink" href="./museum.html">museum ↗</a>
     </div>
     <!-- INLINE_SCRIPT: the engine is inlined here by targets/web/build.mjs -->
   </body>

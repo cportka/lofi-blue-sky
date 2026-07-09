@@ -173,6 +173,15 @@ async function main() {
     console.log('params:', JSON.stringify(info.params));
     console.log('features:', JSON.stringify(info.features));
     console.log('→ .captures/frame.png');
+  } else if (cmd === 'frameAt') {
+    // frameAt <hash> <engineId> <t 0..1> — a still at a chosen engine + loop phase (design-log stills)
+    const eng = argB || undefined;
+    const t = Number(process.argv[5] ?? 0.4);
+    const info = await page.evaluate(([h, e]) => window.__setup(h, 512, 512, e), [argA, eng]);
+    await renderAt(info.params.loopSeconds * t);
+    await writePng('frame.png', await png());
+    console.log('features:', JSON.stringify(info.features));
+    console.log(`→ .captures/frame.png (engine=${info.engineId}, t=${t})`);
   } else if (cmd === 'loop') {
     const frames = Number(argB || 24);
     const info = await setup(argA, 400, 400);

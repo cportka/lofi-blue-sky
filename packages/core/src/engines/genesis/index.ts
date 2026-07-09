@@ -15,8 +15,8 @@ export const GENESIS: Engine<Genome> = {
   id: 'genesis',
   name: 'Genesis',
   description:
-    'The original — a horizontal slit-scan sunset. Quantized bands drift in a venetian-blind reveal over a dusty gradient.',
-  keyVersion: 1,
+    'The original — a horizontal slit-scan sunset. Quantized bands drift in a venetian-blind reveal over a dusty gradient; v2 opens a second (horizontal) split, a clean finish, and a block mosaic.',
+  keyVersion: 2,
   genome: genesisGenome,
   features: deriveFeatures,
   createRenderer(gl, iw, ih): EngineRenderer<Genome> {

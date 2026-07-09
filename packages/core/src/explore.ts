@@ -41,7 +41,9 @@ export function randomHashByPolicy(
 /** The clickable attributes, in HUD order. */
 export const FEATURE_KEYS: readonly (keyof Features)[] = [
   'Palette',
+  'Split',
   'Band Density',
+  'Finish',
   'Drift',
   'Processing',
   'Perfect Horizon',
@@ -58,7 +60,29 @@ const PROPOSE: Record<string, (g: Genome, r: R) => Partial<Genome>> = {
     const p = pool[Math.floor(r() * pool.length)] ?? PALETTES[0]!;
     return { paletteId: p.id, stopJitter: jitter6(r) };
   },
+  Split: (g, r) => {
+    const cur = deriveFeatures(g).Split;
+    // Propose a value that crosses the current one. Bars ↔ Grid ↔ Blocks; skewed small like the
+    // genome (wide splits stay rare), so clicking Split stays in pleasing territory.
+    const someHbands = () => (r() < 0.7 ? ui(r, 2, 10) : ui(r, 11, 40));
+    const someBlocksN = () => (r() < 0.7 ? ui(r, 2, 8) : ui(r, 9, 40));
+    if (cur === 'Blocks') {
+      return r() < 0.5
+        ? { blocks: false, hbands: 1 }
+        : { blocks: false, hbands: someHbands() };
+    }
+    if (cur === 'Grid') {
+      return r() < 0.5
+        ? { blocks: false, hbands: 1 }
+        : { blocks: true, blocksN: someBlocksN() };
+    }
+    // Bars
+    return r() < 0.5
+      ? { blocks: false, hbands: someHbands() }
+      : { blocks: true, blocksN: someBlocksN() };
+  },
   'Band Density': (g, r) => ({ bands: g.bands >= 24 ? ui(r, 8, 23) : ui(r, 24, 48) }),
+  Finish: (g) => ({ clean: !g.clean }),
   Drift: (g, r) => {
     const flowing = g.bandDrift + g.rowDisplace + (g.driftCycles - 1) * 0.03 > 0.09;
     return flowing

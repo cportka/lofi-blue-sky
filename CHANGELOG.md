@@ -4,6 +4,38 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.5.0] - 2026-07-09
+
+Genesis grows a second axis, a third engine arrives, and the generator's HUD is decluttered —
+grounded in a full analysis of the released sky loops in `assets/skies/`.
+
+### Added
+- **Genesis v2 — clean finish + 2D pixel splits.** Alongside the classic single-column slit-scan
+  (still preferred, ~56% of seeds), Genesis can now split the sky into a `hbands × bands` **grid**
+  (up to ~40 columns, skewed small), render a **clean** finish (crisp flat bars/pixels, drift +
+  smear off), or a square **block** mosaic of large pixels. New **Split** (Bars/Grid/Blocks) and
+  **Finish** (Clean/Distorted) traits, both clickable to reroll.
+- **Squall — a third engine (stateless datamosh).** A calm sky that a *squall* of signal corruption
+  sweeps through and clears, seamlessly, over the loop (from the `13` reference). Macroblock motion
+  error + cyan/magenta chroma tearing + held-frame snaps + horizontal sort streaks, all a periodic
+  function of the loop phase (no feedback history). Own key, palettes, and traits (Corruption /
+  Squalls / Blocks / Tearing + Signal Lost / Clear Skies).
+- Design-log stills for the new Genesis looks and Squall (`assets/renders/v0.5-*`), and a reusable
+  `render.mjs frameAt <hash> <engine> <t>` for mid-loop stills.
+
+### Changed
+- **Genesis key opened (keyVersion 1 → 2).** The first two of the four reserved draws now drive the
+  v2 geometry, so what a hash renders can change — but every field up to `loopSeconds` is
+  byte-identical, so each seed keeps its **DNA** (palette, horizon, bands, colour, post) and only the
+  new geometry overlays. Seeds that land on 1 column / not-clean / not-blocks (≈⅓) are pixel-identical
+  (proven by the render golden). Canon picks re-blessed under v2. Pre-release, nothing minted.
+- **HUD decluttered.** Removed the confusing WebM **loop** button and the redundant **png** button
+  (the OS screenshot covers saving a frame). "New sky" is now a bare ↻ icon in the seed row, right of
+  copy. Museum link shortened to "museum ↗". Web bundle 38.4 → 45.7 KB (the third engine); fxhash
+  token unchanged at 20.2 KB (Squall tree-shaken out).
+- `assets/` restructured into `skies/` (the 23 historical released loops), `renders/` (generator
+  stills), and `palettes/`, each documented.
+
 ## [0.4.0] - 2026-07-08
 
 Position lofi blue sky as the internet art project it is, and document the real fxhash release path.

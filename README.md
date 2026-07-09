@@ -5,17 +5,17 @@
 > it is my meditation — sit with me and watch the sky go by
 > ˜”°•.˜”°• hello •°”˜.•°”˜
 
-**Version:** 0.4.0 · **License:** MIT · [Roadmap](./ROADMAP.md) · [Docs](./docs) · **Live:** https://cportka.github.io/lofi-blue-sky/
+**Version:** 0.5.0 · **License:** MIT · [Roadmap](./ROADMAP.md) · [Docs](./docs) · **Live:** https://cportka.github.io/lofi-blue-sky/
 
 A procedurally generated **lofi glitch-sky**, synthesized entirely in a fragment shader from a
 hash. No footage, no assets — a slow, meditative, seamless loop of a slit-scan sunset built from
 math. Same hash, same sky, on every machine, forever.
 
-![a lofi blue sky](./assets/hero.png)
+![a lofi blue sky](./assets/renders/hero.png)
 
 _The same sky, five moments across one loop — the bands drift, the horizon breathes:_
 
-![loop filmstrip](./assets/filmstrip.png)
+![loop filmstrip](./assets/renders/filmstrip.png)
 
 ## The thesis
 
@@ -53,11 +53,20 @@ the library of released skies.
 One core, swappable **engines** — each a sky algorithm with its own hash→params key and shaders
 ([docs/ENGINES.md](./docs/ENGINES.md)):
 
-- **Genesis** — the horizontal slit-scan sunset (above). Frozen and canonical.
+- **Genesis** — the horizontal slit-scan sunset (above). Canonical. **v2** opens a second
+  (horizontal) split into a `grid`, a `clean` finish, and a square `block` mosaic — the classic
+  single-column slit-scan is still the preferred, most common look.
 - **Billow** — rolling billowing clouds sweeping across a blue sky, procedural and seamless. Young;
   carries the experimental Phase-4 mosaic mode.
+- **Squall** — a stateless **datamosh**: a calm sky that a squall of signal corruption sweeps
+  through and clears, seamlessly (macroblock motion error, cyan/magenta chroma tearing). Young and
+  experimental.
 
-![Billow — rolling clouds](./assets/billow.png)
+![Billow — rolling clouds](./assets/renders/billow.png)
+
+| Genesis — clean bars | Genesis — grid | Squall — datamosh |
+|---|---|---|
+| ![](./assets/renders/v0.5-genesis-clean-bars.png) | ![](./assets/renders/v0.5-genesis-grid.png) | ![](./assets/renders/v0.5-squall-datamosh.png) |
 
 ## The look
 
@@ -97,25 +106,26 @@ verified in CI and in a real browser. See [docs/DETERMINISM.md](./docs/DETERMINI
 ## Explore (the live generator)
 
 On [the site](https://cportka.github.io/lofi-blue-sky/) (full-screen, always looping): **switch
-engine** (Genesis / Billow) with the chips — the same seed reinterprets under it; **click the sky**
-to hide/show the panel; **click any attribute** to reshuffle just that one; **◀ ▶** undo/redo;
-**↻ new sky** rolls a fresh seed; the seed box updates live and takes a pasted hash automatically;
-**⧉** copies it; **png** saves the frame and **loop** records one seamless loop as WebM. A
-hand-tweaked sky is shared as an engine-tagged `g:<engine>:…` token. See
-[docs/CANON.md](./docs/CANON.md).
+engine** (Genesis / Billow / Squall) with the chips — the same seed reinterprets under it; **click
+the sky** to hide/show the panel; **click any attribute** to reshuffle just that one; **◀ ▶**
+undo/redo; **⧉** copies the seed and **↻** rolls a fresh one, side by side in the seed row (which
+takes a pasted hash automatically). Save a frame with the OS screenshot. A hand-tweaked sky is
+shared as an engine-tagged `g:<engine>:…` token. See [docs/CANON.md](./docs/CANON.md).
 
 Two canonical seeds to try:
-`00f50f353cf56cfa55f3b32404db3196e7cef86e37bd4b0fbca9304a8dd6097f` (a sodium sunset) and
-`3ebed465933f11af41fb9f999635ca11ea55c1357cdcba0f3d4bc11f9de5ff64` (an olive sky).
+`00f50f353cf56cfa55f3b32404db3196e7cef86e37bd4b0fbca9304a8dd6097f` (a sodium sunset, now a clean
+finish) and `3ebed465933f11af41fb9f999635ca11ea55c1357cdcba0f3d4bc11f9de5ff64` (an olive sky, now a
+grid).
 
 ## Status
 
-**Genesis v0.1.0 is canonical and frozen** — its genome, palettes, and shaders never change, so
-every Genesis seed regenerates byte-identically (locked by [docs/CANON.md](./docs/CANON.md) + CI).
-v0.2.0 added the interactive generator + WebM export; **v0.3.0** makes engines swappable and starts
-**Billow** (rolling clouds) with the experimental Phase-4 mosaic mode — all without changing any
-Genesis seed's pixels. Open design calls (storage, params) are in
-[docs/DECISIONS.md](./docs/DECISIONS.md); the engine model is in [docs/ENGINES.md](./docs/ENGINES.md).
+**Genesis is canonical** — each seed's DNA (palette, horizon, bands, colour, post) is locked by
+[docs/CANON.md](./docs/CANON.md) + CI. v0.2.0 added the interactive generator; **v0.3.0** made
+engines swappable and started **Billow** (rolling clouds); **v0.4.0** added the museum + fxhash
+release path; **v0.5.0** opened the **Genesis key to v2** (clean finish + 2D pixel splits — same
+DNA, a new geometry overlay) and added a third engine, **Squall** (a stateless datamosh). Open
+design calls are in [docs/DECISIONS.md](./docs/DECISIONS.md); the engine model is in
+[docs/ENGINES.md](./docs/ENGINES.md).
 
 ---
 
