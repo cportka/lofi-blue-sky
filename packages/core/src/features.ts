@@ -9,7 +9,9 @@ import { getPaletteById, type PaletteFamily } from './palettes.js';
 
 export interface Features {
   Palette: PaletteFamily;
+  Split: 'Bars' | 'Grid' | 'Blocks';
   'Band Density': 'Fine' | 'Wide';
+  Finish: 'Clean' | 'Distorted';
   Drift: 'Still' | 'Flowing';
   Processing: 'Clean' | 'Grained' | 'Degraded';
   'Perfect Horizon': boolean;
@@ -21,10 +23,16 @@ export function deriveFeatures(g: Genome): Features {
   const palette = getPaletteById(g.paletteId);
   const family: PaletteFamily = palette ? palette.family : 'Sodium';
 
+  // How the frame is split (v2): a square block mosaic, a multi-column grid, or the classic bars.
+  const split = g.blocks ? 'Blocks' : g.hbands > 1 ? 'Grid' : 'Bars';
+
   const bandDensity = g.bands >= 24 ? 'Fine' : 'Wide';
 
+  // Clean finish (v2) renders flat cells with drift + smear off, so it also reads as Still.
+  const finish = g.clean ? 'Clean' : 'Distorted';
+
   const motion = g.bandDrift + g.rowDisplace + (g.driftCycles - 1) * 0.03;
-  const drift = motion > 0.09 ? 'Flowing' : 'Still';
+  const drift = g.clean || motion <= 0.09 ? 'Still' : 'Flowing';
 
   const wear = g.grain + g.dither * 0.5 + g.chroma + (16 - g.quantLevels) * 0.03;
   const processing = wear > 1.0 ? 'Degraded' : wear > 0.55 ? 'Grained' : 'Clean';
@@ -37,7 +45,9 @@ export function deriveFeatures(g: Genome): Features {
 
   return {
     Palette: family,
+    Split: split,
     'Band Density': bandDensity,
+    Finish: finish,
     Drift: drift,
     Processing: processing,
     'Perfect Horizon': perfectHorizon,

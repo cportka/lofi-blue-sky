@@ -23,8 +23,15 @@ import { PALETTES, MAX_STOPS } from './palettes.js';
 export type SkyMode = 'bands' | 'mosaic' | 'sort' | 'mosh';
 export type SortAxis = 'vertical' | 'horizontal';
 
-/** Reserved blank draws appended to the Genesis key (headroom; unused by the shaders). */
-export const GENESIS_RESERVED = 4;
+/**
+ * Reserved blank draws appended to the Genesis key (headroom; unused by the shaders).
+ *
+ * v2 spent the first two of the original four reserved draws on real structure — the horizontal
+ * split, clean finish, and block mosaic (see {@link genome}) — and appended two fresh blanks. So
+ * the draw *positions* are unchanged (every field up to `loopSeconds` is byte-identical), but the
+ * former blanks now drive pixels: keyVersion bumped 1 → 2. See docs/ENGINES.md and docs/CANON.md.
+ */
+export const GENESIS_RESERVED = 2;
 
 export interface Genome {
   /** Active glitch mode. v1 = `bands`. */
@@ -45,8 +52,26 @@ export interface Genome {
   sunStrength: number;
 
   // slit-scan (bands)
-  /** Number of quantised horizontal bands. */
+  /** Number of quantised horizontal bands (the vertical divisions / rows). */
   bands: number;
+  /**
+   * Horizontal divisions (columns) laid over the bands — the second axis of the pixel split. `1`
+   * is the classic single-column slit-scan (preferred, ~56% of seeds); larger values (up to ~40,
+   * skewed small) weave the sky into a `hbands × bands` grid. New in v2.
+   */
+  hbands: number;
+  /**
+   * Clean finish — render crisp, flat bars/pixels with drift and smear switched off (the calm,
+   * poster-like look). Distorted (drift + smear on) otherwise. ~28% of seeds. New in v2.
+   */
+  clean: boolean;
+  /**
+   * Square-pixel mosaic — override bands/hbands with a `blocksN × blocksN` grid of large pixels
+   * (the downsample look). ~14% of seeds. New in v2.
+   */
+  blocks: boolean;
+  /** Grid size for {@link blocks} mode, 2 → ~40 (skewed small). New in v2. */
+  blocksN: number;
   /** Per-band drift phase seed, 0 → 1. */
   bandPhase: number;
   /** Vertical smear amplitude of the venetian-blind reveal. */
@@ -138,7 +163,22 @@ export function genome(rand: Rng): Genome {
   // loop
   const loopSeconds = range(rand, 20, 34);
 
-  // reserved blank draws — headroom to open the key up later without shifting existing fields.
+  // v2 structure — spent from what were the first two reserved draws (g0..g3), so the draw
+  // POSITIONS are unchanged and every field above is byte-identical to v1. These now drive pixels.
+  const g0 = rand();
+  const g1 = rand();
+  const g2 = rand();
+  const g3 = rand();
+  // Horizontal split (columns). Prefer 1 — the classic single-column slit-scan ("20×1"). Otherwise
+  // fan out to a `hbands × bands` grid, 2..40, skewed small so wide grids stay rare and special.
+  const hbands = g0 < 0.55 ? 1 : 2 + Math.floor(Math.pow((g0 - 0.55) / 0.45, 1.8) * 38);
+  // Clean finish — crisp flat bars/pixels, no drift or smear.
+  const clean = g1 >= 0.72;
+  // Square-pixel mosaic — a `blocksN × blocksN` grid of large pixels, overriding bands/hbands.
+  const blocks = g2 < 0.14;
+  const blocksN = 2 + Math.floor(Math.pow(g3, 2.0) * 38); // 2..40, strongly skewed small
+
+  // reserved blank draws — fresh headroom to open the key up again later without shifting fields.
   const reserved: number[] = [];
   for (let i = 0; i < GENESIS_RESERVED; i++) reserved.push(rand());
 
@@ -150,6 +190,10 @@ export function genome(rand: Rng): Genome {
     sunElevation,
     sunStrength,
     bands,
+    hbands,
+    clean,
+    blocks,
+    blocksN,
     bandPhase,
     bandDrift,
     rowDisplace,

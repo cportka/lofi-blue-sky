@@ -4,7 +4,7 @@ import { genomeFromHash } from '../dist/genome.js';
 import { deriveFeatures } from '../dist/features.js';
 import { getPaletteById } from '../dist/palettes.js';
 
-const KEYS = ['Palette', 'Band Density', 'Drift', 'Processing', 'Perfect Horizon', 'Full Corruption'];
+const KEYS = ['Palette', 'Split', 'Band Density', 'Finish', 'Drift', 'Processing', 'Perfect Horizon', 'Full Corruption'];
 
 test('deriveFeatures is deterministic and complete', () => {
   for (let i = 0; i < 200; i++) {
@@ -12,7 +12,9 @@ test('deriveFeatures is deterministic and complete', () => {
     const f = deriveFeatures(g);
     for (const k of KEYS) assert.ok(k in f, `missing feature ${k}`);
     assert.equal(f.Palette, getPaletteById(g.paletteId).family);
+    assert.ok(['Bars', 'Grid', 'Blocks'].includes(f.Split));
     assert.ok(['Fine', 'Wide'].includes(f['Band Density']));
+    assert.ok(['Clean', 'Distorted'].includes(f.Finish));
     assert.ok(['Still', 'Flowing'].includes(f.Drift));
     assert.ok(['Clean', 'Grained', 'Degraded'].includes(f.Processing));
     assert.equal(typeof f['Perfect Horizon'], 'boolean');
@@ -25,13 +27,22 @@ test('deriveFeatures is deterministic and complete', () => {
 const base = {
   mode: 'bands', paletteId: 'sodium-sunset', stopJitter: [0, 0, 0, 0, 0, 0],
   horizon: 0.46, sunElevation: 0.5, sunStrength: 0.5,
-  bands: 20, bandPhase: 0.5, bandDrift: 0.02, rowDisplace: 0.01, driftCycles: 1,
+  bands: 20, hbands: 1, clean: false, blocks: false, blocksN: 8,
+  bandPhase: 0.5, bandDrift: 0.02, rowDisplace: 0.01, driftCycles: 1,
   tile: 6, sortThreshold: 0.5, sortAxis: 'vertical', moshDecay: 0.9,
   quantLevels: 12, grain: 0.1, dither: 0.3, chroma: 0, vignette: 0.3, loopSeconds: 27,
 };
 const mk = (o) => ({ ...base, ...o });
 
 test('features discriminate at their thresholds', () => {
+  // Split: Bars (1 column), Grid (>1 column), Blocks (square mosaic overrides)
+  assert.equal(deriveFeatures(mk({ hbands: 1, blocks: false })).Split, 'Bars');
+  assert.equal(deriveFeatures(mk({ hbands: 8, blocks: false })).Split, 'Grid');
+  assert.equal(deriveFeatures(mk({ hbands: 8, blocks: true })).Split, 'Blocks');
+  // Finish tracks clean; clean also forces Drift to Still
+  assert.equal(deriveFeatures(mk({ clean: false })).Finish, 'Distorted');
+  assert.equal(deriveFeatures(mk({ clean: true })).Finish, 'Clean');
+  assert.equal(deriveFeatures(mk({ clean: true, bandDrift: 0.05, rowDisplace: 0.045 })).Drift, 'Still');
   // Band Density at 24
   assert.equal(deriveFeatures(mk({ bands: 23 }))['Band Density'], 'Wide');
   assert.equal(deriveFeatures(mk({ bands: 24 }))['Band Density'], 'Fine');
@@ -54,7 +65,7 @@ test('features discriminate at their thresholds', () => {
 });
 
 test('features actually vary across the hash space (no zero-rarity trait)', () => {
-  const seen = { Palette: new Set(), 'Band Density': new Set(), Drift: new Set(), Processing: new Set() };
+  const seen = { Palette: new Set(), Split: new Set(), 'Band Density': new Set(), Finish: new Set(), Drift: new Set(), Processing: new Set() };
   let perfect = false, corrupt = false;
   for (let i = 0; i < 600; i++) {
     const f = deriveFeatures(genomeFromHash('vary-' + i));

@@ -104,6 +104,10 @@ export class Pipeline {
     this.slit.vec2('uResolution', this.iw, this.ih);
     this.slit.f('uLoopT', loopT);
     this.slit.f('uBands', g.bands);
+    this.slit.f('uHbands', g.hbands);
+    this.slit.f('uClean', g.clean ? 1 : 0);
+    this.slit.f('uBlocks', g.blocks ? 1 : 0);
+    this.slit.f('uBlocksN', g.blocksN);
     this.slit.f('uBandPhase', g.bandPhase);
     this.slit.f('uBandDrift', g.bandDrift);
     this.slit.f('uRowDisplace', g.rowDisplace);
