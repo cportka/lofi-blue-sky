@@ -9,7 +9,7 @@ more than one look. Today there are two:
 | **Genesis** | horizontal slit-scan sunset (the `32__OG` look) | **frozen** — canonical, every seed byte-identical |
 | **Billow** | rolling billowing clouds across a blue sky (toward `35`) | **young** — evolving; key reserves blank space |
 
-![Billow](../assets/billow.png)
+![Billow](../assets/renders/billow.png)
 
 ## The interface
 

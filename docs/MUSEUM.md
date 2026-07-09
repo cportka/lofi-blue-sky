@@ -51,7 +51,7 @@ _(Counts, full titles, and media are on the collections — this repo can't mirr
 
 ## The source loops → the engines
 
-Three loops the brief calls out (see [AESTHETIC.md](./AESTHETIC.md), [`assets/reference/`](../assets/reference))
+Three loops the brief calls out (see [AESTHETIC.md](./AESTHETIC.md), [`assets/skies/`](../assets/skies))
 are the ancestors of the generative engines:
 
 - **`32__OG`** — horizontal slit-scan sunset → **Genesis**.
@@ -66,7 +66,7 @@ synthesized-from-a-hash (the [engines](./ENGINES.md)).
 As works are curated in:
 
 1. Add a row to **Cataloged so far** (title, platform link, a note).
-2. Where a still is available/allowed, save it to [`assets/museum/`](../assets/museum) and reference
+2. Where a still is available/allowed, save it to [`assets/skies/`](../assets/skies) and reference
    it in [`museum.html`](../museum.html).
 3. Keep the platforms as the canonical source; this is a curated index, not a mirror.
 

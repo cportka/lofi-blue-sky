@@ -11,11 +11,11 @@ A procedurally generated **lofi glitch-sky**, synthesized entirely in a fragment
 hash. No footage, no assets — a slow, meditative, seamless loop of a slit-scan sunset built from
 math. Same hash, same sky, on every machine, forever.
 
-![a lofi blue sky](./assets/hero.png)
+![a lofi blue sky](./assets/renders/hero.png)
 
 _The same sky, five moments across one loop — the bands drift, the horizon breathes:_
 
-![loop filmstrip](./assets/filmstrip.png)
+![loop filmstrip](./assets/renders/filmstrip.png)
 
 ## The thesis
 
@@ -57,7 +57,7 @@ One core, swappable **engines** — each a sky algorithm with its own hash→par
 - **Billow** — rolling billowing clouds sweeping across a blue sky, procedural and seamless. Young;
   carries the experimental Phase-4 mosaic mode.
 
-![Billow — rolling clouds](./assets/billow.png)
+![Billow — rolling clouds](./assets/renders/billow.png)
 
 ## The look
 

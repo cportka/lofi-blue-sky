@@ -1,14 +1,14 @@
 # Design log
 
 The visual + design narrative of the generator, iteration by iteration, with saved stills in
-[`assets/iterations/`](../assets/iterations). For the full technical changelog see
+[`assets/renders/`](../assets/renders). For the full technical changelog see
 [CHANGELOG.md](../CHANGELOG.md); this is the *look* and the *why*. For the released video-loop
 editions that seeded the aesthetic, see the [museum](./MUSEUM.md).
 
 ## Source inspiration
 
 The look is reverse-engineered from a handful of the project's own sky loops (see
-[AESTHETIC.md](./AESTHETIC.md) and [`assets/reference/`](../assets/reference)):
+[AESTHETIC.md](./AESTHETIC.md) and [`assets/skies/`](../assets/skies)):
 
 - **`32__OG`** — horizontal slit-scan sunset → **Genesis**.
 - **`35`** — datamosh powder-blue sky + salmon clouds → seeded **Billow** / future sort mode.
@@ -26,11 +26,11 @@ Deterministic from a hash; seamless 20–34s loop.
 
 | periwinkle dusk | sodium sunset |
 |---|---|
-| ![](../assets/iterations/v0.1-genesis-periwinkle.png) | ![](../assets/iterations/v0.1-genesis-sodium.png) |
+| ![](../assets/renders/v0.1-genesis-periwinkle.png) | ![](../assets/renders/v0.1-genesis-sodium.png) |
 
 _The same sky drifting across one loop:_
 
-![filmstrip](../assets/iterations/v0.1-genesis-filmstrip.png)
+![filmstrip](../assets/renders/v0.1-genesis-filmstrip.png)
 
 Palette DNA: [`assets/palettes/palettes.svg`](../assets/palettes/palettes.svg).
 **Canonized and frozen** — every Genesis seed regenerates byte-identically ([CANON.md](./CANON.md)).
@@ -55,7 +55,7 @@ Phase-4 **mosaic** mode (the `31` downsample look).
 
 | Billow — clouds | Billow — mosaic (experimental) |
 |---|---|
-| ![](../assets/iterations/v0.3-billow-clouds.png) | ![](../assets/iterations/v0.3-billow-mosaic.png) |
+| ![](../assets/renders/v0.3-billow-clouds.png) | ![](../assets/renders/v0.3-billow-mosaic.png) |
 
 Genesis's key was *opened a little* (4 reserved draws) with **zero pixel change** to any seed.
 
@@ -64,5 +64,5 @@ Genesis's key was *opened a little* (4 reserved draws) with **zero pixel change*
 ## Adding an entry
 
 When a change alters the look (a new engine, a new mode, a palette pass): render a labeled still
-into `assets/iterations/` (`node scripts/render.mjs frame <hash>` → copy from `.captures/`), then add
+into `assets/renders/` (`node scripts/render.mjs frame <hash>` → copy from `.captures/`), then add
 a section here with the image and a sentence on the intent. Keep the stills small and representative.
