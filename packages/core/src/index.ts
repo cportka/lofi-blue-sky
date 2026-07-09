@@ -12,6 +12,7 @@ export type { Sky, SkyOptions } from './engine.js';
 export { ENGINES, ENGINE_IDS, DEFAULT_ENGINE_ID, getEngine } from './engines/registry.js';
 export { GENESIS } from './engines/genesis/index.js';
 export { BILLOW } from './engines/billow/index.js';
+export { SQUALL } from './engines/squall/index.js';
 export type { Engine, EngineRenderer, BaseParams, Features } from './engines/types.js';
 
 // --- Genesis engine (the original slit-scan sunset) ---
@@ -25,6 +26,10 @@ export { randomHashByPolicy, rerollFeature, FEATURE_KEYS } from './explore.js';
 // --- Billow engine (rolling clouds) ---
 export { billowGenome, billowGenomeFromHash, billowFeatures, BILLOW_PALETTES } from './engines/billow/index.js';
 export type { BillowParams, BillowMode } from './engines/billow/index.js';
+
+// --- Squall engine (stateless datamosh) ---
+export { squallGenome, squallGenomeFromHash, squallFeatures, SQUALL_PALETTES } from './engines/squall/index.js';
+export type { SquallParams } from './engines/squall/index.js';
 
 // rng
 export { createRng, sfc32, xmur3, range, rangeInt, pick, weightedIndex, chance } from './rng.js';

@@ -6,9 +6,10 @@
 import type { Engine } from './types.js';
 import { GENESIS } from './genesis/index.js';
 import { BILLOW } from './billow/index.js';
+import { SQUALL } from './squall/index.js';
 
 /** All engines, in display order. The first is the default. */
-export const ENGINES: readonly Engine[] = [GENESIS, BILLOW];
+export const ENGINES: readonly Engine[] = [GENESIS, BILLOW, SQUALL];
 
 export const DEFAULT_ENGINE_ID = ENGINES[0]!.id;
 export const ENGINE_IDS: readonly string[] = ENGINES.map((e) => e.id);
