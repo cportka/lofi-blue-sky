@@ -3,7 +3,7 @@
  *   • switch sky engine (Genesis / Billow) with a chip; the same seed reinterprets under it,
  *   • live seed box (hash or g:engine:… token, applies automatically),
  *   • click the sky to toggle the HUD; click any attribute to reshuffle just that one (per engine),
- *   • ◀ ▶ undo/redo; ⧉ copy-with-check; png frame; loop = record one seamless loop as WebM.
+ *   • ◀ ▶ undo/redo; ⧉ copy-with-check; ↻ new sky. (Save a frame with the OS screenshot.)
  *
  * Full-screen + always looping. Never touches any engine's seed → params mapping (frozen; see
  * docs/CANON.md). A hand-tweaked sky is shared as an engine-tagged `g:engine:…` token.
@@ -33,7 +33,6 @@ const seedInput = $<HTMLInputElement>('seed');
 const backBtn = $<HTMLButtonElement>('back');
 const fwdBtn = $<HTMLButtonElement>('fwd');
 const copyBtn = $<HTMLButtonElement>('copy');
-const webmBtn = $<HTMLButtonElement>('webm');
 
 interface State {
   engineId: string;
@@ -45,7 +44,6 @@ const history: State[] = [];
 let hi = -1;
 let sky: Sky | null = null;
 let start = performance.now();
-let recording = false;
 
 const cur = (): State => history[hi]!;
 
@@ -152,17 +150,6 @@ function reshuffle(featureKey: string): void {
   apply({ engineId: cur().engineId, token: encodeSky(cur().engineId, p), params: p }, true);
 }
 
-function labelOf(token: string): string {
-  return isSkyToken(token) ? 'edited' : token.slice(0, 12);
-}
-function downloadBlob(blob: Blob, name: string): void {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = name;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-}
-
 // --- controls ----------------------------------------------------------------------------------
 canvas.addEventListener('click', () => document.body.classList.toggle('hud-hidden'));
 
@@ -201,43 +188,6 @@ copyBtn.addEventListener('click', async () => {
     }, 1200);
   } catch {
     seedInput.select();
-  }
-});
-
-$<HTMLButtonElement>('png').addEventListener('click', () => {
-  const b64 = canvas.toDataURL('image/png').split(',')[1]!;
-  const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
-  downloadBlob(new Blob([bytes], { type: 'image/png' }), `lofi-blue-sky_${cur().engineId}_${labelOf(cur().token)}.png`);
-});
-
-webmBtn.addEventListener('click', async () => {
-  if (recording || !sky || typeof MediaRecorder === 'undefined') return;
-  recording = true;
-  const restore = webmBtn.textContent;
-  webmBtn.disabled = true;
-  const L = sky.params.loopSeconds;
-  try {
-    const stream = canvas.captureStream(30);
-    const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
-    const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 8_000_000 });
-    const chunks: BlobPart[] = [];
-    rec.ondataavailable = (e) => {
-      if (e.data.size) chunks.push(e.data);
-    };
-    const stopped = new Promise<void>((res) => (rec.onstop = () => res()));
-    start = performance.now();
-    rec.start();
-    for (let s = Math.ceil(L); s > 0; s--) {
-      webmBtn.textContent = `● ${s}s`;
-      await new Promise((r) => setTimeout(r, 1000));
-    }
-    rec.stop();
-    await stopped;
-    downloadBlob(new Blob(chunks, { type: 'video/webm' }), `lofi-blue-sky_${cur().engineId}_${labelOf(cur().token)}.webm`);
-  } finally {
-    recording = false;
-    webmBtn.disabled = false;
-    webmBtn.textContent = restore;
   }
 });
 
