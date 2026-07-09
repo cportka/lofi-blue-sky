@@ -2,12 +2,13 @@
 
 A **sky** is produced by an **engine**: a self-contained algorithm with its own **key**
 (`hash → params`), shaders, and rarity features. Engines are swappable, so one core + one UI can ship
-more than one look. Today there are two:
+more than one look. Today there are three:
 
 | Engine | Look | Status |
 |--------|------|--------|
-| **Genesis** | horizontal slit-scan sunset (the `32__OG` look) | **frozen** — canonical, every seed byte-identical |
+| **Genesis** | horizontal slit-scan sunset (the `32__OG` look); **v2** adds grids, a clean finish, and block mosaics | **canonical** — each seed's DNA is locked; key at `keyVersion 2` |
 | **Billow** | rolling billowing clouds across a blue sky (toward `35`) | **young** — evolving; key reserves blank space |
+| **Squall** | stateless datamosh — a squall of signal corruption sweeps a calm sky (toward `13`) | **young, experimental** — cyan/magenta chroma tearing, seamless |
 
 ![Billow](../assets/renders/billow.png)
 
@@ -43,9 +44,15 @@ An engine's **key** is its `genome()` draw order — the determinism contract (s
   (bump `keyVersion`, MAJOR).
 - **Reserved blank draws.** A young engine draws a block of unused values at the end of its key
   (`BILLOW_RESERVED = 8`), so new params can fill that space later without shifting existing fields.
-- **Opening a key "a little".** You can *append* reserved draws to a mature key (Genesis gained
-  `GENESIS_RESERVED = 4` in v0.3.0) — because they're drawn last and unused by the shaders, **every
-  seed's pixels stay byte-identical** (the render goldens prove it). Only the params object grows.
+- **Opening a key "a little".** You can *append* reserved draws to a mature key (Genesis gained four
+  in v0.3.0) — because they're drawn last and unused by the shaders, **every seed's pixels stay
+  byte-identical** (the render goldens prove it). Only the params object grows.
+- **Spending reserved draws (the second stage).** Later you can give those blanks *meaning*. Genesis
+  v2 (v0.5.0) spent the first two of its four reserved draws on real geometry (`hbands`/`clean`/
+  `blocks`) and appended two fresh blanks (`GENESIS_RESERVED = 2`). The draw *positions* don't move,
+  so every field up to `loopSeconds` is byte-identical — each seed keeps its **DNA** — but the former
+  blanks now drive pixels, so this **is** a key change: bump `keyVersion` (1 → 2) and re-bless canon.
+  A seed whose draws land on the defaults (1 column, not-clean, not-blocks) is still pixel-identical.
 
 ## One engine per token; both in the app
 
@@ -64,7 +71,10 @@ on the right engine ([codec.ts](../packages/core/src/codec.ts)).
 
 Phase-4 glitch modes live as an **experimental** `mode` in Billow's key: `clouds` and `mosaic` (the
 `31` downsample look) are live; `sort` / `mosh` (feedback modes) are **reserved** — named but not yet
-implemented, held in the blank key space until the design settles. Genesis stays `bands`-only.
+implemented, held in the blank key space until the design settles. **Squall** is the datamosh
+direction realised as its own engine (the `13` look) rather than a Billow mode, so it keeps its own
+key and can evolve freely. Genesis's `mode` stays `bands`; its v2 variety rides on the geometry
+fields (`hbands`/`clean`/`blocks`), not a new mode.
 
 ## Adding an engine
 

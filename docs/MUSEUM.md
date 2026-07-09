@@ -57,6 +57,7 @@ are the ancestors of the generative engines:
 - **`32__OG`** — horizontal slit-scan sunset → **Genesis**.
 - **`35`** — datamosh blue sky + salmon clouds → **Billow** / a future sort mode.
 - **`31`** — olive/mauve downsample mosaic → the experimental **mosaic** mode.
+- **`13`** — cyan/magenta macroblock datamosh → **Squall** (the stateless-datamosh engine, v0.5.0).
 
 So the museum and the generator are two ends of one line: filmed sky → processed loop (here) →
 synthesized-from-a-hash (the [engines](./ENGINES.md)).
