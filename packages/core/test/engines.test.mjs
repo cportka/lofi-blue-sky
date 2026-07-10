@@ -56,12 +56,14 @@ test('Squall key is deterministic, in-range, and reserves blank space', () => {
   for (let i = 0; i < 300; i++) {
     const p = squallGenomeFromHash('squ-' + i);
     assert.ok(p.loopSeconds >= 20 && p.loopSeconds <= 34);
-    assert.ok(p.blocksX >= 6 && p.blocksX <= 20 && Number.isInteger(p.blocksX));
-    assert.ok(p.blocksY >= 6 && p.blocksY <= 20 && Number.isInteger(p.blocksY));
+    assert.ok(p.blocksX >= 4 && p.blocksX <= 18 && Number.isInteger(p.blocksX));
+    assert.ok(p.blocksY >= 4 && p.blocksY <= 18 && Number.isInteger(p.blocksY));
     assert.ok(p.steps >= 3 && p.steps <= 9 && Number.isInteger(p.steps)); // integer held-frames → seamless
     assert.ok(p.bursts >= 1 && p.bursts <= 3 && Number.isInteger(p.bursts)); // integer sweeps → seamless envelope
-    assert.ok(p.amount >= 0.35 && p.amount <= 0.9);
-    assert.ok(p.chroma === 0 || (p.chroma > 0 && p.chroma <= 0.5));
+    assert.ok(p.pulseCycles >= 1 && p.pulseCycles <= 3 && Number.isInteger(p.pulseCycles)); // integer → seamless
+    assert.ok(p.pulse >= 0.02 && p.pulse <= 0.08);
+    assert.ok(p.amount >= 0.12 && p.amount <= 0.62); // corruption skews light — mostly clean
+    assert.ok(p.chroma === 0 || (p.chroma > 0 && p.chroma <= 0.4));
     assert.equal(p.skyJitter.length, 5);
     assert.equal(p.reserved.length, SQUALL_RESERVED);
     for (const rv of p.reserved) assert.ok(rv >= 0 && rv < 1);

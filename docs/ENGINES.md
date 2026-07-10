@@ -6,9 +6,9 @@ more than one look. Today there are three:
 
 | Engine | Look | Status |
 |--------|------|--------|
-| **Genesis** | horizontal slit-scan sunset (the `32__OG` look); **v2** adds grids, a clean finish, and block mosaics | **canonical** — each seed's DNA is locked; key at `keyVersion 2` |
-| **Billow** | rolling billowing clouds across a blue sky (toward `35`) | **young** — evolving; key reserves blank space |
-| **Squall** | stateless datamosh — a squall of signal corruption sweeps a calm sky (toward `13`) | **young, experimental** — cyan/magenta chroma tearing, seamless |
+| **Genesis** | a grid of flat sky-**pixels** that pulse in colour (`1×1 → 2×2 → 4×4 → 1×N`); clean by default, the slit-scan smear is the rare distorted look (the `32__OG` lineage) | **canonical** — each seed's DNA is locked; key at `keyVersion 3` |
+| **Billow** | rolling billowing clouds across a blue sky (toward `35`) — clean, smooth by default | **young** — `keyVersion 2`; key reserves blank space |
+| **Squall** | a clean pixel sky a rare squall of datamosh sweeps through (toward `13`) | **young, experimental** — `keyVersion 2`; cyan/magenta tearing, seamless |
 
 ![Billow](../assets/renders/billow.png)
 
@@ -51,8 +51,12 @@ An engine's **key** is its `genome()` draw order — the determinism contract (s
   v2 (v0.5.0) spent the first two of its four reserved draws on real geometry (`hbands`/`clean`/
   `blocks`) and appended two fresh blanks (`GENESIS_RESERVED = 2`). The draw *positions* don't move,
   so every field up to `loopSeconds` is byte-identical — each seed keeps its **DNA** — but the former
-  blanks now drive pixels, so this **is** a key change: bump `keyVersion` (1 → 2) and re-bless canon.
-  A seed whose draws land on the defaults (1 column, not-clean, not-blocks) is still pixel-identical.
+  blanks now drive pixels, so this **is** a key change: bump `keyVersion` and re-bless canon.
+- **Re-thresholding (the third stage).** Even after a draw carries meaning you can *re-tune* how it
+  maps to pixels. Genesis v3 (v0.6.0) re-thresholded the same `g0..g3` draws so a clean pulsing pixel
+  grid is the default, and reduced the post-crush on clean seeds. Same DNA, same draw positions, new
+  look — again a `keyVersion` bump (2 → 3), re-blessed goldens. The discipline is unchanged: never
+  reorder or re-count the draws; only re-interpret them, and only pre-mint.
 
 ## One engine per token; both in the app
 

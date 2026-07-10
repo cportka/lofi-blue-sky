@@ -82,7 +82,12 @@ const PROPOSE: Record<string, (g: Genome, r: R) => Partial<Genome>> = {
       : { blocks: true, blocksN: someBlocksN() };
   },
   'Band Density': (g, r) => ({ bands: g.bands >= 24 ? ui(r, 8, 23) : ui(r, 24, 48) }),
-  Finish: (g) => ({ clean: !g.clean }),
+  // Toggling the finish also swaps the bit-crush so the look actually changes: clean = flat, exact
+  // pixels (crush near zero); distorted = smear + full crush.
+  Finish: (g, r) =>
+    g.clean
+      ? { clean: false, dither: uf(r, 0.45, 0.9), grain: uf(r, 0.2, 0.5), chroma: r() < 0.5 ? uf(r, 0.25, 0.6) : 0, rowDisplace: uf(r, 0.02, 0.06) }
+      : { clean: true, dither: uf(r, 0.0, 0.05), grain: uf(r, 0.0, 0.06), chroma: 0 },
   Drift: (g, r) => {
     const flowing = g.bandDrift + g.rowDisplace + (g.driftCycles - 1) * 0.03 > 0.09;
     return flowing

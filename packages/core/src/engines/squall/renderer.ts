@@ -95,6 +95,8 @@ export class SquallRenderer implements EngineRenderer<SquallParams> {
     this.squall.f('uHorizon', p.horizon);
     this.squall.f('uSunX', p.sunX);
     this.squall.f('uSunStrength', p.sunStrength);
+    this.squall.f('uPulse', p.pulse);
+    this.squall.f('uPulseCycles', p.pulseCycles);
     this.squall.f('uBlocksX', p.blocksX);
     this.squall.f('uBlocksY', p.blocksY);
     this.squall.f('uSteps', p.steps);

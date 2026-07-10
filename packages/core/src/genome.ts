@@ -56,21 +56,22 @@ export interface Genome {
   bands: number;
   /**
    * Horizontal divisions (columns) laid over the bands — the second axis of the pixel split. `1`
-   * is the classic single-column slit-scan (preferred, ~56% of seeds); larger values (up to ~40,
-   * skewed small) weave the sky into a `hbands × bands` grid. New in v2.
+   * is the classic single-column bars (the most common, "1×N"); larger values (up to ~32, skewed
+   * small) weave the sky into a tidy `hbands × bands` grid. New in v2.
    */
   hbands: number;
   /**
-   * Clean finish — render crisp, flat bars/pixels with drift and smear switched off (the calm,
-   * poster-like look). Distorted (drift + smear on) otherwise. ~28% of seeds. New in v2.
+   * Clean pixels — the **default** (~75%): crisp, exact flat cells that pulse in colour over the
+   * loop, with smear and gradient-bleed off and the bit-crush (dither/grain/chroma) pulled right
+   * down. `false` is the rarer distorted/glitch look (smear + full crush). New in v2; the norm in v3.
    */
   clean: boolean;
   /**
-   * Square-pixel mosaic — override bands/hbands with a `blocksN × blocksN` grid of large pixels
-   * (the downsample look). ~14% of seeds. New in v2.
+   * Square pixel-grid mosaic — override bands/hbands with a `blocksN × blocksN` grid of large
+   * pixels (the 1×1 → 2×2 → 4×4 lineage). ~30% of seeds. New in v2.
    */
   blocks: boolean;
-  /** Grid size for {@link blocks} mode, 2 → ~40 (skewed small). New in v2. */
+  /** Grid size for {@link blocks} mode, 1 (the origin) → ~24 (skewed small). New in v2. */
   blocksN: number;
   /** Per-band drift phase seed, 0 → 1. */
   bandPhase: number;
@@ -149,34 +150,42 @@ export function genome(rand: Rng): Genome {
   const sortAxis: SortAxis = chance(rand, 0.7) ? 'vertical' : 'horizontal';
   const moshDecay = range(rand, 0.85, 0.98);
 
-  // colour + post
+  // colour + post (raw draws — finalised below once we know whether this is a clean pixel sky)
   const quantLevels = rangeInt(rand, 5, 16);
-  const grain = range(rand, 0.04, 0.5);
-  const dither = range(rand, 0.2, 0.9);
+  const grainRaw = range(rand, 0.04, 0.5);
+  const ditherRaw = range(rand, 0.2, 0.9);
   // Draw both rolls unconditionally so the draw COUNT never depends on an earlier value — that is
   // the fixed-draw-count half of the determinism contract. Then gate the magnitude.
   const chromaOn = chance(rand, 0.45);
   const chromaMag = range(rand, 0.0, 0.6);
-  const chroma = chromaOn ? chromaMag : 0.0;
+  const chromaRaw = chromaOn ? chromaMag : 0.0;
   const vignette = range(rand, 0.1, 0.6);
 
   // loop
   const loopSeconds = range(rand, 20, 34);
 
-  // v2 structure — spent from what were the first two reserved draws (g0..g3), so the draw
-  // POSITIONS are unchanged and every field above is byte-identical to v1. These now drive pixels.
+  // v3 structure — a **clean pulsating pixel grid** is the default look; distortion is the rare
+  // seasoning. Derived from what were the first two reserved draws (g0..g3), so the draw POSITIONS
+  // are unchanged and every field above is byte-identical. keyVersion 3.
   const g0 = rand();
   const g1 = rand();
   const g2 = rand();
   const g3 = rand();
-  // Horizontal split (columns). Prefer 1 — the classic single-column slit-scan ("20×1"). Otherwise
-  // fan out to a `hbands × bands` grid, 2..40, skewed small so wide grids stay rare and special.
-  const hbands = g0 < 0.55 ? 1 : 2 + Math.floor(Math.pow((g0 - 0.55) / 0.45, 1.8) * 38);
-  // Clean finish — crisp flat bars/pixels, no drift or smear.
-  const clean = g1 >= 0.72;
-  // Square-pixel mosaic — a `blocksN × blocksN` grid of large pixels, overriding bands/hbands.
-  const blocks = g2 < 0.14;
-  const blocksN = 2 + Math.floor(Math.pow(g3, 2.0) * 38); // 2..40, strongly skewed small
+  // Horizontal split (columns). 1 = the classic single-column bars ("1×N", e.g. 1×9, 1×20), the
+  // most common; otherwise a tidy `hbands × bands` grid, skewed small.
+  const hbands = g0 < 0.5 ? 1 : 2 + Math.floor(Math.pow((g0 - 0.5) / 0.5, 2.0) * 30); // 1..32
+  // Clean is the **norm** — crisp, exact flat pixels (~75%). The rest are the rarer distorted look.
+  const clean = g1 >= 0.25;
+  // Square pixel-grid mosaic — the 1×1 → 2×2 → 4×4 pixel-multiplication lineage. ~30% of seeds.
+  const blocks = g2 < 0.3;
+  // Grid size: 1×1 is the origin (a single pulsing colour — rare); otherwise small tidy squares.
+  const blocksN = g3 < 0.04 ? 1 : 2 + Math.floor(Math.pow((g3 - 0.04) / 0.96, 2.2) * 22); // 1..24
+
+  // Clean pixels read as flat, exact colour, so pull the "bit-crush" (dither/grain/chroma) nearly
+  // to nothing; distorted seeds keep the full crush. A value remap of already-drawn rolls, not a draw.
+  const grain = clean ? grainRaw * 0.12 : grainRaw;
+  const dither = clean ? ditherRaw * 0.06 : ditherRaw;
+  const chroma = clean ? 0.0 : chromaRaw;
 
   // reserved blank draws — fresh headroom to open the key up again later without shifting fields.
   const reserved: number[] = [];

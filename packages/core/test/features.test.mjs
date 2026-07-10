@@ -39,16 +39,16 @@ test('features discriminate at their thresholds', () => {
   assert.equal(deriveFeatures(mk({ hbands: 1, blocks: false })).Split, 'Bars');
   assert.equal(deriveFeatures(mk({ hbands: 8, blocks: false })).Split, 'Grid');
   assert.equal(deriveFeatures(mk({ hbands: 8, blocks: true })).Split, 'Blocks');
-  // Finish tracks clean; clean also forces Drift to Still
+  // Finish tracks clean
   assert.equal(deriveFeatures(mk({ clean: false })).Finish, 'Distorted');
   assert.equal(deriveFeatures(mk({ clean: true })).Finish, 'Clean');
-  assert.equal(deriveFeatures(mk({ clean: true, bandDrift: 0.05, rowDisplace: 0.045 })).Drift, 'Still');
   // Band Density at 24
   assert.equal(deriveFeatures(mk({ bands: 23 }))['Band Density'], 'Wide');
   assert.equal(deriveFeatures(mk({ bands: 24 }))['Band Density'], 'Fine');
-  // Drift at motion 0.09
-  assert.equal(deriveFeatures(mk({ bandDrift: 0.04, rowDisplace: 0.04 })).Drift, 'Still'); // 0.08
+  // Drift at pulse-strength 0.06 (clean drops the smear term, so it reads calmer)
+  assert.equal(deriveFeatures(mk({ bandDrift: 0.02, rowDisplace: 0.02 })).Drift, 'Still'); // 0.04
   assert.equal(deriveFeatures(mk({ bandDrift: 0.05, rowDisplace: 0.045 })).Drift, 'Flowing'); // 0.095
+  assert.equal(deriveFeatures(mk({ clean: true, bandDrift: 0.05, rowDisplace: 0.045 })).Drift, 'Still'); // 0.05, smear ignored
   // Processing across both thresholds (0.55, 1.0)
   assert.equal(deriveFeatures(mk({ grain: 0.05, dither: 0.2, quantLevels: 16 })).Processing, 'Clean'); // 0.15
   assert.equal(deriveFeatures(mk({ grain: 0.3, dither: 0.4, quantLevels: 14 })).Processing, 'Grained'); // 0.56

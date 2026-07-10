@@ -28,11 +28,12 @@ export function deriveFeatures(g: Genome): Features {
 
   const bandDensity = g.bands >= 24 ? 'Fine' : 'Wide';
 
-  // Clean finish (v2) renders flat cells with drift + smear off, so it also reads as Still.
+  // Clean pixels (the norm) vs. the rarer distorted/smeared look.
   const finish = g.clean ? 'Clean' : 'Distorted';
 
-  const motion = g.bandDrift + g.rowDisplace + (g.driftCycles - 1) * 0.03;
-  const drift = g.clean || motion <= 0.09 ? 'Still' : 'Flowing';
+  // Every sky pulses now; Drift is the *strength* of that pulse (plus the smear on distorted skies).
+  const motion = g.bandDrift + (g.driftCycles - 1) * 0.02 + (g.clean ? 0 : g.rowDisplace);
+  const drift = motion > 0.06 ? 'Flowing' : 'Still';
 
   const wear = g.grain + g.dither * 0.5 + g.chroma + (16 - g.quantLevels) * 0.03;
   const processing = wear > 1.0 ? 'Degraded' : wear > 0.55 ? 'Grained' : 'Clean';

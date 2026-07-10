@@ -22,32 +22,32 @@ const PROPOSE: Record<string, (p: SquallParams, r: R) => Partial<SquallParams>> 
     return { skyPaletteId: pick.id, skyJitter: Array.from({ length: MAX_SQUALL_STOPS }, () => uf(r, -0.05, 0.05)) };
   },
   Corruption: (p, r) =>
-    p.amount < 0.5
-      ? { amount: uf(r, 0.55, 0.9) }
-      : { amount: uf(r, 0.35, 0.48) },
+    p.amount < 0.3
+      ? { amount: uf(r, 0.34, 0.62) }
+      : { amount: uf(r, 0.13, 0.27) },
   Squalls: (p, r) => ({ bursts: ((p.bursts - 1 + rangeInt(r, 1, 2)) % 3) + 1 }),
   Blocks: (p, r) => {
     const ratio = Math.max(p.blocksX, p.blocksY) / Math.min(p.blocksX, p.blocksY);
     if (ratio > 1.6) {
-      const n = rangeInt(r, 8, 16);
+      const n = rangeInt(r, 6, 14);
       return { blocksX: n, blocksY: n }; // square-ish → Coarse/Fine
     }
-    return p.blocksX <= 10
-      ? { blocksX: rangeInt(r, 13, 20), blocksY: rangeInt(r, 13, 20) } // Coarse → Fine
-      : { blocksX: rangeInt(r, 6, 10), blocksY: rangeInt(r, 14, 20) }; // Fine → Torn (lopsided)
+    return p.blocksX <= 9
+      ? { blocksX: rangeInt(r, 12, 18), blocksY: rangeInt(r, 12, 18) } // Coarse → Fine
+      : { blocksX: rangeInt(r, 4, 8), blocksY: rangeInt(r, 13, 18) }; // Fine → Torn (lopsided)
   },
   Tearing: (p, r) => (p.tear > 0.032 ? { tear: uf(r, 0.01, 0.028) } : { tear: uf(r, 0.036, 0.05) }),
   'Signal Lost': (p, r) => {
-    const on = p.amount > 0.8 && p.bloom > 0.7 && p.steps >= 6;
+    const on = p.amount > 0.52 && p.bloom > 0.6 && p.steps >= 6;
     return on
-      ? { amount: uf(r, 0.4, 0.7), bloom: uf(r, 0.35, 0.6) }
-      : { amount: uf(r, 0.82, 0.9), bloom: uf(r, 0.72, 0.85), steps: rangeInt(r, 6, 9) };
+      ? { amount: uf(r, 0.2, 0.45), bloom: uf(r, 0.3, 0.55) }
+      : { amount: uf(r, 0.55, 0.62), bloom: uf(r, 0.64, 0.75), steps: rangeInt(r, 6, 9) };
   },
   'Clear Skies': (p, r) => {
-    const on = p.amount < 0.45 && p.bloom < 0.55;
+    const on = p.amount < 0.24 && p.bloom < 0.5;
     return on
-      ? { amount: uf(r, 0.5, 0.85), bloom: uf(r, 0.58, 0.85) }
-      : { amount: uf(r, 0.35, 0.43), bloom: uf(r, 0.35, 0.52) };
+      ? { amount: uf(r, 0.32, 0.6), bloom: uf(r, 0.55, 0.75) }
+      : { amount: uf(r, 0.13, 0.22), bloom: uf(r, 0.32, 0.48) };
   },
 };
 
@@ -67,8 +67,8 @@ export const SQUALL: Engine<SquallParams> = {
   id: 'squall',
   name: 'Squall',
   description:
-    'A stateless datamosh — a calm sky that a squall of signal corruption sweeps through and clears. Macroblock motion error, cyan/magenta chroma tearing, held-frame snaps. Young and experimental.',
-  keyVersion: 1,
+    'A clean grid of sky-pixels that a rare squall of datamosh sweeps through and clears. Mostly the calm, pulsing pixel sky; occasionally macroblock motion error and cyan/magenta chroma tearing. Young and experimental.',
+  keyVersion: 2,
   genome: squallGenome,
   features: squallFeatures,
   createRenderer: (gl, iw, ih) => new SquallRenderer(gl, iw, ih),
