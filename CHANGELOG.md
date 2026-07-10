@@ -4,6 +4,29 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.6.0] - 2026-07-10
+
+The whole family becomes **clean pulsating pixel-grids by default** — rooted in the project's
+origin (a 1×1 sky-pixel, then 2×2, 4×4, 1×9 …). Motion returns; the glitch/bit-crush becomes rare.
+
+### Changed
+- **Genesis (key → v3): clean is the norm, and it pulses.** A sky is a grid of flat, exact pixels
+  whose colour **pulses** over the loop (the sample slides up and down the gradient) — clean pixels
+  are now ~75% of seeds (was ~28%), and clean no longer means *static* (the "barely moving" bug:
+  clean had switched drift off — now it keeps the pulse, only the smear is off). On clean seeds the
+  ordered-dither/grain/chroma "bit-crush" is pulled right down, so the pixels read as flat, exact
+  colour; the venetian-blind smear + full crush is the rarer **distorted** minority. Pixel-grid
+  splits are more prominent (blocks ~30%), size skewed small, and the **1×1 origin** (a single
+  pulsing colour) is a rare possibility. keyVersion 2 → 3; canon re-blessed (DNA byte-identical).
+- **Squall (key → v2): majority clean.** The calm base is now itself a clean grid of pulsing
+  sky-pixels; the datamosh is a **rare** spike — corruption fraction skews light and the burst
+  envelope is punchier, so most of the loop (and most seeds) is the clean pixel sky.
+- **Billow (key → v2): leaner crush.** Lighter grain/dither and rarer chroma, so most Billow skies
+  are clean, smooth clouds.
+- **HUD:** the **museum ↗** link moved up into the header row, left of the ◀ ▶ arrows.
+- **Featured stills regenerated** (`assets/renders/hero`, `filmstrip`, `billow`, `v0.6-*`) to the
+  new clean-pixel look; added `scripts/make-stills.mjs` to regenerate them.
+
 ## [0.5.0] - 2026-07-09
 
 Genesis grows a second axis, a third engine arrives, and the generator's HUD is decluttered —

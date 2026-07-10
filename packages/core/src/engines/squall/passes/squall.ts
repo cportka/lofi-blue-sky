@@ -27,6 +27,8 @@ uniform vec3  uCold;
 uniform float uHorizon;
 uniform float uSunX;
 uniform float uSunStrength;
+uniform float uPulse;
+uniform float uPulseCycles;
 uniform float uBlocksX;
 uniform float uBlocksY;
 uniform float uSteps;
@@ -49,16 +51,23 @@ vec3 skyRamp(float t) {
   return c;
 }
 
-// The calm sky before corruption — a vertical ramp with a soft low sun glow.
+// The calm sky before corruption — itself a clean grid of flat sky-pixels, each breathing in
+// colour over the loop (integer cycles → seamless). This is the "majority clean" base a rare
+// squall of datamosh sweeps through.
 vec3 baseSky(vec2 uv) {
-  float y = uv.y;
+  vec2 grid = vec2(max(1.0, floor(uBlocksX + 0.5)), max(1.0, floor(uBlocksY + 0.5)));
+  vec2 cell = (floor(uv * grid) + 0.5) / grid; // this pixel's cell centre
+  float pc = max(1.0, floor(uPulseCycles + 0.5));
+  float rseed = hash11(floor(uv.y * grid.y) + 1.0);
+  float pulse = uPulse * sin(TAU * (pc * uLoopT + rseed)); // the pixel's colour breathe
+  float y = clamp(cell.y + pulse, 0.0, 1.0);
   float warped = y < uHorizon
     ? (y / max(1e-3, uHorizon)) * 0.5
     : 0.5 + (y - uHorizon) / max(1e-3, 1.0 - uHorizon) * 0.5;
   vec3 col = skyRamp(warped);
-  float d = uv.y - uHorizon * 0.7;
+  float d = cell.y - uHorizon * 0.7;
   float glow = exp(-d * d * 40.0) * uSunStrength;
-  float hx = exp(-pow((uv.x - uSunX) * 1.4, 2.0) * 1.2);
+  float hx = exp(-pow((cell.x - uSunX) * 1.4, 2.0) * 1.2);
   col += skyRamp(0.05) * glow * (0.5 + 0.5 * hx);
   return col;
 }

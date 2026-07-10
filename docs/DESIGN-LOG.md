@@ -92,6 +92,32 @@ loop phase (the envelope is exactly 0 at the seam), so it's seamless with no fee
 And the HUD was decluttered — the WebM loop and png buttons removed, "new sky" folded into a bare ↻
 in the seed row.
 
+## v0.6.0 — the pixels come home (clean, and pulsing)
+
+A correction and a homecoming. v0.5's Genesis leaned on the *distorted* look — most seeds carried
+the ordered-dither bit-crush — and the clean mode had accidentally switched the motion **off**, so
+clean skies sat there stationary. v0.6 puts the project back on its origin: **lofi blue sky began as
+a single 1×1 sky-pixel pulsing with colour, then 2×2, 4×4, 1×9 …** — clean because the pixels are
+*exact*, just multiplied up.
+
+So now a sky is a grid of flat, exact pixels whose colour **pulses** over the loop — the sample
+slides up and down the sunset gradient, and with the crush pulled down each pixel reads as a clean,
+breathing block of colour. Clean is the default (~75%); the venetian-blind smear + bit-crush is the
+rare, distorted minority. The hero and filmstrip above were re-shot to this look.
+
+| clean pixel blocks (the hero) | clean bars | blue pixels |
+|---|---|---|
+| ![](../assets/renders/v0.6-genesis-blocks.png) | ![](../assets/renders/v0.6-genesis-bars.png) | ![](../assets/renders/v0.6-genesis-blue.png) |
+
+The same correction rippled out: **Squall's** calm base became a clean grid of pulsing pixels with
+the datamosh as a rare passing spike (not a constant wash), and **Billow** dropped most of its crush
+to clean, smooth clouds. Genesis's key went to **v3**, Squall and Billow to **v2** — all DNA-stable
+where it could be, re-blessed where it couldn't.
+
+| Squall — a passing squall | Billow — clean clouds |
+|---|---|
+| ![](../assets/renders/v0.6-squall.png) | ![](../assets/renders/billow.png) |
+
 ---
 
 ## Adding an entry

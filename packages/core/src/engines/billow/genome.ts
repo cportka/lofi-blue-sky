@@ -66,11 +66,12 @@ export function billowGenome(rand: Rng): BillowParams {
   const mode: BillowMode = weightedIndex(rand, [0.82, 0.18]) === 1 ? 'mosaic' : 'clouds';
   const tile = rangeInt(rand, 4, 14);
 
-  const quantLevels = rangeInt(rand, 6, 18);
-  const grain = range(rand, 0.03, 0.35);
-  const dither = range(rand, 0.15, 0.7);
-  const chroma = chance(rand, 0.35) ? range(rand, 0.0, 0.45) : 0.0;
-  const vignette = range(rand, 0.08, 0.5);
+  // Lean clean: most Billow skies are clean, smooth clouds — the crush is light and chroma rare.
+  const quantLevels = rangeInt(rand, 8, 20);
+  const grain = range(rand, 0.02, 0.2);
+  const dither = range(rand, 0.1, 0.4);
+  const chroma = chance(rand, 0.2) ? range(rand, 0.0, 0.3) : 0.0;
+  const vignette = range(rand, 0.08, 0.45);
 
   const reserved: number[] = [];
   for (let i = 0; i < BILLOW_RESERVED; i++) reserved.push(rand());

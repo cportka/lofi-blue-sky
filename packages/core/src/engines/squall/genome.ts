@@ -23,6 +23,9 @@ export interface SquallParams extends BaseParams {
   horizon: number;
   sunX: number;
   sunStrength: number;
+  // the calm base is a clean grid of flat sky-pixels that pulse in colour over the loop
+  pulse: number; // colour-pulse amplitude of the clean pixels
+  pulseCycles: number; // integer pulse cycles per loop (seamless)
   // datamosh grid + timing
   blocksX: number; // macroblock columns
   blocksY: number; // macroblock rows
@@ -52,24 +55,28 @@ export function squallGenome(rand: Rng): SquallParams {
   const horizon = range(rand, 0.3, 0.55);
   const sunX = range(rand, 0.2, 0.8);
   const sunStrength = range(rand, 0.1, 0.6);
+  const pulse = range(rand, 0.02, 0.08); // gentle colour breathe of the clean pixels
+  const pulseCycles = rangeInt(rand, 1, 3); // integer → seamless
 
   // Coarse macroblocks like a low-bitrate codec — usually roughly square, sometimes lopsided.
-  const blocksX = rangeInt(rand, 6, 20);
-  const blocksY = chance(rand, 0.6) ? blocksX : rangeInt(rand, 6, 20);
+  const blocksX = rangeInt(rand, 4, 18);
+  const blocksY = chance(rand, 0.65) ? blocksX : rangeInt(rand, 4, 18);
   const steps = rangeInt(rand, 3, 9); // integer held-frames → seamless snaps
   const bursts = rangeInt(rand, 1, 3); // integer sweeps → env returns to clear at the seam
-  const sharpness = range(rand, 1.4, 4.0);
-  const amount = range(rand, 0.35, 0.9);
+  // Punchier envelope so the squall is a brief spike — the sky is CLEAN most of the loop.
+  const sharpness = range(rand, 2.6, 6.0);
+  // Corruption is the rare seasoning: the fraction of blocks that go corrupt skews low.
+  const amount = 0.12 + Math.pow(rand(), 1.8) * 0.5; // 0.12..0.62, skewed low
   const motion = range(rand, 0.02, 0.14);
   const tear = range(rand, 0.01, 0.05);
-  const bloom = range(rand, 0.35, 0.85);
-  const streak = range(rand, 0.0, 0.6);
+  const bloom = range(rand, 0.3, 0.75);
+  const streak = range(rand, 0.0, 0.5);
 
   const quantLevels = rangeInt(rand, 6, 18);
-  const grain = range(rand, 0.04, 0.4);
-  const dither = range(rand, 0.2, 0.8);
-  const chroma = chance(rand, 0.4) ? range(rand, 0.0, 0.5) : 0.0;
-  const vignette = range(rand, 0.08, 0.5);
+  const grain = range(rand, 0.03, 0.22); // lighter crush — the clean sky dominates
+  const dither = range(rand, 0.1, 0.5);
+  const chroma = chance(rand, 0.28) ? range(rand, 0.0, 0.4) : 0.0;
+  const vignette = range(rand, 0.08, 0.45);
 
   const reserved: number[] = [];
   for (let i = 0; i < SQUALL_RESERVED; i++) reserved.push(rand());
@@ -82,6 +89,8 @@ export function squallGenome(rand: Rng): SquallParams {
     horizon,
     sunX,
     sunStrength,
+    pulse,
+    pulseCycles,
     blocksX,
     blocksY,
     steps,

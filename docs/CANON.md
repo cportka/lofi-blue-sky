@@ -8,9 +8,11 @@ This doc draws the line between what is frozen and what is free to evolve.
 **opened** — most gently by appending reserved draws (pixels byte-identical), and, once, by
 *spending* those reserved draws to give them meaning (a `keyVersion` bump). The rule below binds
 **at mint**; until then, a key change is allowed if it bumps `keyVersion` and preserves each seed's
-**DNA** (every draw *before* the reserved block). Genesis is currently at **`keyVersion 2`**: v2
-spent two of its four reserved draws on the clean/grid/block geometry (v0.5.0) — same DNA per seed,
-new geometry overlay. See [ENGINES.md](./ENGINES.md#keys-versions-and-reserved-space).
+**DNA** (every draw *before* the reserved block). Genesis is currently at **`keyVersion 3`**: v2
+spent two reserved draws on the clean/grid/block geometry (v0.5.0); v3 (v0.6.0) re-thresholded those
+same draws so a **clean pulsing pixel grid** is the default and the bit-crush is pulled down on clean
+seeds — same DNA per seed, a new finish/geometry overlay. (Billow and Squall are at `keyVersion 2`,
+still young and unfrozen.) See [ENGINES.md](./ENGINES.md#keys-versions-and-reserved-space).
 
 ## Frozen at mint (the seed → pixels contract)
 
@@ -39,13 +41,13 @@ If you change a shader or the genome, these fail on purpose. That failure is the
 
 Held as regression anchors (add your favourites here — pin both the genome and the pixels):
 
-| seed | look (under Genesis v2) |
+| seed | look (under Genesis v3) |
 |------|------|
-| `00f50f353cf56cfa55f3b32404db3196e7cef86e37bd4b0fbca9304a8dd6097f` | sodium sunset · **clean** bars · perfect horizon |
-| `3ebed465933f11af41fb9f999635ca11ea55c1357cdcba0f3d4bc11f9de5ff64` | olive sky · woven into a 26-column **grid** |
+| `00f50f353cf56cfa55f3b32404db3196e7cef86e37bd4b0fbca9304a8dd6097f` | sodium sunset · **clean** pulsing bars · perfect horizon |
+| `3ebed465933f11af41fb9f999635ca11ea55c1357cdcba0f3d4bc11f9de5ff64` | olive sky · woven into a **clean 21-column grid** |
 
 `canon.test.mjs` also asserts each pick's **pre-reserved DNA** (palette, bands, horizon, …) is
-byte-identical to v1 — the v2 overlay changed the finish/geometry, never the DNA.
+byte-identical to v1 — the v2/v3 overlay changed the finish/geometry, never the DNA.
 
 ## Free to move (never changes what a hash renders)
 

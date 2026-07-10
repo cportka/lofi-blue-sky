@@ -15,8 +15,8 @@ export const GENESIS: Engine<Genome> = {
   id: 'genesis',
   name: 'Genesis',
   description:
-    'The original — a horizontal slit-scan sunset. Quantized bands drift in a venetian-blind reveal over a dusty gradient; v2 opens a second (horizontal) split, a clean finish, and a block mosaic.',
-  keyVersion: 2,
+    'The original — a grid of flat sky-pixels that pulse in colour over a seamless loop, in the 1×1 → 2×2 → 4×4 → 1×N lineage. Clean, exact pixels by default; the venetian-blind slit-scan smear is the rarer distorted look.',
+  keyVersion: 3,
   genome: genesisGenome,
   features: deriveFeatures,
   createRenderer(gl, iw, ih): EngineRenderer<Genome> {

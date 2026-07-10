@@ -24,7 +24,7 @@ const GOLDEN = {
   hbands: 1,
   clean: false,
   blocks: false,
-  blocksN: 13,
+  blocksN: 7,
   bandPhase: 0.5071672464255244,
   bandDrift: 0.07815468958346172,
   rowDisplace: 0.03513844524510205,
@@ -66,11 +66,11 @@ const GOLDEN_VECTORS = {
     stopJitter: [0.057708084359765044, -0.0051770644728094325, -0.013355187932029368,
       -0.004327639639377594, 0.05123597390949726, -0.04592280942946672],
     horizon: 0.4017001429200172, sunElevation: 0.5773192049912177, sunStrength: 0.27621843698434534,
-    bands: 9, hbands: 4, clean: true, blocks: false, blocksN: 15,
+    bands: 9, hbands: 4, clean: true, blocks: true, blocksN: 8,
     bandPhase: 0.6816464364528656, bandDrift: 0.035924939919495955,
     rowDisplace: 0.01323959418106824, driftCycles: 1, tile: 12, sortThreshold: 0.6664858225570061,
-    sortAxis: 'horizontal', moshDecay: 0.8693750870763324, quantLevels: 8, grain: 0.09093006900046022,
-    dither: 0.42671795743517577, chroma: 0, vignette: 0.4436766439117491, loopSeconds: 23.383221368771046,
+    sortAxis: 'horizontal', moshDecay: 0.8693750870763324, quantLevels: 8, grain: 0.010911608280055225,
+    dither: 0.025603077446110546, chroma: 0, vignette: 0.4436766439117491, loopSeconds: 23.383221368771046,
     reserved: [0.3182834356557578, 0.3021326712332666],
   },
   'seed-3': {
@@ -78,11 +78,11 @@ const GOLDEN_VECTORS = {
     stopJitter: [-0.002698839101940395, -0.056407305216416716, -0.04179643026553094,
       -0.004335041223093868, -0.03517482270486653, 0.04921595804393292],
     horizon: 0.40009025782346724, sunElevation: 0.5037014248827472, sunStrength: 0.7796804954996333,
-    bands: 44, hbands: 5, clean: true, blocks: false, blocksN: 13,
+    bands: 44, hbands: 5, clean: true, blocks: true, blocksN: 7,
     bandPhase: 0.39475096575915813, bandDrift: 0.048222664415370674,
     rowDisplace: 0.054802955766208465, driftCycles: 3, tile: 9, sortThreshold: 0.447101808085572,
-    sortAxis: 'vertical', moshDecay: 0.9698582527227699, quantLevels: 6, grain: 0.4358113253349438,
-    dither: 0.22780112745240333, chroma: 0.5315904050599783, vignette: 0.13846778790466488,
+    sortAxis: 'vertical', moshDecay: 0.9698582527227699, quantLevels: 6, grain: 0.05229735904019326,
+    dither: 0.0136680676471442, chroma: 0, vignette: 0.13846778790466488,
     loopSeconds: 32.79398643737659,
     reserved: [0.29602953302673995, 0.023686108645051718],
   },
@@ -106,10 +106,10 @@ test('every generated genome is fully in-range and well-formed', () => {
     inRange(g.sunElevation, g.horizon - 0.05, g.horizon + 0.18, 'sunElevation');
     inRange(g.sunStrength, 0.15, 0.85, 'sunStrength');
     assert.ok(g.bands >= 8 && g.bands <= 48 && Number.isInteger(g.bands), `bands ${g.bands}`);
-    assert.ok(g.hbands >= 1 && g.hbands <= 40 && Number.isInteger(g.hbands), `hbands ${g.hbands}`);
+    assert.ok(g.hbands >= 1 && g.hbands <= 32 && Number.isInteger(g.hbands), `hbands ${g.hbands}`);
     assert.equal(typeof g.clean, 'boolean');
     assert.equal(typeof g.blocks, 'boolean');
-    assert.ok(g.blocksN >= 2 && g.blocksN <= 40 && Number.isInteger(g.blocksN), `blocksN ${g.blocksN}`);
+    assert.ok(g.blocksN >= 1 && g.blocksN <= 24 && Number.isInteger(g.blocksN), `blocksN ${g.blocksN}`);
     inRange(g.bandPhase, 0, 1, 'bandPhase');
     inRange(g.bandDrift, 0.015, 0.09, 'bandDrift');
     inRange(g.rowDisplace, 0.0, 0.06, 'rowDisplace');
@@ -119,8 +119,10 @@ test('every generated genome is fully in-range and well-formed', () => {
     assert.ok(g.sortAxis === 'vertical' || g.sortAxis === 'horizontal');
     inRange(g.moshDecay, 0.85, 0.98, 'moshDecay');
     assert.ok(g.quantLevels >= 5 && g.quantLevels <= 16 && Number.isInteger(g.quantLevels));
-    inRange(g.grain, 0.04, 0.5, 'grain');
-    inRange(g.dither, 0.2, 0.9, 'dither');
+    // Clean seeds (the norm) pull grain/dither right down (×0.12 / ×0.06); distorted keep the full range.
+    inRange(g.grain, 0.04 * 0.12, 0.5, 'grain');
+    inRange(g.dither, 0.2 * 0.06, 0.9, 'dither');
+    if (g.clean) assert.ok(g.grain <= 0.06 + 1e-9 && g.dither <= 0.054 + 1e-9 && g.chroma === 0, 'clean seeds are crisp');
     assert.ok(g.chroma === 0 || (g.chroma >= 0 && g.chroma <= 0.6), `chroma ${g.chroma}`);
     inRange(g.vignette, 0.1, 0.6, 'vignette');
     inRange(g.loopSeconds, 20, 34, 'loopSeconds');
@@ -143,20 +145,19 @@ test('a plain seed string is folded deterministically (never throws)', () => {
   assert.deepEqual(genomeFromHash('hello sky'), genomeFromHash('hello sky'));
 });
 
-test('v2 split prefers the classic single column, but grids and blocks both appear', () => {
-  let bars = 0, grid = 0, blocks = 0, cleanCount = 0;
-  const N = 1000;
+test('v3: clean pixels are the majority; bars/grid/block splits all appear (incl. the 1×1 origin)', () => {
+  let bars = 0, grid = 0, blocks = 0, cleanCount = 0, oneByOne = 0;
+  const N = 2000;
   for (let i = 0; i < N; i++) {
     const g = genomeFromHash('split-' + i);
-    if (g.blocks) blocks++;
+    if (g.blocks) { blocks++; if (g.blocksN === 1) oneByOne++; }
     else if (g.hbands > 1) grid++;
     else bars++;
     if (g.clean) cleanCount++;
   }
-  // Bars (the preferred "20×1" look) is the single most common split by a wide margin…
-  assert.ok(bars > grid && bars > blocks, `bars ${bars} should dominate (grid ${grid}, blocks ${blocks})`);
-  assert.ok(bars / N > 0.45 && bars / N < 0.65, `bars share ${(bars / N).toFixed(2)} ~0.56`);
-  // …yet grids and blocks are both genuinely reachable, and clean is a meaningful minority.
-  assert.ok(grid > 0 && blocks > 0, 'grid and blocks must both occur');
-  assert.ok(cleanCount / N > 0.18 && cleanCount / N < 0.4, `clean share ${(cleanCount / N).toFixed(2)} ~0.28`);
+  // Clean is the DEFAULT look now — the vast majority of skies.
+  assert.ok(cleanCount / N > 0.68 && cleanCount / N < 0.82, `clean share ${(cleanCount / N).toFixed(2)} ~0.75`);
+  // All three splits are genuinely reachable, and the 1×1 origin (a single pulsing colour) occurs, rarely.
+  assert.ok(bars > 0 && grid > 0 && blocks > 0, `bars ${bars} grid ${grid} blocks ${blocks}`);
+  assert.ok(oneByOne > 0 && oneByOne / N < 0.05, `1×1 share ${(oneByOne / N).toFixed(3)} should be rare but present`);
 });

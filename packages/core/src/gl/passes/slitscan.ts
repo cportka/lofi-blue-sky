@@ -5,13 +5,12 @@
  * loop phase and every drift cycle count is an integer, so the loop is perfectly seamless and
  * stateless. Reads FBO_A (the sky), renders into FBO_B.
  *
- * v2 opens two axes on top of the classic single-column slit-scan:
- *   • `uHbands` columns → a `cols × rows` grid (`1` reduces exactly to the v1 slit-scan);
- *   • `uClean` → crisp flat cells with drift + smear off;
- *   • `uBlocks`/`uBlocksN` → a square `N × N` mosaic of large pixels.
- * When `uHbands = 1`, `uClean = 0`, `uBlocks = 0` this shader is byte-identical to v1 — that is the
- * contract that keeps every pre-v2 seed's DNA rendering as before (its geometry overlay just
- * activates; see docs/CANON.md).
+ * The whole frame is a grid of `cols × rows` flat cells ("pixels"), each sampling the sky gradient
+ * at a position that *pulses* over the loop — so a flat pixel breathes through the sky's colours
+ * (this is the motion; a clean sky pulses, it is not static). Axes on top of the classic bars:
+ *   • `uHbands` columns → a `cols × rows` grid;
+ *   • `uClean` → crisp, exact flat pixels (the default look) vs. the rarer distorted/smeared look;
+ *   • `uBlocks`/`uBlocksN` → a square `N × N` mosaic of large pixels (the 1×1 → 2×2 → 4×4 lineage).
  */
 
 export const SLITSCAN_FRAG = /* glsl */ `
@@ -55,19 +54,22 @@ void main() {
   float colShift = grid ? (hash11(colIdx + 7.3) - 0.5) * 0.5 : 0.0;
   float colPhase = grid ? hash11(colIdx + 19.7) : 0.0;
 
-  // Per-band vertical drift — integer cycles per loop keeps it seamless. Clean switches it off.
-  float drift = clean ? 0.0
-    : uBandDrift * sin(TAU * (driftCycles * uLoopT + seed) + (uBandPhase + colPhase) * TAU);
+  // The heartbeat: every cell's colour *pulses* over the loop — its sample slides up and down the
+  // gradient (integer cycles → seamless), so a flat pixel breathes through the sky's colours. This
+  // is the motion in both clean and distorted skies (clean is NOT static — that was the bug). A
+  // gain so the pulse is clearly visible, not a barely-there shimmer.
+  const float PULSE_GAIN = 1.9;
+  float pulse = uBandDrift * PULSE_GAIN
+    * sin(TAU * (driftCycles * uLoopT + seed) + (uBandPhase + colPhase) * TAU);
 
-  // Each cell shows a near-flat slice of the gradient at its position. Clean samples the cell
-  // centre (a flat colour); distorted bleeds a little in-band gradient back in so bands aren't
-  // hard posterisation.
+  // Clean samples the cell centre (a flat, exact colour) that pulses; distorted bleeds a little
+  // in-band gradient back in (softer edges) and adds the smear below.
   float yLocal = fract(uv.y * rows) / rows;
   float sy = clean
-    ? bandBase + 0.5 / rows + colShift
-    : bandBase + mix(0.5 / rows, yLocal, 0.35) + drift + colShift;
+    ? bandBase + 0.5 / rows + colShift + pulse
+    : bandBase + mix(0.5 / rows, yLocal, 0.35) + colShift + pulse;
 
-  // Per-row horizontal displacement (the smear), also loop-periodic. Off when clean.
+  // Per-row horizontal displacement (the smear), also loop-periodic. Off when clean (crisp edges).
   float row = floor(uv.y * uResolution.y);
   float rowN = hash11(row + 3.0) - 0.5;
   float xdisp = clean ? 0.0 : uRowDisplace * rowN * sin(TAU * (uLoopT + seed));

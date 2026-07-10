@@ -52,8 +52,8 @@ export const BILLOW: Engine<BillowParams> = {
   id: 'billow',
   name: 'Billow',
   description:
-    'Rolling billowing clouds sweeping across a blue sky. Procedural FBM, seamless drift + churn. Young — carries the experimental Phase-4 mosaic mode.',
-  keyVersion: 1,
+    'Rolling billowing clouds sweeping across a blue sky. Procedural FBM, seamless drift + churn — clean and smooth by default. Young — carries the experimental Phase-4 mosaic mode.',
+  keyVersion: 2,
   genome: billowGenome,
   features: billowFeatures,
   createRenderer: (gl, iw, ih) => new BillowRenderer(gl, iw, ih),
