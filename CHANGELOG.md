@@ -4,6 +4,34 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.7.0] - 2026-07-15
+
+**True Clean** — the entire bar/pixel is exactly one colour and changes as one unit. What v0.6 got
+wrong: the sun-bloom's horizontal gradient bled through each bar, so a "clean" bar was a glowing
+slice, not a pixel. Now Genesis has *movements*, and True Clean is ~90% of the sky.
+
+### Changed
+- **Genesis (key → v4): movements.** Every cell samples the gradient at its cell **centre on both
+  axes**, so the whole bar/pixel is one flat colour changing as a unit, each cell on its own phase —
+  the pixels of a low-res sky video. The movement split: **True Clean ~90%**, **Clean Sweep ~6%**
+  (the preserved v0.6 look — the sun-bloom sweeping through flat bars), **Distorted ~4%** (smear +
+  full crush), and **Classic <1%** — the original v1 slit-scan, in a "golden window" of the key
+  placed so the **two original canonical picks land in it** and render as the v1 beauties they were
+  first loved as (raw crush, drift, smear). True Clean also drops the cell-edge seams (a flat pixel
+  is one colour edge to edge). keyVersion 3 → 4; canon re-blessed; DNA byte-identical.
+- **True Horizon, visualized** (renames Perfect Horizon). The trait is no longer label-only: seeds
+  in the window get a crisp colour edge pushed into the gradient exactly at the horizon — always
+  distinguishable, in every movement (in True Clean it lands between two pixel rows).
+- **Squall (key → v3): more movement.** Sky pulse amplitude/cycles lifted (0.06–0.16 × 2–5 cycles),
+  each pixel now breathes on its own per-cell phase, and the corruption hits harder when it lands
+  (motion 0.05–0.22, snappier 5–12 step judder, streak 0.1–0.7).
+- **Billow (key → v3): wider weather + 80/20 clean.** Coverage 0.25–0.78 (near-clear to
+  near-overcast), wind 1–4, scale/softness/churn/horizon/sun all widened; an explicit finish flag
+  makes ~80% of skies clean (near-zero crush) and ~20% distorted (full lofi crush).
+- **Museum:** all 23 released-edition gifs from `assets/skies/` now live on the page as an animated
+  grid ("the skies").
+- Featured stills re-shot (`hero`, `filmstrip`, `billow`, `v0.7-*`, including the Classic canon).
+
 ## [0.6.0] - 2026-07-10
 
 The whole family becomes **clean pulsating pixel-grids by default** — rooted in the project's

@@ -40,7 +40,7 @@ test('rerollFeature changes exactly the clicked feature (best-effort) and return
     assert.equal(next.stopJitter.length, 6);
     assert.ok(getPaletteById(next.paletteId), 'palette still valid');
     // the targeted feature actually moved for the discrete traits
-    if (['Palette', 'Split', 'Band Density', 'Finish', 'Perfect Horizon', 'Full Corruption'].includes(key)) {
+    if (['Palette', 'Split', 'Band Density', 'Movement', 'True Horizon', 'Full Corruption'].includes(key)) {
       assert.notEqual(deriveFeatures(next)[key], before, `feature ${key} did not change`);
     }
   }

@@ -58,7 +58,7 @@ vec3 baseSky(vec2 uv) {
   vec2 grid = vec2(max(1.0, floor(uBlocksX + 0.5)), max(1.0, floor(uBlocksY + 0.5)));
   vec2 cell = (floor(uv * grid) + 0.5) / grid; // this pixel's cell centre
   float pc = max(1.0, floor(uPulseCycles + 0.5));
-  float rseed = hash11(floor(uv.y * grid.y) + 1.0);
+  float rseed = hash21(floor(uv * grid) + 1.0); // per-CELL phase — every pixel breathes on its own
   float pulse = uPulse * sin(TAU * (pc * uLoopT + rseed)); // the pixel's colour breathe
   float y = clamp(cell.y + pulse, 0.0, 1.0);
   float warped = y < uHorizon

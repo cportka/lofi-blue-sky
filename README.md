@@ -5,7 +5,7 @@
 > it is my meditation — sit with me and watch the sky go by
 > ˜”°•.˜”°• hello •°”˜.•°”˜
 
-**Version:** 0.6.0 · **License:** MIT · [Roadmap](./ROADMAP.md) · [Docs](./docs) · **Live:** https://cportka.github.io/lofi-blue-sky/
+**Version:** 0.7.0 · **License:** MIT · [Roadmap](./ROADMAP.md) · [Docs](./docs) · **Live:** https://cportka.github.io/lofi-blue-sky/
 
 A procedurally generated **lofi sky**, synthesized entirely in a fragment shader from a hash. No
 footage, no assets — a slow, meditative, seamless loop of a **clean grid of sky-pixels that pulse
@@ -54,29 +54,31 @@ the library of released skies.
 One core, swappable **engines** — each a sky algorithm with its own hash→params key and shaders
 ([docs/ENGINES.md](./docs/ENGINES.md)):
 
-- **Genesis** (above) — a grid of flat sky-pixels that pulse in colour, in the 1×1 → 2×2 → 4×4 → 1×N
-  lineage. **Clean, exact pixels by default**; the venetian-blind slit-scan smear is the rarer
-  distorted look. Canonical.
-- **Billow** — rolling billowing clouds sweeping across a blue sky, procedural and seamless — clean
-  and smooth by default. Young; carries the experimental Phase-4 mosaic mode.
-- **Squall** — a clean pixel sky that a **rare squall of datamosh** sweeps through and clears,
-  seamlessly (macroblock motion error, cyan/magenta chroma tearing). Mostly calm; corruption is the
-  seasoning. Young and experimental.
+- **Genesis** (above) — a grid of flat sky-pixels, **each exactly one colour, changing as one
+  unit** (True Clean, ~90% of seeds — the 1×1 → 2×2 → 4×4 → 1×N lineage). The rare movements:
+  **Clean Sweep** (the sun-bloom sweeping through the bars), **Distorted** (the smear + crush), and
+  the <1% **Classic** — the original v1 slit-scan the first canonical picks live in. Canonical.
+- **Billow** — rolling billowing clouds across a blue sky, near-clear to near-overcast, calm to
+  gusty — clean 4 skies in 5. Young; carries the experimental Phase-4 mosaic mode.
+- **Squall** — a clean pixel sky (every pixel breathing on its own phase) that a **rare squall of
+  datamosh** sweeps through and clears (macroblock motion error, cyan/magenta chroma tearing).
+  Young and experimental.
 
 ![Billow — rolling clouds](./assets/renders/billow.png)
 
-| Genesis — clean bars | Genesis — blue pixels | Squall — a passing squall |
-|---|---|---|
-| ![](./assets/renders/v0.6-genesis-bars.png) | ![](./assets/renders/v0.6-genesis-blue.png) | ![](./assets/renders/v0.6-squall.png) |
+| Genesis — clean bars | Genesis — blue pixels | Genesis — the <1% classic | Squall — a passing squall |
+|---|---|---|---|
+| ![](./assets/renders/v0.7-genesis-bars.png) | ![](./assets/renders/v0.7-genesis-blue.png) | ![](./assets/renders/v0.7-genesis-classic.png) | ![](./assets/renders/v0.7-squall.png) |
 
 ## The look
 
 Genesis: a sky is a grid of flat, exact **pixels** (`1×1 → 2×2 → 4×4 → 1×N`) sampled from a sunset
-gradient; over a slow 20–34s seamless loop each pixel's sample slides up and down the gradient, so
-it **pulses in colour** like a low-res sky. Clean by default — the venetian-blind slit-scan smear
-and the ordered-dither "bit-crush" are the rarer, distorted minority. Muted, dusty, quantized
-palettes — Sodium, Powder, Olive, Periwinkle. See [docs/AESTHETIC.md](./docs/AESTHETIC.md) and the
-[palette sheet](./assets/palettes/palettes.svg).
+gradient at each cell's centre — so the **entire bar/pixel is one colour, and it changes as one
+unit**, each cell on its own phase over a slow 20–34s seamless loop: the pixels of a low-res sky
+video. A seed in the **True Horizon** window carries a crisp, always-distinguishable colour edge at
+the horizon. The slit-scan smear and ordered-dither "bit-crush" survive only in the rare movements.
+Muted, dusty, quantized palettes — Sodium, Powder, Olive, Periwinkle. See
+[docs/AESTHETIC.md](./docs/AESTHETIC.md) and the [palette sheet](./assets/palettes/palettes.svg).
 
 ## Quickstart
 
@@ -114,9 +116,10 @@ undo/redo; **⧉** copies the seed and **↻** rolls a fresh one, side by side i
 takes a pasted hash automatically). Save a frame with the OS screenshot. A hand-tweaked sky is
 shared as an engine-tagged `g:<engine>:…` token. See [docs/CANON.md](./docs/CANON.md).
 
-Two canonical seeds to try:
-`00f50f353cf56cfa55f3b32404db3196e7cef86e37bd4b0fbca9304a8dd6097f` (a clean sodium pixel column) and
-`3ebed465933f11af41fb9f999635ca11ea55c1357cdcba0f3d4bc11f9de5ff64` (a clean olive grid).
+Two canonical seeds to try — both live in the <1% **Classic** golden window, rendering as the v1
+slit-scan beauties they were first picked as:
+`00f50f353cf56cfa55f3b32404db3196e7cef86e37bd4b0fbca9304a8dd6097f` (the degraded sodium sunset) and
+`3ebed465933f11af41fb9f999635ca11ea55c1357cdcba0f3d4bc11f9de5ff64` (the olive sky).
 
 ## Status
 
@@ -124,9 +127,11 @@ Two canonical seeds to try:
 [docs/CANON.md](./docs/CANON.md) + CI. v0.2.0 added the interactive generator; **v0.3.0** made
 engines swappable and started **Billow** (rolling clouds); **v0.4.0** added the museum + fxhash
 release path; **v0.5.0** opened the Genesis key with 2D pixel splits and added **Squall** (a
-datamosh); **v0.6.0** made the whole family **clean pulsating pixel-grids by default** — the sky
-that was barely moving now breathes, and the bit-crush is the rare seasoning (Genesis key → v3).
-Open design calls are in [docs/DECISIONS.md](./docs/DECISIONS.md); the engine model is in
+datamosh); **v0.6.0** turned the family toward clean pulsating pixel-grids; **v0.7.0** landed
+**True Clean** — the entire bar/pixel as one colour changing as one unit, ~90% of Genesis — with
+Clean Sweep / Distorted / Classic as the rare movements, a visualized **True Horizon**, livelier
+Squall, wider Billow weather, and the museum's full gif grid (Genesis key → v4). Open design calls
+are in [docs/DECISIONS.md](./docs/DECISIONS.md); the engine model is in
 [docs/ENGINES.md](./docs/ENGINES.md).
 
 ---

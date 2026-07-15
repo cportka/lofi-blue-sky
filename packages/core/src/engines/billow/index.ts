@@ -20,9 +20,13 @@ const PROPOSE: Record<string, (p: BillowParams, r: R) => Partial<BillowParams>> 
     const pick = others[Math.floor(r() * others.length)] ?? BILLOW_PALETTES[0]!;
     return { skyPaletteId: pick.id, skyJitter: Array.from({ length: MAX_SKY_STOPS }, () => uf(r, -0.05, 0.05)) };
   },
-  Coverage: (_p, r) => ({ coverage: uf(r, 0.32, 0.66) }),
-  Wind: (p, r) => ({ wind: ((p.wind - 1 + rangeInt(r, 1, 2)) % 3) + 1 }),
-  Churn: (p, r) => ({ billow: p.billow > 0.45 ? uf(r, 0.15, 0.4) : uf(r, 0.5, 0.7) }),
+  Coverage: (_p, r) => ({ coverage: uf(r, 0.25, 0.78) }),
+  Wind: (p, r) => ({ wind: ((p.wind - 1 + rangeInt(r, 1, 3)) % 4) + 1 }),
+  Churn: (p, r) => ({ billow: p.billow > 0.45 ? uf(r, 0.1, 0.4) : uf(r, 0.5, 0.85) }),
+  Finish: (p, r) =>
+    p.distorted
+      ? { distorted: false, grain: uf(r, 0.01, 0.08), dither: uf(r, 0.02, 0.15), chroma: 0, quantLevels: rangeInt(r, 10, 20) }
+      : { distorted: true, grain: uf(r, 0.15, 0.4), dither: uf(r, 0.4, 0.8), chroma: r() < 0.6 ? uf(r, 0.15, 0.5) : 0, quantLevels: rangeInt(r, 5, 10) },
   Mode: (p) => ({ mode: (p.mode === 'mosaic' ? 'clouds' : 'mosaic') as BillowMode }),
   'Golden Light': (p, r) => {
     const on = p.sunStrength > 0.55 && p.horizon < 0.4;
@@ -52,8 +56,8 @@ export const BILLOW: Engine<BillowParams> = {
   id: 'billow',
   name: 'Billow',
   description:
-    'Rolling billowing clouds sweeping across a blue sky. Procedural FBM, seamless drift + churn — clean and smooth by default. Young — carries the experimental Phase-4 mosaic mode.',
-  keyVersion: 2,
+    'Rolling billowing clouds sweeping across a blue sky — near-clear to near-overcast, calm to gusty. Procedural FBM, seamless drift + churn; clean 4 in 5 skies. Young — carries the experimental Phase-4 mosaic mode.',
+  keyVersion: 3,
   genome: billowGenome,
   features: billowFeatures,
   createRenderer: (gl, iw, ih) => new BillowRenderer(gl, iw, ih),

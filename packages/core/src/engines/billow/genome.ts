@@ -34,6 +34,8 @@ export interface BillowParams extends BaseParams {
   // experimental Phase 4
   mode: BillowMode;
   tile: number; // mosaic tile size
+  // finish — ~20% of skies carry the full lofi crush; the rest are clean, smooth clouds
+  distorted: boolean;
   // shared post
   quantLevels: number;
   grain: number;
@@ -50,27 +52,33 @@ export function billowGenome(rand: Rng): BillowParams {
   const skyJitter: number[] = [];
   for (let i = 0; i < MAX_SKY_STOPS; i++) skyJitter.push(range(rand, -0.05, 0.05));
 
-  const horizon = range(rand, 0.28, 0.5);
-  const sunX = range(rand, 0.2, 0.8);
-  const sunStrength = range(rand, 0.1, 0.7);
+  // Wider weather (v0.7): more sky states — near-clear to near-overcast, calm to gusty, low sun
+  // to high haze — so two Billow skies rarely feel alike.
+  const horizon = range(rand, 0.2, 0.58);
+  const sunX = range(rand, 0.1, 0.9);
+  const sunStrength = range(rand, 0.05, 0.8);
 
-  const coverage = range(rand, 0.32, 0.66);
-  const softness = range(rand, 0.06, 0.22);
-  const scale = range(rand, 2.2, 5.5);
-  const wind = rangeInt(rand, 1, 3); // integer → seamless horizontal drift
-  const billow = range(rand, 0.15, 0.7);
-  const period = rangeInt(rand, 6, 12); // integer noise period
+  const coverage = range(rand, 0.25, 0.78);
+  const softness = range(rand, 0.04, 0.28);
+  const scale = range(rand, 1.6, 5.8); // stays under min period → no visible tiling
+  const wind = rangeInt(rand, 1, 4); // integer → seamless horizontal drift
+  const billow = range(rand, 0.1, 0.85);
+  const period = rangeInt(rand, 6, 14); // integer noise period
   const layers = chance(rand, 0.55) ? 2 : 1;
 
   // EXPERIMENTAL mode: mostly clouds, occasionally mosaic. sort/mosh reserved (never selected yet).
-  const mode: BillowMode = weightedIndex(rand, [0.82, 0.18]) === 1 ? 'mosaic' : 'clouds';
+  const mode: BillowMode = weightedIndex(rand, [0.88, 0.12]) === 1 ? 'mosaic' : 'clouds';
   const tile = rangeInt(rand, 4, 14);
 
-  // Lean clean: most Billow skies are clean, smooth clouds — the crush is light and chroma rare.
-  const quantLevels = rangeInt(rand, 8, 20);
-  const grain = range(rand, 0.02, 0.2);
-  const dither = range(rand, 0.1, 0.4);
-  const chroma = chance(rand, 0.2) ? range(rand, 0.0, 0.3) : 0.0;
+  // Light on the distortion: ~80% of Billow skies are CLEAN (near-zero crush); ~20% carry the
+  // full lofi crush. Both branches draw the same count (determinism contract).
+  const distorted = chance(rand, 0.2);
+  const quantLevels = distorted ? rangeInt(rand, 5, 10) : rangeInt(rand, 10, 20);
+  const grain = distorted ? range(rand, 0.15, 0.4) : range(rand, 0.01, 0.08);
+  const dither = distorted ? range(rand, 0.4, 0.8) : range(rand, 0.02, 0.15);
+  const chromaOn = chance(rand, 0.6);
+  const chromaMag = range(rand, 0.15, 0.5);
+  const chroma = distorted && chromaOn ? chromaMag : 0.0;
   const vignette = range(rand, 0.08, 0.45);
 
   const reserved: number[] = [];
@@ -93,6 +101,7 @@ export function billowGenome(rand: Rng): BillowParams {
     layers,
     mode,
     tile,
+    distorted,
     quantLevels,
     grain,
     dither,

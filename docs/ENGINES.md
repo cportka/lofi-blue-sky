@@ -6,9 +6,9 @@ more than one look. Today there are three:
 
 | Engine | Look | Status |
 |--------|------|--------|
-| **Genesis** | a grid of flat sky-**pixels** that pulse in colour (`1×1 → 2×2 → 4×4 → 1×N`); clean by default, the slit-scan smear is the rare distorted look (the `32__OG` lineage) | **canonical** — each seed's DNA is locked; key at `keyVersion 3` |
-| **Billow** | rolling billowing clouds across a blue sky (toward `35`) — clean, smooth by default | **young** — `keyVersion 2`; key reserves blank space |
-| **Squall** | a clean pixel sky a rare squall of datamosh sweeps through (toward `13`) | **young, experimental** — `keyVersion 2`; cyan/magenta tearing, seamless |
+| **Genesis** | a grid of flat sky-**pixels**, each one colour changing as one unit (`1×1 → 2×2 → 4×4 → 1×N`). Movements: **True Clean** ~90% · Clean Sweep ~6% · Distorted ~4% · **Classic** (the v1 slit-scan) <1% | **canonical** — each seed's DNA is locked; key at `keyVersion 4` |
+| **Billow** | rolling billowing clouds across a blue sky (toward `35`) — near-clear to near-overcast; clean 4 in 5 | **young** — `keyVersion 3`; key reserves blank space |
+| **Squall** | a clean pixel sky (per-pixel breathe) a rare squall of datamosh sweeps through (toward `13`) | **young, experimental** — `keyVersion 3`; cyan/magenta tearing, seamless |
 
 ![Billow](../assets/renders/billow.png)
 
@@ -54,9 +54,11 @@ An engine's **key** is its `genome()` draw order — the determinism contract (s
   blanks now drive pixels, so this **is** a key change: bump `keyVersion` and re-bless canon.
 - **Re-thresholding (the third stage).** Even after a draw carries meaning you can *re-tune* how it
   maps to pixels. Genesis v3 (v0.6.0) re-thresholded the same `g0..g3` draws so a clean pulsing pixel
-  grid is the default, and reduced the post-crush on clean seeds. Same DNA, same draw positions, new
-  look — again a `keyVersion` bump (2 → 3), re-blessed goldens. The discipline is unchanged: never
-  reorder or re-count the draws; only re-interpret them, and only pre-mint.
+  grid is the default; v4 (v0.7.0) re-cut them again into **movements** (True Clean / Sweep / Classic
+  / Distorted) — including a deliberate <1% *golden window* (`g2 × g3`) positioned so the original
+  canonical picks land in the Classic v1 look. Same DNA, same draw positions, new look — each time a
+  `keyVersion` bump and re-blessed goldens. The discipline is unchanged: never reorder or re-count
+  the draws; only re-interpret them, and only pre-mint.
 
 ## One engine per token; both in the app
 

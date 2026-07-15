@@ -14,6 +14,7 @@ uniform vec3  uColors[MAX_STOPS];
 uniform float uHorizon;
 uniform float uSunElev;
 uniform float uSunStrength;
+uniform float uTrueHorizon;
 
 // Piecewise-linear ramp sampler (mirrors palettes.ts sampleRamp).
 vec3 sampleRamp(float t) {
@@ -35,6 +36,13 @@ void main() {
   float warped = y < uHorizon
     ? (y / max(1e-3, uHorizon)) * 0.5
     : 0.5 + (y - uHorizon) / max(1e-3, 1.0 - uHorizon) * 0.5;
+
+  // True Horizon: push the gradient apart across the horizon so a crisp, always-distinguishable
+  // colour edge sits exactly at uHorizon (in True Clean it lands between two pixel rows).
+  if (uTrueHorizon > 0.5) {
+    float side = step(uHorizon, y);
+    warped = clamp(warped + (side - 0.5) * 0.16, 0.0, 1.0);
+  }
 
   vec3 col = sampleRamp(warped);
 

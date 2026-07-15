@@ -118,6 +118,34 @@ where it could be, re-blessed where it couldn't.
 |---|---|
 | ![](../assets/renders/v0.6-squall.png) | ![](../assets/renders/billow.png) |
 
+## v0.7.0 — True Clean (the bar IS the pixel), and movements
+
+v0.6's clean bars had a tell: the sun-bloom's horizontal gradient bled through each bar, so a bar
+was a glowing *slice* of sky, not a pixel. v0.7 fixes the metaphor at the root — every cell now
+samples the gradient at its cell **centre on both axes**, so the **entire bar/pixel is exactly one
+colour and changes as one unit**, each cell on its own phase. The v0.6 look was too beautiful to
+delete, so Genesis now has **movements**:
+
+| movement | share | what it is |
+|---|---|---|
+| **True Clean** | ~90% | flat one-colour cells changing as units — the sky |
+| **Clean Sweep** | ~6% | the preserved v0.6 look — the sun-bloom sweeping through flat bars |
+| **Distorted** | ~4% | the venetian-blind smear + full bit-crush |
+| **Classic** | <1% | the original v1 slit-scan, in a golden window of the key that deliberately holds the two original canonical picks — they render as the v1 beauties they were first loved as |
+
+**True Horizon** (né Perfect Horizon) is now visualized, not just labelled: seeds in the window get
+a crisp colour edge pushed into the gradient exactly at the horizon — in True Clean it lands
+between two pixel rows, always distinguishable.
+
+| the hero — true pixels | classic (canon 00f50f) | true clean bars |
+|---|---|---|
+| ![](../assets/renders/v0.7-genesis-blocks.png) | ![](../assets/renders/v0.7-genesis-classic.png) | ![](../assets/renders/v0.7-genesis-bars.png) |
+
+**Squall** got the movement it was missing — pulse amplitude/cycles lifted, per-pixel phase, harder
+corruption when it lands. **Billow** got weather — coverage from near-clear to near-overcast, wind
+1–4, and an explicit 80/20 clean/distorted finish. And the **museum** now shows all 23 released
+gifs as an animated grid.
+
 ---
 
 ## Adding an entry
