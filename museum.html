@@ -32,6 +32,10 @@
       .became figure { margin:0; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#000; }
       .became img { display:block; width:100%; height:auto; }
       .became figcaption { color: var(--muted); font-size: 12px; padding: 8px 12px; }
+      .skies { display:grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap:10px; }
+      .skies figure { margin:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#000; }
+      .skies img { display:block; width:100%; height:auto; aspect-ratio:1/1; object-fit:cover; }
+      .skies figcaption { color: var(--muted); font-size: 11px; padding: 5px 9px; }
       .note { color: var(--muted); font-size: 12.5px; max-width: 66ch; }
       footer { margin-top: 56px; padding-top: 20px; border-top:1px solid var(--line); color: var(--muted); font-size: 12.5px; }
     </style>
@@ -93,13 +97,43 @@
         </a>
       </div>
 
+      <h2>the skies</h2>
+      <p class="note">The released editions in the library — 400×400 seamless loops, a decade of
+        filmed sky processed into the signature glitch. These are the animated gifs themselves
+        (a subset of the collections; the marketplaces above hold the full set).</p>
+      <div class="skies">
+        <figure><img loading="lazy" src="./assets/skies/1.gif" alt="lofi blue sky #1" /><figcaption>#1</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/2.gif" alt="lofi blue sky #2" /><figcaption>#2</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/3.gif" alt="lofi blue sky #3" /><figcaption>#3</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/4.gif" alt="lofi blue sky #4" /><figcaption>#4</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/5.gif" alt="lofi blue sky #5" /><figcaption>#5</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/6.gif" alt="lofi blue sky #6" /><figcaption>#6</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/7.gif" alt="lofi blue sky #7" /><figcaption>#7</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/8.gif" alt="lofi blue sky #8" /><figcaption>#8</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/9.gif" alt="lofi blue sky #9" /><figcaption>#9</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/10.gif" alt="lofi blue sky #10" /><figcaption>#10</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/11.gif" alt="lofi blue sky #11" /><figcaption>#11</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/12.gif" alt="lofi blue sky #12" /><figcaption>#12</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/13.gif" alt="lofi blue sky #13" /><figcaption>#13</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/16.gif" alt="lofi blue sky #16" /><figcaption>#16</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/17.gif" alt="lofi blue sky #17" /><figcaption>#17</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/18.gif" alt="lofi blue sky #18" /><figcaption>#18</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/19.gif" alt="lofi blue sky #19" /><figcaption>#19</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/20.gif" alt="lofi blue sky #20" /><figcaption>#20</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/21.gif" alt="lofi blue sky #21" /><figcaption>#21</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/22.gif" alt="lofi blue sky #22" /><figcaption>#22</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/28.gif" alt="lofi blue sky #28" /><figcaption>#28</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/30.gif" alt="lofi blue sky #30" /><figcaption>#30</figcaption></figure>
+        <figure><img loading="lazy" src="./assets/skies/31.gif" alt="lofi blue sky #31" /><figcaption>#31</figcaption></figure>
+      </div>
+
       <h2>the loops became math</h2>
       <p class="note">The filmed loops are the source aesthetic. The generator distills them into
         deterministic, on-chain-storable skies synthesized from a hash — the same meditative,
         corrupted sky, rebuilt from math. Three engines so far:</p>
       <div class="became">
         <figure>
-          <img src="./assets/renders/v0.6-genesis-blocks.png" alt="Genesis — clean sky-pixels" />
+          <img src="./assets/renders/v0.7-genesis-blocks.png" alt="Genesis — clean sky-pixels" />
           <figcaption><strong>Genesis</strong> — clean pulsing sky-pixels (from <em>32__OG</em> + the pixel lineage)</figcaption>
         </figure>
         <figure>
@@ -107,11 +141,11 @@
           <figcaption><strong>Billow</strong> — rolling clouds (from <em>35</em>)</figcaption>
         </figure>
         <figure>
-          <img src="./assets/renders/v0.6-squall.png" alt="Squall — a passing squall of datamosh" />
+          <img src="./assets/renders/v0.7-squall.png" alt="Squall — a passing squall of datamosh" />
           <figcaption><strong>Squall</strong> — a rare squall of datamosh (from <em>13</em>)</figcaption>
         </figure>
         <figure>
-          <img src="./assets/renders/v0.6-genesis-bars.png" alt="Genesis — clean bars" />
+          <img src="./assets/renders/v0.7-genesis-bars.png" alt="Genesis — clean bars" />
           <figcaption><strong>Genesis</strong> — clean pulsing bars (the 1×N lineage)</figcaption>
         </figure>
       </div>

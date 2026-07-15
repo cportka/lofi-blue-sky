@@ -16,10 +16,11 @@ const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/jav
 const STILLS = [
   ['hero.png', 'gal-7', null, 0.4, 640],
   ['billow.png', 'bill-2', 'billow', 0.45, 560],
-  ['v0.6-genesis-blocks.png', 'gal-7', null, 0.4, 512],
-  ['v0.6-genesis-bars.png', 'gal-16', null, 0.5, 512],
-  ['v0.6-genesis-blue.png', 'gal-31', null, 0.35, 512],
-  ['v0.6-squall.png', 'squ-17', 'squall', 0.5, 512],
+  ['v0.7-genesis-blocks.png', 'gal-7', null, 0.4, 512],
+  ['v0.7-genesis-bars.png', 'gal-16', null, 0.5, 512],
+  ['v0.7-genesis-blue.png', 'gal-31', null, 0.35, 512],
+  ['v0.7-genesis-classic.png', '00f50f353cf56cfa55f3b32404db3196e7cef86e37bd4b0fbca9304a8dd6097f', null, 0.33, 512],
+  ['v0.7-squall.png', 'squ-17', 'squall', 0.5, 512],
 ];
 // filmstrip: one seed, 5 loop moments, stitched horizontally
 const FILM = { hash: 'gal-7', engine: null, phases: [0.0, 0.2, 0.4, 0.6, 0.8], tile: 300 };

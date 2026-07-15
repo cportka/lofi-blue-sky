@@ -55,22 +55,23 @@ export function squallGenome(rand: Rng): SquallParams {
   const horizon = range(rand, 0.3, 0.55);
   const sunX = range(rand, 0.2, 0.8);
   const sunStrength = range(rand, 0.1, 0.6);
-  const pulse = range(rand, 0.02, 0.08); // gentle colour breathe of the clean pixels
-  const pulseCycles = rangeInt(rand, 1, 3); // integer → seamless
+  // A lively colour breathe — the sky must visibly MOVE (v0.7: both ranges lifted).
+  const pulse = range(rand, 0.06, 0.16);
+  const pulseCycles = rangeInt(rand, 2, 5); // integer → seamless
 
   // Coarse macroblocks like a low-bitrate codec — usually roughly square, sometimes lopsided.
   const blocksX = rangeInt(rand, 4, 18);
   const blocksY = chance(rand, 0.65) ? blocksX : rangeInt(rand, 4, 18);
-  const steps = rangeInt(rand, 3, 9); // integer held-frames → seamless snaps
+  const steps = rangeInt(rand, 5, 12); // integer held-frames → seamless snaps (snappier judder)
   const bursts = rangeInt(rand, 1, 3); // integer sweeps → env returns to clear at the seam
   // Punchier envelope so the squall is a brief spike — the sky is CLEAN most of the loop.
   const sharpness = range(rand, 2.6, 6.0);
   // Corruption is the rare seasoning: the fraction of blocks that go corrupt skews low.
   const amount = 0.12 + Math.pow(rand(), 1.8) * 0.5; // 0.12..0.62, skewed low
-  const motion = range(rand, 0.02, 0.14);
-  const tear = range(rand, 0.01, 0.05);
+  const motion = range(rand, 0.05, 0.22); // harder macroblock displacement when it DOES hit
+  const tear = range(rand, 0.015, 0.06);
   const bloom = range(rand, 0.3, 0.75);
-  const streak = range(rand, 0.0, 0.5);
+  const streak = range(rand, 0.1, 0.7);
 
   const quantLevels = rangeInt(rand, 6, 18);
   const grain = range(rand, 0.03, 0.22); // lighter crush — the clean sky dominates

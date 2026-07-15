@@ -11,47 +11,55 @@ export interface Features {
   Palette: PaletteFamily;
   Split: 'Bars' | 'Grid' | 'Blocks';
   'Band Density': 'Fine' | 'Wide';
-  Finish: 'Clean' | 'Distorted';
+  Movement: 'True Clean' | 'Clean Sweep' | 'Classic' | 'Distorted';
   Drift: 'Still' | 'Flowing';
   Processing: 'Clean' | 'Grained' | 'Degraded';
-  'Perfect Horizon': boolean;
+  'True Horizon': boolean;
   'Full Corruption': boolean;
   [key: string]: string | boolean;
 }
+
+const MOVEMENT_LABEL = {
+  'true-clean': 'True Clean',
+  sweep: 'Clean Sweep',
+  classic: 'Classic',
+  distorted: 'Distorted',
+} as const;
 
 export function deriveFeatures(g: Genome): Features {
   const palette = getPaletteById(g.paletteId);
   const family: PaletteFamily = palette ? palette.family : 'Sodium';
 
-  // How the frame is split (v2): a square block mosaic, a multi-column grid, or the classic bars.
+  // How the frame is split: a square block mosaic, a multi-column grid, or the classic bars.
   const split = g.blocks ? 'Blocks' : g.hbands > 1 ? 'Grid' : 'Bars';
 
   const bandDensity = g.bands >= 24 ? 'Fine' : 'Wide';
 
-  // Clean pixels (the norm) vs. the rarer distorted/smeared look.
-  const finish = g.clean ? 'Clean' : 'Distorted';
+  // How the sky moves — True Clean is the sky (~90%); everything else is the rare seasoning.
+  const movement = MOVEMENT_LABEL[g.movement] ?? 'True Clean';
 
-  // Every sky pulses now; Drift is the *strength* of that pulse (plus the smear on distorted skies).
-  const motion = g.bandDrift + (g.driftCycles - 1) * 0.02 + (g.clean ? 0 : g.rowDisplace);
+  // Every sky pulses; Drift is the *strength* of that pulse (plus the smear on smeared movements).
+  const smeared = g.movement === 'classic' || g.movement === 'distorted';
+  const motion = g.bandDrift + (g.driftCycles - 1) * 0.02 + (smeared ? g.rowDisplace : 0);
   const drift = motion > 0.06 ? 'Flowing' : 'Still';
 
   const wear = g.grain + g.dither * 0.5 + g.chroma + (16 - g.quantLevels) * 0.03;
   const processing = wear > 1.0 ? 'Degraded' : wear > 0.55 ? 'Grained' : 'Clean';
 
-  // A clean, level horizon sitting near the golden band reads as a "perfect" one.
-  // (Windows widened in v0.2.0 so the two rare flags actually vary as you explore — a label-only
-  // tuning that never changes any seed's rendered pixels. They freeze at mint. See docs/CANON.md.)
-  const perfectHorizon = g.horizon > 0.4 && g.horizon < 0.52 && g.rowDisplace < 0.025;
+  // True Horizon — a crisp, always-distinguishable colour edge at the horizon. Unlike the old
+  // label-only "Perfect Horizon", this trait is VISUALIZED: the sky pass pushes the gradient
+  // apart across uHorizon when it holds (see sky.ts / pipeline.ts — same derivation).
+  const trueHorizon = g.horizon > 0.4 && g.horizon < 0.52 && g.rowDisplace < 0.025;
   const fullCorruption = g.chroma > 0.3 && g.grain > 0.32 && g.quantLevels <= 9;
 
   return {
     Palette: family,
     Split: split,
     'Band Density': bandDensity,
-    Finish: finish,
+    Movement: movement,
     Drift: drift,
     Processing: processing,
-    'Perfect Horizon': perfectHorizon,
+    'True Horizon': trueHorizon,
     'Full Corruption': fullCorruption,
   };
 }

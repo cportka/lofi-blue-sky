@@ -24,6 +24,19 @@ export type SkyMode = 'bands' | 'mosaic' | 'sort' | 'mosh';
 export type SortAxis = 'vertical' | 'horizontal';
 
 /**
+ * How a Genesis sky moves (v4):
+ *  - `true-clean` — THE look (~90%): every cell is exactly one flat colour (sampled at the cell
+ *    centre on both axes) that changes as one unit, each cell on its own phase — pixels of a
+ *    low-res sky video.
+ *  - `sweep`      — the "Clean Sweep Movement" (~6%): flat rows but the sun-bloom's horizontal
+ *    gradient sweeps through the bars (the v3 clean look, preserved).
+ *  - `distorted`  — the venetian-blind smear + full bit-crush (~4%).
+ *  - `classic`    — the original v1 slit-scan (gradient bleed + drift + smear + raw crush), the
+ *    look of the first two canonical picks (<1% — the "golden window").
+ */
+export type GenesisMovement = 'true-clean' | 'sweep' | 'classic' | 'distorted';
+
+/**
  * Reserved blank draws appended to the Genesis key (headroom; unused by the shaders).
  *
  * v2 spent the first two of the original four reserved draws on real structure — the horizontal
@@ -60,12 +73,8 @@ export interface Genome {
    * small) weave the sky into a tidy `hbands × bands` grid. New in v2.
    */
   hbands: number;
-  /**
-   * Clean pixels — the **default** (~75%): crisp, exact flat cells that pulse in colour over the
-   * loop, with smear and gradient-bleed off and the bit-crush (dither/grain/chroma) pulled right
-   * down. `false` is the rarer distorted/glitch look (smear + full crush). New in v2; the norm in v3.
-   */
-  clean: boolean;
+  /** How the sky moves — see {@link GenesisMovement}. `true-clean` is the norm (~90%). New in v4. */
+  movement: GenesisMovement;
   /**
    * Square pixel-grid mosaic — override bands/hbands with a `blocksN × blocksN` grid of large
    * pixels (the 1×1 → 2×2 → 4×4 lineage). ~30% of seeds. New in v2.
@@ -164,28 +173,42 @@ export function genome(rand: Rng): Genome {
   // loop
   const loopSeconds = range(rand, 20, 34);
 
-  // v3 structure — a **clean pulsating pixel grid** is the default look; distortion is the rare
-  // seasoning. Derived from what were the first two reserved draws (g0..g3), so the draw POSITIONS
-  // are unchanged and every field above is byte-identical. keyVersion 3.
+  // v4 structure — **True Clean is the sky** (~90%): flat one-colour cells changing as units.
+  // Everything else is rare. Derived from what were the first two reserved draws (g0..g3), so the
+  // draw POSITIONS are unchanged and every field above is byte-identical. keyVersion 4.
   const g0 = rand();
   const g1 = rand();
   const g2 = rand();
   const g3 = rand();
   // Horizontal split (columns). 1 = the classic single-column bars ("1×N", e.g. 1×9, 1×20), the
   // most common; otherwise a tidy `hbands × bands` grid, skewed small.
-  const hbands = g0 < 0.5 ? 1 : 2 + Math.floor(Math.pow((g0 - 0.5) / 0.5, 2.0) * 30); // 1..32
-  // Clean is the **norm** — crisp, exact flat pixels (~75%). The rest are the rarer distorted look.
-  const clean = g1 >= 0.25;
+  const hbands0 = g0 < 0.5 ? 1 : 2 + Math.floor(Math.pow((g0 - 0.5) / 0.5, 2.0) * 30); // 1..32
   // Square pixel-grid mosaic — the 1×1 → 2×2 → 4×4 pixel-multiplication lineage. ~30% of seeds.
-  const blocks = g2 < 0.3;
+  const blocks0 = g2 < 0.3;
   // Grid size: 1×1 is the origin (a single pulsing colour — rare); otherwise small tidy squares.
   const blocksN = g3 < 0.04 ? 1 : 2 + Math.floor(Math.pow((g3 - 0.04) / 0.96, 2.2) * 22); // 1..24
 
-  // Clean pixels read as flat, exact colour, so pull the "bit-crush" (dither/grain/chroma) nearly
-  // to nothing; distorted seeds keep the full crush. A value remap of already-drawn rolls, not a draw.
-  const grain = clean ? grainRaw * 0.12 : grainRaw;
-  const dither = clean ? ditherRaw * 0.06 : ditherRaw;
-  const chroma = clean ? 0.0 : chromaRaw;
+  // Movement. The "golden window" (g2 × g3) is the <1% classic slit-scan — chosen so the two
+  // original canonical picks land in it and keep the v1 look they were loved for. Otherwise g1
+  // splits: distorted 4%, sweep 6%, true-clean the rest (~90%).
+  const golden = g2 >= 0.42 && g2 < 0.48 && g3 >= 0.4 && g3 < 0.52;
+  const movement: GenesisMovement = golden
+    ? 'classic'
+    : g1 < 0.04
+      ? 'distorted'
+      : g1 < 0.1
+        ? 'sweep'
+        : 'true-clean';
+  // Classic is the pure v1 frame: single-column bars, no block mosaic.
+  const hbands = movement === 'classic' ? 1 : hbands0;
+  const blocks = movement === 'classic' ? false : blocks0;
+
+  // Clean movements read as flat, exact colour, so pull the "bit-crush" (dither/grain/chroma)
+  // nearly to nothing; classic + distorted keep the full crush. A value remap, not a draw.
+  const cleanish = movement === 'true-clean' || movement === 'sweep';
+  const grain = cleanish ? grainRaw * 0.12 : grainRaw;
+  const dither = cleanish ? ditherRaw * 0.06 : ditherRaw;
+  const chroma = cleanish ? 0.0 : chromaRaw;
 
   // reserved blank draws — fresh headroom to open the key up again later without shifting fields.
   const reserved: number[] = [];
@@ -200,7 +223,7 @@ export function genome(rand: Rng): Genome {
     sunStrength,
     bands,
     hbands,
-    clean,
+    movement,
     blocks,
     blocksN,
     bandPhase,

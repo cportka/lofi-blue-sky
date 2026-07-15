@@ -26,8 +26,8 @@ test('Billow key is deterministic, in-range, and reserves blank space', () => {
   for (let i = 0; i < 300; i++) {
     const p = billowGenomeFromHash('bill-' + i);
     assert.ok(p.loopSeconds >= 20 && p.loopSeconds <= 34);
-    assert.ok(p.wind >= 1 && p.wind <= 3 && Number.isInteger(p.wind));
-    assert.ok(p.period >= 6 && p.period <= 12 && Number.isInteger(p.period));
+    assert.ok(p.wind >= 1 && p.wind <= 4 && Number.isInteger(p.wind));
+    assert.ok(p.period >= 6 && p.period <= 14 && Number.isInteger(p.period));
     assert.ok(p.layers === 1 || p.layers === 2);
     assert.ok(['clouds', 'mosaic'].includes(p.mode)); // sort/mosh reserved, never selected yet
     assert.equal(p.skyJitter.length, 4);
@@ -37,7 +37,7 @@ test('Billow key is deterministic, in-range, and reserves blank space', () => {
 });
 
 test('Billow features are deterministic and complete', () => {
-  const KEYS = ['Sky', 'Coverage', 'Wind', 'Churn', 'Mode', 'Golden Light', 'Full Mosaic'];
+  const KEYS = ['Sky', 'Coverage', 'Wind', 'Churn', 'Finish', 'Mode', 'Golden Light', 'Full Mosaic'];
   let clouds = 0, mosaic = 0;
   for (let i = 0; i < 300; i++) {
     const p = billowGenomeFromHash('bf-' + i);
@@ -50,6 +50,13 @@ test('Billow features are deterministic and complete', () => {
   assert.ok(clouds > 0 && mosaic > 0, 'expected a mix of clouds and the experimental mosaic mode');
 });
 
+test('Billow is light on the distortion: ~80% of skies are clean', () => {
+  let distorted = 0;
+  const N = 1000;
+  for (let i = 0; i < N; i++) if (billowGenomeFromHash('bc-' + i).distorted) distorted++;
+  assert.ok(distorted / N > 0.14 && distorted / N < 0.26, `distorted share ${(distorted / N).toFixed(2)} ~0.20`);
+});
+
 test('Squall key is deterministic, in-range, and reserves blank space', () => {
   const H = '5c1a115c1a115c1a115c1a115c1a115c1a115c1a115c1a115c1a115c1a115c1a';
   assert.deepEqual(squallGenomeFromHash(H), squallGenomeFromHash(H));
@@ -58,10 +65,10 @@ test('Squall key is deterministic, in-range, and reserves blank space', () => {
     assert.ok(p.loopSeconds >= 20 && p.loopSeconds <= 34);
     assert.ok(p.blocksX >= 4 && p.blocksX <= 18 && Number.isInteger(p.blocksX));
     assert.ok(p.blocksY >= 4 && p.blocksY <= 18 && Number.isInteger(p.blocksY));
-    assert.ok(p.steps >= 3 && p.steps <= 9 && Number.isInteger(p.steps)); // integer held-frames → seamless
+    assert.ok(p.steps >= 5 && p.steps <= 12 && Number.isInteger(p.steps)); // integer held-frames → seamless
     assert.ok(p.bursts >= 1 && p.bursts <= 3 && Number.isInteger(p.bursts)); // integer sweeps → seamless envelope
-    assert.ok(p.pulseCycles >= 1 && p.pulseCycles <= 3 && Number.isInteger(p.pulseCycles)); // integer → seamless
-    assert.ok(p.pulse >= 0.02 && p.pulse <= 0.08);
+    assert.ok(p.pulseCycles >= 2 && p.pulseCycles <= 5 && Number.isInteger(p.pulseCycles)); // integer → seamless
+    assert.ok(p.pulse >= 0.06 && p.pulse <= 0.16); // lively — the sky must visibly move
     assert.ok(p.amount >= 0.12 && p.amount <= 0.62); // corruption skews light — mostly clean
     assert.ok(p.chroma === 0 || (p.chroma > 0 && p.chroma <= 0.4));
     assert.equal(p.skyJitter.length, 5);

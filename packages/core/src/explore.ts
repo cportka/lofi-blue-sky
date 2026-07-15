@@ -43,10 +43,10 @@ export const FEATURE_KEYS: readonly (keyof Features)[] = [
   'Palette',
   'Split',
   'Band Density',
-  'Finish',
+  'Movement',
   'Drift',
   'Processing',
-  'Perfect Horizon',
+  'True Horizon',
   'Full Corruption',
 ];
 
@@ -63,31 +63,44 @@ const PROPOSE: Record<string, (g: Genome, r: R) => Partial<Genome>> = {
   Split: (g, r) => {
     const cur = deriveFeatures(g).Split;
     // Propose a value that crosses the current one. Bars ↔ Grid ↔ Blocks; skewed small like the
-    // genome (wide splits stay rare), so clicking Split stays in pleasing territory.
-    const someHbands = () => (r() < 0.7 ? ui(r, 2, 10) : ui(r, 11, 40));
-    const someBlocksN = () => (r() < 0.7 ? ui(r, 2, 8) : ui(r, 9, 40));
+    // genome (wide splits stay rare), so clicking Split stays in pleasing territory. Classic is
+    // bars-only, so re-splitting it moves it to the default movement first.
+    const base: Partial<Genome> = g.movement === 'classic' ? { movement: 'true-clean' } : {};
+    const someHbands = () => (r() < 0.7 ? ui(r, 2, 10) : ui(r, 11, 32));
+    const someBlocksN = () => (r() < 0.7 ? ui(r, 2, 8) : ui(r, 9, 24));
     if (cur === 'Blocks') {
       return r() < 0.5
-        ? { blocks: false, hbands: 1 }
-        : { blocks: false, hbands: someHbands() };
+        ? { ...base, blocks: false, hbands: 1 }
+        : { ...base, blocks: false, hbands: someHbands() };
     }
     if (cur === 'Grid') {
       return r() < 0.5
-        ? { blocks: false, hbands: 1 }
-        : { blocks: true, blocksN: someBlocksN() };
+        ? { ...base, blocks: false, hbands: 1 }
+        : { ...base, blocks: true, blocksN: someBlocksN() };
     }
     // Bars
     return r() < 0.5
-      ? { blocks: false, hbands: someHbands() }
-      : { blocks: true, blocksN: someBlocksN() };
+      ? { ...base, blocks: false, hbands: someHbands() }
+      : { ...base, blocks: true, blocksN: someBlocksN() };
   },
   'Band Density': (g, r) => ({ bands: g.bands >= 24 ? ui(r, 8, 23) : ui(r, 24, 48) }),
-  // Toggling the finish also swaps the bit-crush so the look actually changes: clean = flat, exact
-  // pixels (crush near zero); distorted = smear + full crush.
-  Finish: (g, r) =>
-    g.clean
-      ? { clean: false, dither: uf(r, 0.45, 0.9), grain: uf(r, 0.2, 0.5), chroma: r() < 0.5 ? uf(r, 0.25, 0.6) : 0, rowDisplace: uf(r, 0.02, 0.06) }
-      : { clean: true, dither: uf(r, 0.0, 0.05), grain: uf(r, 0.0, 0.06), chroma: 0 },
+  // Cycle the movement; also swap the bit-crush so the look actually changes (clean movements are
+  // crisp; classic/distorted carry the full crush and smear).
+  Movement: (g, r) => {
+    const order: Genome['movement'][] = ['true-clean', 'sweep', 'classic', 'distorted'];
+    const next = order[(order.indexOf(g.movement) + 1 + Math.floor(r() * 3)) % 4]!;
+    const cleanish = next === 'true-clean' || next === 'sweep';
+    return cleanish
+      ? { movement: next, dither: uf(r, 0.0, 0.05), grain: uf(r, 0.0, 0.06), chroma: 0 }
+      : {
+          movement: next,
+          ...(next === 'classic' ? { hbands: 1, blocks: false } : {}),
+          dither: uf(r, 0.3, 0.9),
+          grain: uf(r, 0.15, 0.5),
+          chroma: r() < 0.5 ? uf(r, 0.2, 0.6) : 0,
+          rowDisplace: uf(r, 0.02, 0.06),
+        };
+  },
   Drift: (g, r) => {
     const flowing = g.bandDrift + g.rowDisplace + (g.driftCycles - 1) * 0.03 > 0.09;
     return flowing
@@ -100,8 +113,8 @@ const PROPOSE: Record<string, (g: Genome, r: R) => Partial<Genome>> = {
     chroma: r() < 0.45 ? uf(r, 0, 0.6) : 0,
     quantLevels: ui(r, 5, 16),
   }),
-  'Perfect Horizon': (g, r) => {
-    const on = deriveFeatures(g)['Perfect Horizon'];
+  'True Horizon': (g, r) => {
+    const on = deriveFeatures(g)['True Horizon'];
     return on
       ? { horizon: r() < 0.5 ? uf(r, 0.3, 0.39) : uf(r, 0.53, 0.62), rowDisplace: uf(r, 0.03, 0.06) }
       : { horizon: uf(r, 0.42, 0.5), rowDisplace: uf(r, 0, 0.014) };

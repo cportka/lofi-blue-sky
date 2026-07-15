@@ -94,6 +94,9 @@ export class Pipeline {
     this.sky.f('uHorizon', g.horizon);
     this.sky.f('uSunElev', g.sunElevation);
     this.sky.f('uSunStrength', g.sunStrength);
+    // True Horizon — same derivation as the feature label, so trait and pixels agree.
+    const trueHorizon = g.horizon > 0.4 && g.horizon < 0.52 && g.rowDisplace < 0.025;
+    this.sky.f('uTrueHorizon', trueHorizon ? 1 : 0);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
     // --- pass 2: slitscan(A) → B ---
@@ -105,7 +108,8 @@ export class Pipeline {
     this.slit.f('uLoopT', loopT);
     this.slit.f('uBands', g.bands);
     this.slit.f('uHbands', g.hbands);
-    this.slit.f('uClean', g.clean ? 1 : 0);
+    const MOVEMENT_ID = { 'true-clean': 0, sweep: 1, classic: 2, distorted: 3 } as const;
+    this.slit.f('uMovement', MOVEMENT_ID[g.movement] ?? 0);
     this.slit.f('uBlocks', g.blocks ? 1 : 0);
     this.slit.f('uBlocksN', g.blocksN);
     this.slit.f('uBandPhase', g.bandPhase);

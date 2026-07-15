@@ -67,8 +67,8 @@ export const SQUALL: Engine<SquallParams> = {
   id: 'squall',
   name: 'Squall',
   description:
-    'A clean grid of sky-pixels that a rare squall of datamosh sweeps through and clears. Mostly the calm, pulsing pixel sky; occasionally macroblock motion error and cyan/magenta chroma tearing. Young and experimental.',
-  keyVersion: 2,
+    'A clean grid of sky-pixels that a rare squall of datamosh sweeps through and clears. Lively per-pixel colour breathe; when the squall hits, hard macroblock motion and cyan/magenta chroma tearing. Young and experimental.',
+  keyVersion: 3,
   genome: squallGenome,
   features: squallFeatures,
   createRenderer: (gl, iw, ih) => new SquallRenderer(gl, iw, ih),
