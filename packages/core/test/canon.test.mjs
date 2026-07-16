@@ -7,7 +7,7 @@ import { genomeFromHash } from '../dist/genome.js';
 // longer regenerates as-is. The genome, palettes, and shaders are the contract; everything else
 // (UI, exploration policy, feature labels) may evolve without touching what a hash renders.
 //
-// v4 note: the key gained MOVEMENTS (keyVersion 3 → 4) — True Clean ~90%, Clean Sweep ~6%,
+// v5 note: the 1×1 origin became half of all skies (keyVersion 4 → 5); movements as in v4 —
 // Distorted ~4%, and the <1% CLASSIC "golden window" (g2 × g3), deliberately placed so BOTH of
 // these original picks land in it: they render as the v1 slit-scan beauties they were first loved
 // as — full raw crush, drift, smear, single-column bars. Their DNA is still byte-identical.
@@ -18,7 +18,7 @@ const CANON = {
     stopJitter: [0.012655991921201343, -0.03318908608518541, 0.019618835337460047,
       0.015342185217887161, -0.02222185774706304, -0.019905288191512223],
     horizon: 0.42092513039708135, sunElevation: 0.43736527191009367, sunStrength: 0.7114813092630357,
-    bands: 9, hbands: 1, movement: 'classic', blocks: false, blocksN: 4,
+    bands: 9, hbands: 1, movement: 'classic', blocks: false, blocksN: 5,
     bandPhase: 0.7529440429061651, bandDrift: 0.07542739116819575,
     rowDisplace: 0.017053212183527646, driftCycles: 2, tile: 12, sortThreshold: 0.5932750415988266,
     sortAxis: 'vertical', moshDecay: 0.8997874998836778, quantLevels: 8, grain: 0.26657230912242086,
@@ -31,7 +31,7 @@ const CANON = {
     stopJitter: [0.02516851094551384, -0.051634382000193, 0.0417234693467617,
       0.010482334736734628, 0.032278002994135024, 0.008471077512949704],
     horizon: 0.5896774014085531, sunElevation: 0.542511689160019, sunStrength: 0.7240639494033531,
-    bands: 13, hbands: 1, movement: 'classic', blocks: false, blocksN: 6,
+    bands: 13, hbands: 1, movement: 'classic', blocks: false, blocksN: 7,
     bandPhase: 0.5475297577213496, bandDrift: 0.07462609054986387,
     rowDisplace: 0.022370359115302562, driftCycles: 2, tile: 12, sortThreshold: 0.6645986850839107,
     sortAxis: 'horizontal', moshDecay: 0.8618357972288504, quantLevels: 8, grain: 0.06991859803907574,
@@ -40,13 +40,13 @@ const CANON = {
   },
 };
 
-test('canonical seeds regenerate byte-identically (Genesis v4 genome is frozen)', () => {
+test('canonical seeds regenerate byte-identically (Genesis v5 genome is frozen)', () => {
   for (const [hash, genome] of Object.entries(CANON)) {
     assert.deepEqual(genomeFromHash(hash), genome, `canonical seed drifted: ${hash.slice(0, 12)}…`);
   }
 });
 
-test('v4 preserved the pre-reserved DNA of the canonical seeds (only the movement overlay is new)', () => {
+test('v5 preserved the pre-reserved DNA of the canonical seeds (only the movement overlay is new)', () => {
   // Every field drawn *before* the reserved block must be byte-identical to v1 — that is the whole
   // point of spending reserved draws rather than reordering the key.
   const V1_DNA = {

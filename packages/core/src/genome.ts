@@ -77,10 +77,11 @@ export interface Genome {
   movement: GenesisMovement;
   /**
    * Square pixel-grid mosaic — override bands/hbands with a `blocksN × blocksN` grid of large
-   * pixels (the 1×1 → 2×2 → 4×4 lineage). ~30% of seeds. New in v2.
+   * pixels (the 1×1 → 2×2 → 4×4 lineage). New in v2; in v5 the **1×1 origin is half of all
+   * skies** — the entire visual area as one pixel of sky.
    */
   blocks: boolean;
-  /** Grid size for {@link blocks} mode, 1 (the origin) → ~24 (skewed small). New in v2. */
+  /** Grid size for {@link blocks} mode: 1 = the origin (~50% of seeds) → ~24 (skewed small). */
   blocksN: number;
   /** Per-band drift phase seed, 0 → 1. */
   bandPhase: number;
@@ -173,9 +174,10 @@ export function genome(rand: Rng): Genome {
   // loop
   const loopSeconds = range(rand, 20, 34);
 
-  // v4 structure — **True Clean is the sky** (~90%): flat one-colour cells changing as units.
-  // Everything else is rare. Derived from what were the first two reserved draws (g0..g3), so the
-  // draw POSITIONS are unchanged and every field above is byte-identical. keyVersion 4.
+  // v5 structure — **the 1×1 origin is HALF the sky**: the entire visual area as one pixel of
+  // sky, one flat colour breathing through the gradient (how lofi blue sky began). The other half
+  // is the pixel-grid family, still ~90% True Clean. Derived from what were the first two reserved
+  // draws (g0..g3), so the draw POSITIONS are unchanged and every field above is byte-identical.
   const g0 = rand();
   const g1 = rand();
   const g2 = rand();
@@ -183,25 +185,25 @@ export function genome(rand: Rng): Genome {
   // Horizontal split (columns). 1 = the classic single-column bars ("1×N", e.g. 1×9, 1×20), the
   // most common; otherwise a tidy `hbands × bands` grid, skewed small.
   const hbands0 = g0 < 0.5 ? 1 : 2 + Math.floor(Math.pow((g0 - 0.5) / 0.5, 2.0) * 30); // 1..32
-  // Square pixel-grid mosaic — the 1×1 → 2×2 → 4×4 pixel-multiplication lineage. ~30% of seeds.
-  const blocks0 = g2 < 0.3;
-  // Grid size: 1×1 is the origin (a single pulsing colour — rare); otherwise small tidy squares.
-  const blocksN = g3 < 0.04 ? 1 : 2 + Math.floor(Math.pow((g3 - 0.04) / 0.96, 2.2) * 22); // 1..24
 
-  // Movement. The "golden window" (g2 × g3) is the <1% classic slit-scan — chosen so the two
-  // original canonical picks land in it and keep the v1 look they were loved for. Otherwise g1
-  // splits: distorted 4%, sweep 6%, true-clean the rest (~90%).
+  // The "golden window" (g2 × g3) is the <1% classic slit-scan — chosen so the two original
+  // canonical picks land in it and keep the v1 look they were loved for. It takes precedence.
   const golden = g2 >= 0.42 && g2 < 0.48 && g3 >= 0.4 && g3 < 0.52;
+  // THE ORIGIN — 1×1 (~50%): the whole frame is ONE pixel, so it is True Clean by definition.
+  const oneByOne = !golden && g2 < 0.5;
+  // Otherwise g1 splits the movements: distorted 4%, sweep 6%, true-clean the rest (~90%).
   const movement: GenesisMovement = golden
     ? 'classic'
-    : g1 < 0.04
-      ? 'distorted'
-      : g1 < 0.1
-        ? 'sweep'
-        : 'true-clean';
-  // Classic is the pure v1 frame: single-column bars, no block mosaic.
-  const hbands = movement === 'classic' ? 1 : hbands0;
-  const blocks = movement === 'classic' ? false : blocks0;
+    : oneByOne || g1 >= 0.1
+      ? 'true-clean'
+      : g1 < 0.04
+        ? 'distorted'
+        : 'sweep';
+  // Classic is the pure v1 frame (single-column bars, no mosaic); 1×1 is a 1-cell mosaic.
+  const hbands = movement === 'classic' || oneByOne ? 1 : hbands0;
+  const blocks = movement === 'classic' ? false : oneByOne ? true : g2 >= 0.5 && g2 < 0.65;
+  // Grid size: 1 for the origin; otherwise small tidy squares (2..24, skewed small).
+  const blocksN = oneByOne ? 1 : 2 + Math.floor(Math.pow(g3, 2.2) * 22);
 
   // Clean movements read as flat, exact colour, so pull the "bit-crush" (dither/grain/chroma)
   // nearly to nothing; classic + distorted keep the full crush. A value remap, not a draw.

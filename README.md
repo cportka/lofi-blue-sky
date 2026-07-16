@@ -5,16 +5,18 @@
 > it is my meditation — sit with me and watch the sky go by
 > ˜”°•.˜”°• hello •°”˜.•°”˜
 
-**Version:** 0.7.0 · **License:** MIT · [Roadmap](./ROADMAP.md) · [Docs](./docs) · **Live:** https://cportka.github.io/lofi-blue-sky/
+**Version:** 0.8.0 · **License:** MIT · [Roadmap](./ROADMAP.md) · [Docs](./docs) · **Live:** https://cportka.github.io/lofi-blue-sky/
 
 A procedurally generated **lofi sky**, synthesized entirely in a fragment shader from a hash. No
-footage, no assets — a slow, meditative, seamless loop of a **clean grid of sky-pixels that pulse
-in colour**, in the 1×1 → 2×2 → 4×4 → 1×N lineage the project grew out of. Same hash, same sky, on
-every machine, forever.
+footage, no assets — a slow, meditative, seamless loop. **Half of all skies are the 1×1 origin:
+the entire frame is ONE pixel of sky**, breathing through the gradient — how lofi blue sky began;
+the rest are grids of flat sky-pixels changing as units (2×2 → 4×4 → 1×N …). Same hash, same sky,
+on every machine, forever.
 
 ![a lofi blue sky](./assets/renders/hero.png)
 
-_The same sky, five moments across one loop — the pixels pulse, the sky breathes:_
+_A **1×1 sky**, five moments across one loop — the entire frame is one pixel, journeying through
+the sunset:_
 
 ![loop filmstrip](./assets/renders/filmstrip.png)
 
@@ -54,29 +56,33 @@ the library of released skies.
 One core, swappable **engines** — each a sky algorithm with its own hash→params key and shaders
 ([docs/ENGINES.md](./docs/ENGINES.md)):
 
-- **Genesis** (above) — a grid of flat sky-pixels, **each exactly one colour, changing as one
-  unit** (True Clean, ~90% of seeds — the 1×1 → 2×2 → 4×4 → 1×N lineage). The rare movements:
-  **Clean Sweep** (the sun-bloom sweeping through the bars), **Distorted** (the smear + crush), and
-  the <1% **Classic** — the original v1 slit-scan the first canonical picks live in. Canonical.
-- **Billow** — rolling billowing clouds across a blue sky, near-clear to near-overcast, calm to
-  gusty — clean 4 skies in 5. Young; carries the experimental Phase-4 mosaic mode.
-- **Squall** — a clean pixel sky (every pixel breathing on its own phase) that a **rare squall of
-  datamosh** sweeps through and clears (macroblock motion error, cyan/magenta chroma tearing).
-  Young and experimental.
+- **Genesis** (above) — **half of all seeds are the 1×1 origin** (the whole frame as one pixel);
+  the rest are grids of flat sky-pixels, each exactly one colour, changing as one unit (True
+  Clean). The rare movements: **Clean Sweep** (the sun-bloom sweeping through the bars),
+  **Distorted** (the smear + crush), and the <1% **Classic** — the original v1 slit-scan the first
+  canonical picks live in. Canonical.
+- **Billow** — clouds across a blue sky in **20 named types** — Cirrus streaks, puffy Cumulus,
+  lens-smooth Lenticularis, wave-rowed Undulatus, Fog, up to the dark **Cumulonimbus** storm tower.
+  Clean 4 skies in 5. Young; carries the experimental Phase-4 mosaic mode.
+- **Squall** — a clean pixel sky (every pixel breathing on its own phase) that a rare **squall**
+  sweeps through: big wind dragging whole rows sideways, waves bending the frame, macroblock
+  datamosh and cyan/magenta tearing at the peak. Young and experimental.
 
 ![Billow — rolling clouds](./assets/renders/billow.png)
 
-| Genesis — clean bars | Genesis — blue pixels | Genesis — the <1% classic | Squall — a passing squall |
+| Squall — waves mid-burst | Billow — Cumulonimbus | Billow — Lenticularis | Genesis — the <1% classic |
 |---|---|---|---|
-| ![](./assets/renders/v0.7-genesis-bars.png) | ![](./assets/renders/v0.7-genesis-blue.png) | ![](./assets/renders/v0.7-genesis-classic.png) | ![](./assets/renders/v0.7-squall.png) |
+| ![](./assets/renders/v0.8-squall-waves.png) | ![](./assets/renders/v0.8-billow-cumulonimbus.png) | ![](./assets/renders/v0.8-billow-lenticularis.png) | ![](./assets/renders/v0.8-genesis-classic.png) |
 
 ## The look
 
-Genesis: a sky is a grid of flat, exact **pixels** (`1×1 → 2×2 → 4×4 → 1×N`) sampled from a sunset
-gradient at each cell's centre — so the **entire bar/pixel is one colour, and it changes as one
-unit**, each cell on its own phase over a slow 20–34s seamless loop: the pixels of a low-res sky
-video. A seed in the **True Horizon** window carries a crisp, always-distinguishable colour edge at
-the horizon. The slit-scan smear and ordered-dither "bit-crush" survive only in the rare movements.
+Genesis: a sky is a grid of flat, exact **pixels** sampled from a sunset gradient at each cell's
+centre — and **half the time that grid is 1×1: the whole frame is a single pixel**, its one colour
+journeying deep through the gradient over a slow 20–34s seamless loop (the deepest pulse in the
+family). Larger grids (2×2 → 4×4 → 1×N …) change each cell as one unit on its own phase: the pixels
+of a low-res sky video. A seed in the **True Horizon** window carries a crisp,
+always-distinguishable colour edge at the horizon. The slit-scan smear and ordered-dither
+"bit-crush" survive only in the rare movements.
 Muted, dusty, quantized palettes — Sodium, Powder, Olive, Periwinkle. See
 [docs/AESTHETIC.md](./docs/AESTHETIC.md) and the [palette sheet](./assets/palettes/palettes.svg).
 
@@ -128,10 +134,11 @@ slit-scan beauties they were first picked as:
 engines swappable and started **Billow** (rolling clouds); **v0.4.0** added the museum + fxhash
 release path; **v0.5.0** opened the Genesis key with 2D pixel splits and added **Squall** (a
 datamosh); **v0.6.0** turned the family toward clean pulsating pixel-grids; **v0.7.0** landed
-**True Clean** — the entire bar/pixel as one colour changing as one unit, ~90% of Genesis — with
-Clean Sweep / Distorted / Classic as the rare movements, a visualized **True Horizon**, livelier
-Squall, wider Billow weather, and the museum's full gif grid (Genesis key → v4). Open design calls
-are in [docs/DECISIONS.md](./docs/DECISIONS.md); the engine model is in
+**True Clean** (the entire bar/pixel as one colour changing as one unit) with the rare movements
+and a visualized **True Horizon**; **v0.8.0** brought it all the way home — **the 1×1 origin is
+half of all Genesis skies** (key → v5), Squall gained real wind and waves (key → v4), and Billow
+grew a **20-type cloud taxonomy** (key → v4). Open design calls are in
+[docs/DECISIONS.md](./docs/DECISIONS.md); the engine model is in
 [docs/ENGINES.md](./docs/ENGINES.md).
 
 ---

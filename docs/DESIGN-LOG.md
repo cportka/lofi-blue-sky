@@ -146,6 +146,28 @@ corruption when it lands. **Billow** got weather — coverage from near-clear to
 1–4, and an explicit 80/20 clean/distorted finish. And the **museum** now shows all 23 released
 gifs as an animated grid.
 
+## v0.8.0 — the 1×1 origin, the squall's wind, and a cloud taxonomy
+
+**Genesis came all the way home.** The original lofi blue sky was a single 1×1 pixel pulsing with
+colour — so now **half of all Genesis skies are exactly that**: the entire frame is one pixel, its
+colour journeying deep through the gradient over the loop (the deepest pulse in the family). The
+featured filmstrip is now a 1×1 sky — five moments of one colour becoming another:
+
+![one pixel, five moments](../assets/renders/filmstrip.png)
+
+**Squall earned its name.** When the burst envelope swells, big wind drags whole rows of blocks
+sideways in held, snapping shears — the long horizontal datamosh smears of the reference loops —
+and waves bend the frame, all of it clearing to a calm pixel sky at the seam.
+
+**Billow became a taxonomy.** Twenty named cloud types, each a parameter recipe the genome draws
+inside: thin stretched Cirrus, lens-smooth Lenticularis, wave-rowed Undulatus, soft Fog, grey
+Nimbostratus sheets, up to the dark churning **Cumulonimbus** storm tower. Two new shader axes —
+horizontal *stretch* and storm *darken* — carry the variety.
+
+| Squall — waves mid-burst | Cumulonimbus | Lenticularis | Cirrus |
+|---|---|---|---|
+| ![](../assets/renders/v0.8-squall-waves.png) | ![](../assets/renders/v0.8-billow-cumulonimbus.png) | ![](../assets/renders/v0.8-billow-lenticularis.png) | ![](../assets/renders/v0.8-billow-cirrus.png) |
+
 ---
 
 ## Adding an entry

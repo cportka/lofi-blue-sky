@@ -15,8 +15,8 @@ export const GENESIS: Engine<Genome> = {
   id: 'genesis',
   name: 'Genesis',
   description:
-    'The original — a grid of flat sky-pixels, each exactly one colour, changing as one unit over a seamless loop (True Clean, ~90%). Clean Sweep, Classic slit-scan, and Distorted are the rare movements.',
-  keyVersion: 4,
+    'The original — half of all skies are the 1×1 origin: the entire frame as ONE pixel of sky, breathing through the gradient. The rest are grids of flat sky-pixels changing as units (True Clean); Clean Sweep, Classic slit-scan, and Distorted are the rare movements.',
+  keyVersion: 5,
   genome: genesisGenome,
   features: deriveFeatures,
   createRenderer(gl, iw, ih): EngineRenderer<Genome> {

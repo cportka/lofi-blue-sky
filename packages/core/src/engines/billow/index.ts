@@ -6,7 +6,7 @@
 
 import type { Engine } from '../types.js';
 import { BillowRenderer } from './renderer.js';
-import { billowGenome, type BillowParams, type BillowMode } from './genome.js';
+import { billowGenome, CLOUD_TYPES, type BillowParams, type BillowMode } from './genome.js';
 import { billowFeatures } from './features.js';
 import { BILLOW_PALETTES, MAX_SKY_STOPS } from './palettes.js';
 import { rangeInt, type Rng } from '../../rng.js';
@@ -19,6 +19,20 @@ const PROPOSE: Record<string, (p: BillowParams, r: R) => Partial<BillowParams>> 
     const others = BILLOW_PALETTES.filter((x) => x.id !== p.skyPaletteId);
     const pick = others[Math.floor(r() * others.length)] ?? BILLOW_PALETTES[0]!;
     return { skyPaletteId: pick.id, skyJitter: Array.from({ length: MAX_SKY_STOPS }, () => uf(r, -0.05, 0.05)) };
+  },
+  // Re-cast the sky as a different cloud type: pick another recipe and redraw its parameters.
+  Clouds: (p, r) => {
+    const others = CLOUD_TYPES.filter((t) => t.id !== p.cloudType);
+    const t = others[Math.floor(r() * others.length)] ?? CLOUD_TYPES[0]!;
+    return {
+      cloudType: t.id,
+      coverage: uf(r, t.coverage[0], t.coverage[1]),
+      softness: uf(r, t.softness[0], t.softness[1]),
+      scale: uf(r, t.scale[0], t.scale[1]),
+      stretch: uf(r, t.stretch[0], t.stretch[1]),
+      darken: uf(r, t.darken[0], t.darken[1]),
+      billow: uf(r, t.billow[0], t.billow[1]),
+    };
   },
   Coverage: (_p, r) => ({ coverage: uf(r, 0.25, 0.78) }),
   Wind: (p, r) => ({ wind: ((p.wind - 1 + rangeInt(r, 1, 3)) % 4) + 1 }),
@@ -56,8 +70,8 @@ export const BILLOW: Engine<BillowParams> = {
   id: 'billow',
   name: 'Billow',
   description:
-    'Rolling billowing clouds sweeping across a blue sky — near-clear to near-overcast, calm to gusty. Procedural FBM, seamless drift + churn; clean 4 in 5 skies. Young — carries the experimental Phase-4 mosaic mode.',
-  keyVersion: 3,
+    'Clouds across a blue sky — 20 named types, thin cirrus streaks to the cumulonimbus storm tower. Procedural FBM, seamless drift + churn; clean 4 in 5 skies. Young — carries the experimental Phase-4 mosaic mode.',
+  keyVersion: 4,
   genome: billowGenome,
   features: billowFeatures,
   createRenderer: (gl, iw, ih) => new BillowRenderer(gl, iw, ih),
@@ -65,7 +79,7 @@ export const BILLOW: Engine<BillowParams> = {
 };
 
 // re-exports for tooling/tests
-export { billowGenome, billowGenomeFromHash } from './genome.js';
-export type { BillowParams, BillowMode } from './genome.js';
+export { billowGenome, billowGenomeFromHash, CLOUD_TYPES, getCloudType } from './genome.js';
+export type { BillowParams, BillowMode, CloudType } from './genome.js';
 export { billowFeatures } from './features.js';
 export { BILLOW_PALETTES, getBillowPalette } from './palettes.js';

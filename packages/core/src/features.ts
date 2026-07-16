@@ -9,7 +9,7 @@ import { getPaletteById, type PaletteFamily } from './palettes.js';
 
 export interface Features {
   Palette: PaletteFamily;
-  Split: 'Bars' | 'Grid' | 'Blocks';
+  Split: 'Single Pixel' | 'Bars' | 'Grid' | 'Blocks';
   'Band Density': 'Fine' | 'Wide';
   Movement: 'True Clean' | 'Clean Sweep' | 'Classic' | 'Distorted';
   Drift: 'Still' | 'Flowing';
@@ -30,8 +30,15 @@ export function deriveFeatures(g: Genome): Features {
   const palette = getPaletteById(g.paletteId);
   const family: PaletteFamily = palette ? palette.family : 'Sodium';
 
-  // How the frame is split: a square block mosaic, a multi-column grid, or the classic bars.
-  const split = g.blocks ? 'Blocks' : g.hbands > 1 ? 'Grid' : 'Bars';
+  // How the frame is split: the 1×1 origin (the whole frame as one pixel, ~half of all skies),
+  // a square block mosaic, a multi-column grid, or the classic bars.
+  const split = g.blocks
+    ? g.blocksN === 1
+      ? 'Single Pixel'
+      : 'Blocks'
+    : g.hbands > 1
+      ? 'Grid'
+      : 'Bars';
 
   const bandDensity = g.bands >= 24 ? 'Fine' : 'Wide';
 

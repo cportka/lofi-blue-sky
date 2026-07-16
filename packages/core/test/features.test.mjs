@@ -12,7 +12,7 @@ test('deriveFeatures is deterministic and complete', () => {
     const f = deriveFeatures(g);
     for (const k of KEYS) assert.ok(k in f, `missing feature ${k}`);
     assert.equal(f.Palette, getPaletteById(g.paletteId).family);
-    assert.ok(['Bars', 'Grid', 'Blocks'].includes(f.Split));
+    assert.ok(['Single Pixel', 'Bars', 'Grid', 'Blocks'].includes(f.Split));
     assert.ok(['Fine', 'Wide'].includes(f['Band Density']));
     assert.ok(['True Clean', 'Clean Sweep', 'Classic', 'Distorted'].includes(f.Movement));
     assert.ok(['Still', 'Flowing'].includes(f.Drift));
@@ -35,10 +35,11 @@ const base = {
 const mk = (o) => ({ ...base, ...o });
 
 test('features discriminate at their thresholds', () => {
-  // Split: Bars (1 column), Grid (>1 column), Blocks (square mosaic overrides)
+  // Split: Single Pixel (1×1 origin), Bars (1 column), Grid (>1 column), Blocks (square mosaic)
   assert.equal(deriveFeatures(mk({ hbands: 1, blocks: false })).Split, 'Bars');
   assert.equal(deriveFeatures(mk({ hbands: 8, blocks: false })).Split, 'Grid');
   assert.equal(deriveFeatures(mk({ hbands: 8, blocks: true })).Split, 'Blocks');
+  assert.equal(deriveFeatures(mk({ hbands: 1, blocks: true, blocksN: 1 })).Split, 'Single Pixel');
   // Movement labels track the genome's movement
   assert.equal(deriveFeatures(mk({ movement: 'true-clean' })).Movement, 'True Clean');
   assert.equal(deriveFeatures(mk({ movement: 'sweep' })).Movement, 'Clean Sweep');
@@ -69,13 +70,15 @@ test('features discriminate at their thresholds', () => {
 test('features actually vary across the hash space (no zero-rarity trait)', () => {
   const seen = { Palette: new Set(), Split: new Set(), 'Band Density': new Set(), Movement: new Set(), Drift: new Set(), Processing: new Set() };
   let perfect = false, corrupt = false;
-  for (let i = 0; i < 600; i++) {
+  // Full Corruption now lives only in the ~2% classic/distorted movements, so it is ULTRA rare —
+  // scan a deeper (still deterministic) corpus to prove it remains reachable.
+  for (let i = 0; i < 3000; i++) {
     const f = deriveFeatures(genomeFromHash('vary-' + i));
-    for (const k of Object.keys(seen)) seen[k].add(f[k]);
+    if (i < 600) for (const k of Object.keys(seen)) seen[k].add(f[k]);
     perfect ||= f['True Horizon'];
     corrupt ||= f['Full Corruption'];
   }
   for (const k of Object.keys(seen)) assert.ok(seen[k].size >= 2, `feature "${k}" never varies`);
   assert.ok(perfect, 'True Horizon never occurs');
-  assert.ok(corrupt, 'Full Corruption never occurs');
+  assert.ok(corrupt, 'Full Corruption never occurs (scanned 3000 seeds)');
 });

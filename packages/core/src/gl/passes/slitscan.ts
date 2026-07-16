@@ -60,7 +60,10 @@ void main() {
 
   // The heartbeat: every cell's colour pulses over the loop — its sample slides up and down the
   // gradient (integer cycles → seamless), so a flat pixel breathes through the sky's colours.
-  const float PULSE_GAIN = 1.9;
+  // The 1×1 origin (the whole frame as ONE pixel) gets a much deeper pulse, so the single colour
+  // clearly journeys through the sky over the loop instead of hovering.
+  bool onePixel = rows < 1.5 && cols < 1.5;
+  float PULSE_GAIN = onePixel ? 4.6 : 1.9;
   float pulse = uBandDrift * PULSE_GAIN
     * sin(TAU * (driftCycles * uLoopT + seed) + (uBandPhase + colPhase) * TAU);
 

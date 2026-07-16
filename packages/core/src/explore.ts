@@ -62,24 +62,36 @@ const PROPOSE: Record<string, (g: Genome, r: R) => Partial<Genome>> = {
   },
   Split: (g, r) => {
     const cur = deriveFeatures(g).Split;
-    // Propose a value that crosses the current one. Bars ↔ Grid ↔ Blocks; skewed small like the
-    // genome (wide splits stay rare), so clicking Split stays in pleasing territory. Classic is
-    // bars-only, so re-splitting it moves it to the default movement first.
+    // Propose a value that crosses the current one. Single Pixel ↔ Bars ↔ Grid ↔ Blocks; skewed
+    // small like the genome (wide splits stay rare), so clicking Split stays in pleasing
+    // territory. Classic is bars-only, so re-splitting it moves it to the default movement first.
     const base: Partial<Genome> = g.movement === 'classic' ? { movement: 'true-clean' } : {};
     const someHbands = () => (r() < 0.7 ? ui(r, 2, 10) : ui(r, 11, 32));
     const someBlocksN = () => (r() < 0.7 ? ui(r, 2, 8) : ui(r, 9, 24));
+    const onePixel: Partial<Genome> = { ...base, movement: 'true-clean', blocks: true, blocksN: 1, hbands: 1 };
+    if (cur === 'Single Pixel') {
+      const roll = r();
+      return roll < 0.34
+        ? { ...base, blocks: false, hbands: 1 }
+        : roll < 0.67
+          ? { ...base, blocks: false, hbands: someHbands() }
+          : { ...base, blocks: true, blocksN: someBlocksN() };
+    }
     if (cur === 'Blocks') {
-      return r() < 0.5
+      const roll = r();
+      return roll < 0.34 ? onePixel : roll < 0.67
         ? { ...base, blocks: false, hbands: 1 }
         : { ...base, blocks: false, hbands: someHbands() };
     }
     if (cur === 'Grid') {
-      return r() < 0.5
+      const roll = r();
+      return roll < 0.34 ? onePixel : roll < 0.67
         ? { ...base, blocks: false, hbands: 1 }
         : { ...base, blocks: true, blocksN: someBlocksN() };
     }
     // Bars
-    return r() < 0.5
+    const roll = r();
+    return roll < 0.34 ? onePixel : roll < 0.67
       ? { ...base, blocks: false, hbands: someHbands() }
       : { ...base, blocks: true, blocksN: someBlocksN() };
   },

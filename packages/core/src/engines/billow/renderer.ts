@@ -107,6 +107,8 @@ export class BillowRenderer implements EngineRenderer<BillowParams> {
     this.billow.f('uCoverage', p.coverage);
     this.billow.f('uSoftness', p.softness);
     this.billow.f('uScale', p.scale);
+    this.billow.f('uStretch', p.stretch);
+    this.billow.f('uDarken', p.darken);
     this.billow.f('uWind', p.wind);
     this.billow.f('uBillow', p.billow);
     this.billow.f('uPeriod', p.period);
