@@ -25,7 +25,13 @@ const PROPOSE: Record<string, (p: SquallParams, r: R) => Partial<SquallParams>> 
     p.amount < 0.3
       ? { amount: uf(r, 0.34, 0.62) }
       : { amount: uf(r, 0.13, 0.27) },
-  Squalls: (p, r) => ({ bursts: ((p.bursts - 1 + rangeInt(r, 1, 2)) % 3) + 1 }),
+  Squalls: (p, r) => ({ bursts: ((p.bursts - 1 + rangeInt(r, 1, 3)) % 4) + 1 }),
+  Winds: (p, r) =>
+    p.gust > 0.38
+      ? { gust: uf(r, 0.12, 0.22) }
+      : p.gust > 0.24
+        ? { gust: r() < 0.5 ? uf(r, 0.4, 0.5) : uf(r, 0.12, 0.22) }
+        : { gust: uf(r, 0.4, 0.5), wave: uf(r, 0.06, 0.11) },
   Blocks: (p, r) => {
     const ratio = Math.max(p.blocksX, p.blocksY) / Math.min(p.blocksX, p.blocksY);
     if (ratio > 1.6) {
@@ -67,8 +73,8 @@ export const SQUALL: Engine<SquallParams> = {
   id: 'squall',
   name: 'Squall',
   description:
-    'A clean grid of sky-pixels that a rare squall of datamosh sweeps through and clears. Lively per-pixel colour breathe; when the squall hits, hard macroblock motion and cyan/magenta chroma tearing. Young and experimental.',
-  keyVersion: 3,
+    'A clean grid of sky-pixels that a rare squall sweeps through and clears — big wind dragging whole rows sideways, waves bending the frame, macroblock datamosh and cyan/magenta chroma tearing at the peak. Young and experimental.',
+  keyVersion: 4,
   genome: squallGenome,
   features: squallFeatures,
   createRenderer: (gl, iw, ih) => new SquallRenderer(gl, iw, ih),

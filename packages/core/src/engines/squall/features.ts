@@ -16,10 +16,14 @@ export function squallFeatures(p: SquallParams): Features {
   const blocks = ratio > 1.6 ? 'Torn' : p.blocksX <= 9 ? 'Coarse' : 'Fine';
   const tearing = p.tear > 0.032 ? 'Bleeding' : 'Fringed';
 
+  // The squall's wind — how hard the rows get dragged when the burst hits.
+  const winds = p.gust > 0.38 ? 'Gale' : p.gust > 0.24 ? 'Gusty' : 'Breeze';
+
   return {
     Sky: palette ? palette.name : 'Powder Signal',
     Corruption: corruption,
     Squalls: cadence,
+    Winds: winds,
     Blocks: blocks,
     Tearing: tearing,
     // A rare heavier wipe: a lot of blocks flood hard, with hard snaps.

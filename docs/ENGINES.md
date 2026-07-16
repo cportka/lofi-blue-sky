@@ -6,9 +6,9 @@ more than one look. Today there are three:
 
 | Engine | Look | Status |
 |--------|------|--------|
-| **Genesis** | a grid of flat sky-**pixels**, each one colour changing as one unit (`1×1 → 2×2 → 4×4 → 1×N`). Movements: **True Clean** ~90% · Clean Sweep ~6% · Distorted ~4% · **Classic** (the v1 slit-scan) <1% | **canonical** — each seed's DNA is locked; key at `keyVersion 4` |
-| **Billow** | rolling billowing clouds across a blue sky (toward `35`) — near-clear to near-overcast; clean 4 in 5 | **young** — `keyVersion 3`; key reserves blank space |
-| **Squall** | a clean pixel sky (per-pixel breathe) a rare squall of datamosh sweeps through (toward `13`) | **young, experimental** — `keyVersion 3`; cyan/magenta tearing, seamless |
+| **Genesis** | **half of all seeds are the 1×1 origin** — the whole frame as one pixel of sky; the rest are grids of flat pixels changing as units. Movements: True Clean ~95% · Clean Sweep ~3% · Distorted ~2% · **Classic** (the v1 slit-scan) <1% | **canonical** — each seed's DNA is locked; key at `keyVersion 5` |
+| **Billow** | clouds in **20 named types** — Cirrus to the Cumulonimbus storm tower (toward `35`); clean 4 in 5 | **young** — `keyVersion 4`; key reserves blank space |
+| **Squall** | a clean pixel sky a rare squall sweeps through — big wind, waves, datamosh (toward `13`) | **young, experimental** — `keyVersion 4`; cyan/magenta tearing, seamless |
 
 ![Billow](../assets/renders/billow.png)
 

@@ -107,6 +107,10 @@ export class SquallRenderer implements EngineRenderer<SquallParams> {
     this.squall.f('uTear', p.tear);
     this.squall.f('uBloom', p.bloom);
     this.squall.f('uStreak', p.streak);
+    this.squall.f('uGust', p.gust);
+    this.squall.f('uWave', p.wave);
+    this.squall.f('uWaveN', p.waveN);
+    this.squall.f('uWaveCycles', p.waveCycles);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
     // pass 2: post → screen

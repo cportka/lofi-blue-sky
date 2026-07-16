@@ -4,6 +4,34 @@ All notable changes to this project are documented here. The format follows Keep
 (https://keepachangelog.com) and the project uses Semantic Versioning (https://semver.org).
 Every change bumps the version and adds an entry below.
 
+## [0.8.0] - 2026-07-16
+
+The 1×1 origin becomes half the sky, the Squall earns its name, and Billow gets a real cloud
+taxonomy.
+
+### Changed
+- **Genesis (key → v5): the 1×1 origin is ~50% of all skies.** The original lofi blue sky was a
+  single 1×1 pixel pulsing with colour — now half of all seeds render the **entire frame as ONE
+  pixel of sky**, its colour journeying deep through the gradient (a boosted pulse gain so the
+  single colour clearly travels, 1–3 cycles per loop). 1×1 is True Clean by definition; the grid
+  family fills the other half; every non-True-Clean movement stays individually rare, and the <1%
+  Classic golden window (the original canonical picks) is untouched. New **Split: Single Pixel**
+  trait; keyVersion 4 → 5; DNA byte-identical; canon re-blessed.
+- **Squall (key → v4): squall-ish bursts.** When the burst envelope swells, the sky now takes
+  **big wind** — whole rows of blocks dragged sideways in held, snapping shears (the long datamosh
+  smears of the reference loops) — and **waves**, a loop-periodic warp bending the frame. Corruption
+  ceiling raised (amount up to 0.70), up to 4 bursts per loop, and a new **Winds**
+  (Breeze/Gusty/Gale) trait. All of it scales with the envelope, so the seam stays clean.
+- **Billow (key → v4): a 20-type cloud taxonomy.** Billow is all about cloud types now — the genome
+  picks one of 20 named recipes (Cirrus, Cirrostratus, Cirrocumulus, Altocumulus, Altostratus,
+  Stratus, Stratocumulus, Nimbostratus, Cumulus Humilis, Cumulus, Cumulus Congestus,
+  **Cumulonimbus**, Mammatus, Lenticularis, Castellanus, Undulatus, Fractus, Contrails, Fog, Fair
+  Weather) and draws every cloud parameter inside the type's ranges. Two new shader axes carry the
+  variety: horizontal **stretch** (cirrus streaks, lenticular waves) and storm **darken** (nimbus
+  greying). New **Clouds** trait names the type; the 80/20 clean/distorted finish stays.
+- Featured stills re-shot: the hero is a 13×13 sodium pixel grid, and the **filmstrip is now a 1×1
+  sky** — five moments of one pixel journeying through the sunset (the original concept, verbatim).
+
 ## [0.7.0] - 2026-07-15
 
 **True Clean** — the entire bar/pixel is exactly one colour and changes as one unit. What v0.6 got

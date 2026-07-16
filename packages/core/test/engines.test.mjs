@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ENGINES, ENGINE_IDS, DEFAULT_ENGINE_ID, getEngine } from '../dist/engines/registry.js';
 import { billowGenomeFromHash, billowFeatures } from '../dist/engines/billow/index.js';
-import { BILLOW_RESERVED } from '../dist/engines/billow/genome.js';
+import { BILLOW_RESERVED, CLOUD_TYPES, getCloudType } from '../dist/engines/billow/genome.js';
 import { squallGenomeFromHash, squallFeatures } from '../dist/engines/squall/index.js';
 import { SQUALL_RESERVED } from '../dist/engines/squall/genome.js';
 
@@ -37,7 +37,7 @@ test('Billow key is deterministic, in-range, and reserves blank space', () => {
 });
 
 test('Billow features are deterministic and complete', () => {
-  const KEYS = ['Sky', 'Coverage', 'Wind', 'Churn', 'Finish', 'Mode', 'Golden Light', 'Full Mosaic'];
+  const KEYS = ['Sky', 'Clouds', 'Coverage', 'Wind', 'Churn', 'Finish', 'Mode', 'Golden Light', 'Full Mosaic'];
   let clouds = 0, mosaic = 0;
   for (let i = 0; i < 300; i++) {
     const p = billowGenomeFromHash('bf-' + i);
@@ -48,6 +48,22 @@ test('Billow features are deterministic and complete', () => {
     else clouds++;
   }
   assert.ok(clouds > 0 && mosaic > 0, 'expected a mix of clouds and the experimental mosaic mode');
+});
+
+test('Billow spans the cloud taxonomy: 20 types, most reachable in a modest sample', () => {
+  assert.equal(CLOUD_TYPES.length, 20, 'the taxonomy holds 20 cloud types');
+  const seen = new Set();
+  for (let i = 0; i < 800; i++) {
+    const p = billowGenomeFromHash('ct-' + i);
+    const t = getCloudType(p.cloudType);
+    assert.ok(t, `unknown cloud type ${p.cloudType}`);
+    // params were drawn inside the type's ranges
+    assert.ok(p.coverage >= t.coverage[0] - 1e-9 && p.coverage <= t.coverage[1] + 1e-9, 'coverage in type range');
+    assert.ok(p.stretch >= t.stretch[0] - 1e-9 && p.stretch <= t.stretch[1] + 1e-9, 'stretch in type range');
+    assert.ok(p.darken >= t.darken[0] - 1e-9 && p.darken <= t.darken[1] + 1e-9, 'darken in type range');
+    seen.add(p.cloudType);
+  }
+  assert.ok(seen.size >= 16, `expected most cloud types in 800 seeds, saw ${seen.size}`);
 });
 
 test('Billow is light on the distortion: ~80% of skies are clean', () => {
@@ -66,10 +82,14 @@ test('Squall key is deterministic, in-range, and reserves blank space', () => {
     assert.ok(p.blocksX >= 4 && p.blocksX <= 18 && Number.isInteger(p.blocksX));
     assert.ok(p.blocksY >= 4 && p.blocksY <= 18 && Number.isInteger(p.blocksY));
     assert.ok(p.steps >= 5 && p.steps <= 12 && Number.isInteger(p.steps)); // integer held-frames → seamless
-    assert.ok(p.bursts >= 1 && p.bursts <= 3 && Number.isInteger(p.bursts)); // integer sweeps → seamless envelope
+    assert.ok(p.bursts >= 1 && p.bursts <= 4 && Number.isInteger(p.bursts)); // integer sweeps → seamless envelope
     assert.ok(p.pulseCycles >= 2 && p.pulseCycles <= 5 && Number.isInteger(p.pulseCycles)); // integer → seamless
     assert.ok(p.pulse >= 0.06 && p.pulse <= 0.16); // lively — the sky must visibly move
-    assert.ok(p.amount >= 0.12 && p.amount <= 0.62); // corruption skews light — mostly clean
+    assert.ok(p.amount >= 0.12 && p.amount <= 0.7); // corruption skews light — mostly clean
+    assert.ok(p.gust >= 0.12 && p.gust <= 0.5); // the squall's wind
+    assert.ok(p.wave >= 0.02 && p.wave <= 0.11);
+    assert.ok(p.waveN >= 2 && p.waveN <= 6 && Number.isInteger(p.waveN));
+    assert.ok(p.waveCycles >= 1 && p.waveCycles <= 3 && Number.isInteger(p.waveCycles)); // integer → seamless
     assert.ok(p.chroma === 0 || (p.chroma > 0 && p.chroma <= 0.4));
     assert.equal(p.skyJitter.length, 5);
     assert.equal(p.reserved.length, SQUALL_RESERVED);
@@ -78,8 +98,8 @@ test('Squall key is deterministic, in-range, and reserves blank space', () => {
 });
 
 test('Squall features are deterministic, complete, and vary', () => {
-  const KEYS = ['Sky', 'Corruption', 'Squalls', 'Blocks', 'Tearing', 'Signal Lost', 'Clear Skies'];
-  const seen = { Corruption: new Set(), Squalls: new Set(), Blocks: new Set(), Tearing: new Set() };
+  const KEYS = ['Sky', 'Corruption', 'Squalls', 'Winds', 'Blocks', 'Tearing', 'Signal Lost', 'Clear Skies'];
+  const seen = { Corruption: new Set(), Squalls: new Set(), Winds: new Set(), Blocks: new Set(), Tearing: new Set() };
   for (let i = 0; i < 400; i++) {
     const p = squallGenomeFromHash('sf-' + i);
     const f = squallFeatures(p);

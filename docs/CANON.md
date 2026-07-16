@@ -8,12 +8,12 @@ This doc draws the line between what is frozen and what is free to evolve.
 **opened** — most gently by appending reserved draws (pixels byte-identical), and, once, by
 *spending* those reserved draws to give them meaning (a `keyVersion` bump). The rule below binds
 **at mint**; until then, a key change is allowed if it bumps `keyVersion` and preserves each seed's
-**DNA** (every draw *before* the reserved block). Genesis is currently at **`keyVersion 4`**: v2
+**DNA** (every draw *before* the reserved block). Genesis is currently at **`keyVersion 5`**: v2
 spent two reserved draws on geometry (v0.5.0); v3 made clean pixels the default (v0.6.0); v4
-(v0.7.0) introduced **movements** — True Clean ~90% (the whole cell one colour, changing as a
-unit), Clean Sweep ~6%, Distorted ~4%, and the <1% Classic golden window that holds the original
-canonical picks in their v1 look. Same DNA per seed throughout. (Billow and Squall are at
-`keyVersion 3`, still young and unfrozen.) See
+(v0.7.0) introduced **movements** (True Clean / Clean Sweep / Distorted / the <1% Classic golden
+window holding the original canonical picks); v5 (v0.8.0) made the **1×1 origin half of all
+skies** — the entire frame as one pixel. Same DNA per seed throughout. (Billow and Squall are at
+`keyVersion 4`, still young and unfrozen.) See
 [ENGINES.md](./ENGINES.md#keys-versions-and-reserved-space).
 
 ## Frozen at mint (the seed → pixels contract)
@@ -43,12 +43,12 @@ If you change a shader or the genome, these fail on purpose. That failure is the
 
 Held as regression anchors (add your favourites here — pin both the genome and the pixels):
 
-| seed | look (under Genesis v4) |
+| seed | look (under Genesis v5) |
 |------|------|
 | `00f50f353cf56cfa55f3b32404db3196e7cef86e37bd4b0fbca9304a8dd6097f` | **Classic** — the original v1 degraded sodium sunset (raw crush, drift, smear) |
 | `3ebed465933f11af41fb9f999635ca11ea55c1357cdcba0f3d4bc11f9de5ff64` | **Classic** — the original v1 olive sky |
 
-Both picks sit in the v4 key's <1% **golden window** (`g2 × g3`), deliberately placed so they keep
+Both picks sit in the key's <1% **golden window** (`g2 × g3`), deliberately placed so they keep
 the v1 look they were first loved as. `canon.test.mjs` also asserts each pick's **pre-reserved
 DNA** (palette, bands, horizon, …) is byte-identical to v1 — the v2→v4 overlays changed the
 movement/geometry, never the DNA.

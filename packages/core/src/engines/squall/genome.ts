@@ -37,6 +37,11 @@ export interface SquallParams extends BaseParams {
   tear: number; // cyan/magenta chroma-separation strength
   bloom: number; // how hard corrupt blocks flood toward the hot/cold duo
   streak: number; // horizontal pixel-sort smear strength
+  // the squall itself — big wind and waves that swell with the burst envelope (v0.8)
+  gust: number; // horizontal row-shear at the squall's peak (whole rows dragged sideways)
+  wave: number; // wavy warp amplitude at the peak
+  waveN: number; // integer spatial wave count
+  waveCycles: number; // integer temporal wave cycles per loop → seamless
   // shared post
   quantLevels: number;
   grain: number;
@@ -63,15 +68,21 @@ export function squallGenome(rand: Rng): SquallParams {
   const blocksX = rangeInt(rand, 4, 18);
   const blocksY = chance(rand, 0.65) ? blocksX : rangeInt(rand, 4, 18);
   const steps = rangeInt(rand, 5, 12); // integer held-frames → seamless snaps (snappier judder)
-  const bursts = rangeInt(rand, 1, 3); // integer sweeps → env returns to clear at the seam
+  const bursts = rangeInt(rand, 1, 4); // integer sweeps → env returns to clear at the seam
   // Punchier envelope so the squall is a brief spike — the sky is CLEAN most of the loop.
   const sharpness = range(rand, 2.6, 6.0);
-  // Corruption is the rare seasoning: the fraction of blocks that go corrupt skews low.
-  const amount = 0.12 + Math.pow(rand(), 1.8) * 0.5; // 0.12..0.62, skewed low
-  const motion = range(rand, 0.05, 0.22); // harder macroblock displacement when it DOES hit
+  // Corruption skews low, but the ceiling is higher: when a big squall hits, it HITS.
+  const amount = 0.12 + Math.pow(rand(), 1.6) * 0.58; // 0.12..0.70, skewed low
+  const motion = range(rand, 0.06, 0.26); // harder macroblock displacement when it DOES hit
   const tear = range(rand, 0.015, 0.06);
   const bloom = range(rand, 0.3, 0.75);
   const streak = range(rand, 0.1, 0.7);
+  // The squall itself — big wind (whole rows of blocks dragged sideways, held per step, like the
+  // datamosh smears of the reference loops) and waves (a warp that swells with the burst).
+  const gust = range(rand, 0.12, 0.5);
+  const wave = range(rand, 0.02, 0.11);
+  const waveN = rangeInt(rand, 2, 6); // spatial waves across the frame
+  const waveCycles = rangeInt(rand, 1, 3); // integer → seamless
 
   const quantLevels = rangeInt(rand, 6, 18);
   const grain = range(rand, 0.03, 0.22); // lighter crush — the clean sky dominates
@@ -102,6 +113,10 @@ export function squallGenome(rand: Rng): SquallParams {
     tear,
     bloom,
     streak,
+    gust,
+    wave,
+    waveN,
+    waveCycles,
     quantLevels,
     grain,
     dither,

@@ -39,6 +39,10 @@ uniform float uMotion;
 uniform float uTear;
 uniform float uBloom;
 uniform float uStreak;
+uniform float uGust;
+uniform float uWave;
+uniform float uWaveN;
+uniform float uWaveCycles;
 
 vec3 skyRamp(float t) {
   t = clamp(t, 0.0, 1.0);
@@ -106,7 +110,18 @@ void main() {
   // Horizontal pixel-sort streak inside corrupt blocks: pull the sample toward the block's left
   // edge so bright/dark runs smear sideways.
   float sx = mix(uv.x, blockUv.x, corrupt * uStreak);
-  vec2 duv = vec2(sx, uv.y) + mv;
+
+  // THE SQUALL ITSELF — big wind and waves that swell with the burst envelope (0 at the seam):
+  //  • gust — whole ROWS of blocks dragged sideways, a held random shear that snaps each step
+  //    (the long horizontal datamosh smears of the reference loops);
+  //  • wave — a loop-periodic warp rolling through the frame, bending the pixel rows.
+  float gustN = hash21(vec2(blockId.y + 3.0, stp)) - 0.5;
+  float gustX = uGust * env * gustN * 2.0;
+  float waveN = max(1.0, floor(uWaveN + 0.5));
+  float waveCycles = max(1.0, floor(uWaveCycles + 0.5));
+  float wav = uWave * env * sin(TAU * (uv.x * waveN + waveCycles * uLoopT));
+
+  vec2 duv = vec2(sx + gustX, uv.y + wav) + mv;
 
   // Chroma tear: sample R/B at separated positions (the cyan/magenta datamosh split).
   float t = corrupt * uTear * (0.4 + 0.6 * env);

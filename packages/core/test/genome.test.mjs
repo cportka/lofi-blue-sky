@@ -66,7 +66,7 @@ const GOLDEN_VECTORS = {
     stopJitter: [0.057708084359765044, -0.0051770644728094325, -0.013355187932029368,
       -0.004327639639377594, 0.05123597390949726, -0.04592280942946672],
     horizon: 0.4017001429200172, sunElevation: 0.5773192049912177, sunStrength: 0.27621843698434534,
-    bands: 9, hbands: 4, movement: 'true-clean', blocks: true, blocksN: 8,
+    bands: 9, hbands: 1, movement: 'true-clean', blocks: true, blocksN: 1,
     bandPhase: 0.6816464364528656, bandDrift: 0.035924939919495955,
     rowDisplace: 0.01323959418106824, driftCycles: 1, tile: 12, sortThreshold: 0.6664858225570061,
     sortAxis: 'horizontal', moshDecay: 0.8693750870763324, quantLevels: 8, grain: 0.010911608280055225,
@@ -78,7 +78,7 @@ const GOLDEN_VECTORS = {
     stopJitter: [-0.002698839101940395, -0.056407305216416716, -0.04179643026553094,
       -0.004335041223093868, -0.03517482270486653, 0.04921595804393292],
     horizon: 0.40009025782346724, sunElevation: 0.5037014248827472, sunStrength: 0.7796804954996333,
-    bands: 44, hbands: 5, movement: 'true-clean', blocks: true, blocksN: 7,
+    bands: 44, hbands: 1, movement: 'true-clean', blocks: true, blocksN: 1,
     bandPhase: 0.39475096575915813, bandDrift: 0.048222664415370674,
     rowDisplace: 0.054802955766208465, driftCycles: 3, tile: 9, sortThreshold: 0.447101808085572,
     sortAxis: 'vertical', moshDecay: 0.9698582527227699, quantLevels: 6, grain: 0.05229735904019326,
@@ -148,7 +148,7 @@ test('a plain seed string is folded deterministically (never throws)', () => {
   assert.deepEqual(genomeFromHash('hello sky'), genomeFromHash('hello sky'));
 });
 
-test('v4: True Clean is ~90%; every other movement is rare (<10%); classic is the <1% golden window', () => {
+test('v5: the 1×1 origin is ~half of all skies; non-True-Clean movements each stay rare', () => {
   let bars = 0, grid = 0, blocks = 0, oneByOne = 0;
   const mv = { 'true-clean': 0, sweep: 0, classic: 0, distorted: 0 };
   const N = 4000;
@@ -159,14 +159,22 @@ test('v4: True Clean is ~90%; every other movement is rare (<10%); classic is th
     else if (g.hbands > 1) grid++;
     else bars++;
   }
-  // True Clean IS the sky — ~90% of seeds. Everything else is individually rare.
-  assert.ok(mv['true-clean'] / N > 0.86 && mv['true-clean'] / N < 0.93, `true-clean ${(mv['true-clean'] / N).toFixed(3)} ~0.90`);
+  // THE ORIGIN: ~50% of skies are 1×1 — the entire frame as one pixel (always True Clean).
+  assert.ok(oneByOne / N > 0.45 && oneByOne / N < 0.55, `1×1 share ${(oneByOne / N).toFixed(3)} ~0.50`);
+  for (let i = 0; i < N; i++) {
+    const g = genomeFromHash('split-' + i);
+    if (g.blocks && g.blocksN === 1) {
+      assert.equal(g.movement, 'true-clean', '1×1 is True Clean by definition');
+      assert.equal(g.hbands, 1);
+    }
+  }
+  // True Clean dominates; everything else is individually rare.
+  assert.ok(mv['true-clean'] / N > 0.9, `true-clean ${(mv['true-clean'] / N).toFixed(3)} >0.90`);
   assert.ok(mv.sweep / N < 0.1 && mv.sweep > 0, `sweep ${(mv.sweep / N).toFixed(3)} <0.10`);
   assert.ok(mv.distorted / N < 0.1 && mv.distorted > 0, `distorted ${(mv.distorted / N).toFixed(3)} <0.10`);
   assert.ok(mv.classic / N < 0.015 && mv.classic > 0, `classic ${(mv.classic / N).toFixed(4)} <0.01ish (golden window)`);
-  // All three splits are genuinely reachable, and the 1×1 origin (a single pulsing colour) occurs, rarely.
-  assert.ok(bars > 0 && grid > 0 && blocks > 0, `bars ${bars} grid ${grid} blocks ${blocks}`);
-  assert.ok(oneByOne > 0 && oneByOne / N < 0.05, `1×1 share ${(oneByOne / N).toFixed(3)} should be rare but present`);
+  // The grid family is still genuinely reachable.
+  assert.ok(bars > 0 && grid > 0 && blocks > oneByOne, `bars ${bars} grid ${grid} blocks ${blocks}`);
 });
 
 test('the two original canonical picks land in the classic golden window (their v1 look preserved)', () => {
